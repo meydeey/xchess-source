@@ -1,0 +1,32 @@
+[Event "Alien gambit: main line"]
+[Date "2025.07.17"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "main line"]
+[ChapterURL "https://lichess.org/study/XxR4704s/L33iJjch"]
+[Annotator "https://lichess.org/@/None_Ankit54"]
+[UTCDate "2025.07.17"]
+[UTCTime "06:37:43"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 c5 8. Ne5+ Kg8 9. Bc4+ e6 10. Qe2 cxd4 11. f4 Nc6 12. O-O Nxe5 13. fxe5 Nd5 14. Qf3 Qe7 15. h4 Bd7 16. g4 Bc6 17. Qg3 g5 18. Qd3 gxh4 19. Kh2 Rh7 20. Bd2 Rd8 *
+
+
+[Event "Alien gambit: side line"]
+[Date "2025.07.17"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "side line"]
+[ChapterURL "https://lichess.org/study/XxR4704s/eiaJQVZT"]
+[Annotator "https://lichess.org/@/None_Ankit54"]
+[UTCDate "2025.07.17"]
+[UTCTime "06:54:33"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 c5 8. Bc4+ e6 9. Qe2 cxd4 *
+
+

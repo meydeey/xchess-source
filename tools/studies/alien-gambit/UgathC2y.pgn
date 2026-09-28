@@ -1,0 +1,16 @@
+[Event "Alien gambit: Rozdział 1"]
+[Date "2025.06.05"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "Rozdział 1"]
+[ChapterURL "https://lichess.org/study/UgathC2y/3Q9y2t65"]
+[Annotator "https://lichess.org/@/tadziolul"]
+[UTCDate "2025.06.05"]
+[UTCTime "13:50:48"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 e6 (7... Bf5 8. Ne5+ Kg8 9. Bc4+ e6 10. g4) (7... Nbd7 8. Bc4+ e6 9. Qe2 Nb6 10. Ne5+ Kg8) *
+
+

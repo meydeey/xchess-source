@@ -1,0 +1,11 @@
+node_modules
+dist
+.DS_Store
+**/.cc-writes
+tools/bin/
+tools/cache/
+tools/data/lichess_db_puzzle.csv.zst
+src-tauri/binaries/
+src-tauri/target/
+src-tauri/gen/
+.vercel

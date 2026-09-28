@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="XChess, tour d’échecs">
+  <rect width="512" height="512" fill="#101b1b"/>
+  <path d="M132 111h54v42h42v-42h56v42h42v-42h54v91h-27l-19 31h-18l20 126h28v31h19v34H129v-34h19v-31h28l20-126h-18l-19-31h-27z" fill="#f3f0df"/>
+  <path d="M171 195h170v13H171z" fill="#c8f26d"/>
+  <path d="M177 358h158v14H177z" fill="#101b1b" opacity=".42"/>
+</svg>

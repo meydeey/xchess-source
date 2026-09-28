@@ -1,0 +1,34 @@
+[Event "Alien gambit: intro"]
+[Date "2025.06.28"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "intro"]
+[ChapterURL "https://lichess.org/study/bd1oliDV/7Xwy8S2m"]
+[Annotator "https://lichess.org/@/Andy69201111"]
+[UTCDate "2025.06.28"]
+[UTCTime "12:15:24"]
+
+1. d4 c6 2. e4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 *
+
+
+[Event "THE ALIEN GAMBIT: 👾 Alien Gambit - CHECKMATE:-Trap-3 👾"]
+[Date "2025.06.28"]
+[White "Alien Gambit"]
+[Black "Caro-Kann"]
+[Result "*"]
+[Variant "Standard"]
+[Annotator "https://lichess.org/@/Chess_In_Fire"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "Alien Gambit - check mate trap 3 updated"]
+[ChapterURL "https://lichess.org/study/bd1oliDV/trEjLm6g"]
+[UTCDate "2025.06.28"]
+[UTCTime "12:30:51"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bf5 8. Ne5+ Kg8 9. Bc4+ e6 (9... Kh7 10. g4 Be4 11. g5 hxg5 12. Nf7 Qd7 13. Nxg5+ Kg6 14. Bf7+ Kh6 15. Nxe4+ Kh7 16. Nxf6+ gxf6 (16... exf6 17. Qh5#) 17. Qh5+ Bh6 18. Qxh6#) 10. g4 Be4 11. Bxe6+ Kh7 12. g5 Bxh1 (12... Qe7 13. Bb3 hxg5 14. Bxg5 Bxh1 15. Qd3+ Be4 16. Qh3+ Nh5 17. Qxh5#) (12... hxg5 13. Nf7 Qa5+ 14. Bd2 Bb4 15. c3 Re8) 13. g6# *
+
+

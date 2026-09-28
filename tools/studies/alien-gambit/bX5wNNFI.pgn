@@ -1,0 +1,48 @@
+[Event "Alien gambit: Chapter 1"]
+[Date "2024.12.30"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Alien gambit"]
+[ChapterName "Chapter 1"]
+[ChapterURL "https://lichess.org/study/bX5wNNFI/pYPlyQwY"]
+[Annotator "https://lichess.org/@/magnusivan2014"]
+[UTCDate "2024.12.30"]
+[UTCTime "08:12:37"]
+
+ *
+
+
+[Event "Alien gambit: Chapter 2"]
+[Date "2025.01.02"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B17"]
+[Opening "Caro-Kann Defense: Karpov Variation"]
+[StudyName "Alien gambit"]
+[ChapterName "Chapter 2"]
+[ChapterURL "https://lichess.org/study/bX5wNNFI/Zp1CsYdh"]
+[Annotator "https://lichess.org/@/magnusivan2014"]
+[UTCDate "2025.01.02"]
+[UTCTime "10:51:16"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nd7 5. Nf3 Ngf6 6. Neg5 h6 7. Nxf7 Kxf7 8. Bd3 Qc7 9. O-O e5 10. Nxe5+ Nxe5 11. dxe5 Qxe5 12. Re1 Qc5 13. Be3 Qd6 14. Bd4 Be7 15. Bxf6 Bxf6 16. Qh5+ Kg8 17. Re8+ Qf8 18. Rxf8+ Kxf8 19. Re1 Bd7 20. Bc4 Be8 21. Rxe8+ (21. Qc5+ Be7 22. Qxe7#) 21... Rxe8 22. Qf7# *
+
+
+[Event "Alien gambit: Chapter 3"]
+[Date "2025.01.08"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien gambit"]
+[ChapterName "Chapter 3"]
+[ChapterURL "https://lichess.org/study/bX5wNNFI/KaOhJRoR"]
+[Annotator "https://lichess.org/@/magnusivan2014"]
+[UTCDate "2025.01.08"]
+[UTCTime "12:53:35"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Nbd7 8. Bd3 e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Kg8 12. Qf3 Bxe5 13. dxe5 Nd5 14. Bxh6 gxh6 15. Qg4+ Kh8 16. Qg6 Nf8 17. Qxh6+ Kg8 18. Re4 Ne7 19. Rg4+ Neg6 20. Rxg6+ Nxg6 21. Qxg6+ Kf8 22. Qh6+ Ke7 23. Qg7# *
+
+

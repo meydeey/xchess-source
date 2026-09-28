@@ -1,0 +1,32 @@
+[Event "alien gambit: Chapter 1"]
+[Date "2025.08.05"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "alien gambit"]
+[ChapterName "Chapter 1"]
+[ChapterURL "https://lichess.org/study/iZjxYbqu/208K7naV"]
+[Annotator "https://lichess.org/@/khalilzed"]
+[UTCDate "2025.08.05"]
+[UTCTime "13:38:06"]
+
+1. e4 c6 2. d4 d5 3. Nd2 dxe4 4. Nxe4 Nf6 5. Ng5 h6 (5... Bf5 6. N1f3 e6 (6... Nbd7 7. Bd3 Bxd3 8. Qxd3 e6) 7. Ne5 Bg6 8. Bd3 Bxd3 (8... Qxd4 9. Nxg6 hxg6 10. Nxf7 Kxf7 11. Bxg6+) 9. Qxd3) 6. Nxf7 Kxf7 7. Nf3 Bg4 (7... Nbd7 8. Bc4+ (8. Bd3 e6 9. O-O Bd6 10. Re1 Rf8 11. Ne5+) 8... e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Bxe5 (11... Kg8) 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 Qe7 15. Bxg7 Kxg7 16. Re4) (7... c5 8. c3 cxd4 9. Bd3 Nc6 10. O-O Bg4 11. Qb3+ e6 12. Qxb7+ Ne7 13. Ne5+) (7... Bf5 8. Ne5+ Kg8 (8... Ke8 9. g4 Bh7 10. Bc4 Nd5 11. Qf3 Bg8 12. Bd3 Qd6 13. Bg6+ Kd8 14. Qxf8+) 9. Bc4+ e6 10. g4 Be4 11. Bxe6+ Kh7 12. f3 (12. g5 Bxh1 13. g6#) 12... Bd5 13. Qd3+) (7... e6 8. Bd3) 8. Ne5+ *
+
+
+[Event "alien gambit: Chapter 2"]
+[Date "2025.08.05"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "alien gambit"]
+[ChapterName "Chapter 2"]
+[ChapterURL "https://lichess.org/study/iZjxYbqu/3mZLPIB9"]
+[Annotator "https://lichess.org/@/khalilzed"]
+[UTCDate "2025.08.05"]
+[UTCTime "13:38:49"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bg4 (7... Bf5 8. Ne5+ (8. Bc4+) 8... Kg8 9. Bc4+ e6 10. g4 Be4 11. g5 hxg5 12. Bxe6+ Kh7 13. Bxg5 (13. h4 g4 14. Nxg4 Nxg4 15. Qxg4 Qf6 16. Qxe4+ Qg6 (16... g6 17. h5 Qf5 18. hxg6+ Kg7 19. Qxf5) 17. Bf5) (13. Nf7 Bb4+ 14. c3 Qe7 15. Nxg5+ Kg6 16. Rg1 Rxh2 17. Nxe4+ Kh7 18. Ng5+ Kh8 19. cxb4 Ne4 20. Qe2 Nxg5 21. Bxg5 Qxb4+ 22. Bd2 Qxb2 23. Rc1 Qxd4 24. Bc3 Qd7 (24... Qh4 25. Rxg7 Rh1+ 26. Rg1+ Kh7 27. Bf5+ Kh6 28. Qe6+ Kh5 29. Qg6#))) 8. Ne5+ Ke6 (8... Kg8 9. Nxg4 Nxg4 10. Qxg4) *
+
+

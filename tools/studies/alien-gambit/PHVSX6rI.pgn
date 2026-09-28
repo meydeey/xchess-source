@@ -1,0 +1,80 @@
+[Event "The Alien Gambit: The brilliant Nxf7!!"]
+[Date "2025.01.21"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "The brilliant Nxf7!!"]
+[ChapterURL "https://lichess.org/study/PHVSX6rI/TD1rbKVd"]
+[Annotator "https://lichess.org/@/KnightDribbler42"]
+[UTCDate "2025.01.21"]
+[UTCTime "17:08:54"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 *
+
+
+[Event "The Alien Gambit: Game 2"]
+[Date "2025.01.22"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Game 2"]
+[ChapterURL "https://lichess.org/study/PHVSX6rI/sghoMzec"]
+[Annotator "https://lichess.org/@/KnightDribbler42"]
+[UTCDate "2025.01.22"]
+[UTCTime "16:53:39"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Nbd7 8. Bc4+ e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 Qe7 (14... gxh6 15. Qg6+ Kf8 16. Qxh6+ Kg8 17. Re4) 15. Bxg7 Kxg7 (15... Qxg7 16. Qxe8+) 16. Re4 Rg8 17. Rg4+ Kf8 18. Qh6+ Rg7 19. Qh8+ Kf7 20. Rxg7# *
+
+
+[Event "The Alien Gambit: Game 3"]
+[Date "2025.01.22"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Game 3"]
+[ChapterURL "https://lichess.org/study/PHVSX6rI/hnQiWzCe"]
+[Annotator "https://lichess.org/@/KnightDribbler42"]
+[UTCDate "2025.01.22"]
+[UTCTime "16:57:10"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Nbd7 8. Bc4+ e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Kg8 12. Qf3 Bxe5 13. dxe5 Nd5 14. Qh5 Qe7 15. Bxh6 gxh6 16. Re4 *
+
+
+[Event "The Alien Gambit: Chapter 4"]
+[Date "2025.01.23"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Main Line"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Chapter 4"]
+[ChapterURL "https://lichess.org/study/PHVSX6rI/Jso5j0VK"]
+[Annotator "https://lichess.org/@/KnightDribbler42"]
+[UTCDate "2025.01.23"]
+[UTCTime "15:34:47"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 Nbd7 6. N1f3 e6 7. Bd3 Bd6 8. O-O O-O 9. Qe2 h6 10. Nxe6 fxe6 11. Qxe6+ Kh8 12. Qxd6 *
+
+
+[Event "The Alien Gambit: Chapter 7"]
+[Date "2025.01.23"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "The Alien Gambit"]
+[ChapterName "Chapter 7"]
+[ChapterURL "https://lichess.org/study/PHVSX6rI/9j64D7lM"]
+[Annotator "https://lichess.org/@/KnightDribbler42"]
+[UTCDate "2025.01.23"]
+[UTCTime "14:52:13"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Nbd7 8. Bd3 e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Kg8 12. Qf3 Bxe5 13. dxe5 Nd5 14. Qg3 (14. Bxh6) 14... Kh8 15. Bxh6 gxh6 16. Qg6 Qe7 (16... Re7 17. Qxh6+ Kg8 18. Re4 (18. Qg5+ Kf8 19. c4 Qe8 20. cxd5 Rg7 21. Qh6 Qe7) 18... Rg7 19. Qxe6+ Kf8 20. Qf5+ Kg8 21. Rg4 Qe7 22. Qh7+ Kf8 23. Qh8+ Kf7 24. Rxg7+) 17. c4 Nf8 (17... Nf4 18. Qxh6+) 18. Qxh6+ Nh7 19. cxd5 *
+
+

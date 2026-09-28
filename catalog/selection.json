@@ -1,0 +1,897 @@
+[
+  {
+    "id": "partie-italienne",
+    "name": "Partie italienne (Giuoco Piano)",
+    "lichessName": "Italian Game: Giuoco Piano",
+    "eco": "C50",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Bc5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "systeme-de-londres",
+    "name": "Système de Londres",
+    "lichessName": "Queen's Pawn Game: Accelerated London System",
+    "eco": "D00",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "d5",
+      "Bf4"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "partie-ecossaise",
+    "name": "Partie écossaise",
+    "lichessName": "Scotch Game",
+    "eco": "C44",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "d4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "partie-viennoise",
+    "name": "Partie viennoise",
+    "lichessName": "Vienna Game",
+    "eco": "C25",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nc3"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-dame",
+    "name": "Gambit dame",
+    "lichessName": "Queen's Gambit",
+    "eco": "D06",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "d5",
+      "c4"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "attaque-jobava-londres",
+    "name": "Attaque Jobava-Londres",
+    "lichessName": "Rapport-Jobava System",
+    "eco": "D01",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "Nf6",
+      "Nc3",
+      "d5",
+      "Bf4"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "partie-espagnole",
+    "name": "Partie espagnole",
+    "lichessName": "Ruy Lopez",
+    "eco": "C60",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bb5"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "ouverture-anglaise",
+    "name": "Ouverture anglaise",
+    "lichessName": "English Opening",
+    "eco": "A10",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "c4"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "attaque-fried-liver",
+    "name": "Attaque Fried Liver",
+    "lichessName": "Italian Game: Two Knights Defense, Fried Liver Attack",
+    "eco": "C57",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nf6",
+      "Ng5",
+      "d5",
+      "exd5",
+      "Nxd5",
+      "Nxf7"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-danois",
+    "name": "Gambit danois",
+    "lichessName": "Danish Gambit",
+    "eco": "C21",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "d4",
+      "exd4",
+      "c3"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-ecossais",
+    "name": "Gambit écossais",
+    "lichessName": "Scotch Game: Scotch Gambit",
+    "eco": "C44",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "d4",
+      "exd4",
+      "Bc4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-evans",
+    "name": "Gambit Évans",
+    "lichessName": "Italian Game: Evans Gambit",
+    "eco": "C51",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Bc5",
+      "b4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-smith-morra",
+    "name": "Gambit Smith-Morra",
+    "lichessName": "Sicilian Defense: Smith-Morra Gambit",
+    "eco": "B21",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "c5",
+      "d4",
+      "cxd4",
+      "c3"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-viennois",
+    "name": "Gambit viennois",
+    "lichessName": "Vienna Game: Vienna Gambit",
+    "eco": "C29",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nc3",
+      "Nf6",
+      "f4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-blackmar-diemer",
+    "name": "Gambit Blackmar-Diemer",
+    "lichessName": "Blackmar-Diemer Gambit",
+    "eco": "D00",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "d4",
+      "d5",
+      "e4",
+      "dxe4",
+      "Nc3",
+      "Nf6",
+      "f3"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-du-roi",
+    "name": "Gambit du roi",
+    "lichessName": "King's Gambit",
+    "eco": "C30",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "f4"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "alien-gambit",
+    "name": "Alien Gambit",
+    "lichessName": "Caro-Kann Defense: Alien Gambit",
+    "eco": "B15",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "c6",
+      "d4",
+      "d5",
+      "Nc3",
+      "dxe4",
+      "Nxe4",
+      "Nf6",
+      "Ng5",
+      "h6",
+      "Nxf7"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-halloween",
+    "name": "Gambit Halloween",
+    "lichessName": "Four Knights Game: Halloween Gambit",
+    "eco": "C47",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Nc3",
+      "Nf6",
+      "Nxe5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-tennison",
+    "name": "Gambit Tennison",
+    "lichessName": "Zukertort Opening: Tennison Gambit",
+    "eco": "A06",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "Nf3",
+      "d5",
+      "e4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "ouverture-polonaise",
+    "name": "Ouverture polonaise",
+    "lichessName": "Polish Opening",
+    "eco": "A00",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "b4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "attaque-grob",
+    "name": "Attaque Grob",
+    "lichessName": "Grob Opening",
+    "eco": "A00",
+    "side": "white",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "g4"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "defense-scandinave",
+    "name": "Défense scandinave",
+    "lichessName": "Scandinavian Defense",
+    "eco": "B01",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "d5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "defense-caro-kann",
+    "name": "Défense Caro-Kann",
+    "lichessName": "Caro-Kann Defense",
+    "eco": "B10",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "c6"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "defense-francaise",
+    "name": "Défense française",
+    "lichessName": "French Defense",
+    "eco": "C00",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e6"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "defense-pirc",
+    "name": "Défense Pirc",
+    "lichessName": "Pirc Defense",
+    "eco": "B07",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "d6",
+      "d4",
+      "Nf6",
+      "Nc3",
+      "g6"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "defense-slave",
+    "name": "Défense slave",
+    "lichessName": "Slav Defense",
+    "eco": "D10",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "d5",
+      "c4",
+      "c6"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "defense-hollandaise",
+    "name": "Défense hollandaise",
+    "lichessName": "Dutch Defense",
+    "eco": "A80",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "f5"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "sicilienne-dragon",
+    "name": "Sicilienne Dragon",
+    "lichessName": "Sicilian Defense: Dragon Variation",
+    "eco": "B70",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "c5",
+      "Nf3",
+      "d6",
+      "d4",
+      "cxd4",
+      "Nxd4",
+      "Nf6",
+      "Nc3",
+      "g6"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "defense-est-indienne",
+    "name": "Défense est-indienne",
+    "lichessName": "King's Indian Defense",
+    "eco": "E61",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "Nf6",
+      "c4",
+      "g6",
+      "Nc3",
+      "Bg7"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "defense-nimzo-indienne",
+    "name": "Défense nimzo-indienne",
+    "lichessName": "Nimzo-Indian Defense",
+    "eco": "E20",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "Nf6",
+      "c4",
+      "e6",
+      "Nc3",
+      "Bb4"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "sicilienne-najdorf",
+    "name": "Sicilienne Najdorf",
+    "lichessName": "Sicilian Defense: Najdorf Variation",
+    "eco": "B90",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "c5",
+      "Nf3",
+      "d6",
+      "d4",
+      "cxd4",
+      "Nxd4",
+      "Nf6",
+      "Nc3",
+      "a6"
+    ],
+    "provisionalLevel": "expert",
+    "source": "spec"
+  },
+  {
+    "id": "defense-grunfeld",
+    "name": "Défense Grünfeld",
+    "lichessName": "Grünfeld Defense",
+    "eco": "D80",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "classique",
+    "moves": [
+      "d4",
+      "Nf6",
+      "c4",
+      "g6",
+      "Nc3",
+      "d5"
+    ],
+    "provisionalLevel": "expert",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-stafford",
+    "name": "Gambit Stafford",
+    "lichessName": "Petrov's Defense: Stafford Gambit",
+    "eco": "C42",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nf6",
+      "Nxe5",
+      "Nc6"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-portugais",
+    "name": "Gambit portugais",
+    "lichessName": "Scandinavian Defense: Portuguese Gambit",
+    "eco": "B01",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "d5",
+      "exd5",
+      "Nf6",
+      "d4",
+      "Bg4"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "contre-attaque-traxler",
+    "name": "Contre-attaque Traxler",
+    "lichessName": "Italian Game: Two Knights Defense, Traxler Counterattack",
+    "eco": "C57",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nf6",
+      "Ng5",
+      "Bc5"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-budapest",
+    "name": "Gambit Budapest",
+    "lichessName": "Indian Defense: Budapest Gambit",
+    "eco": "A51",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "d4",
+      "Nf6",
+      "c4",
+      "e5"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "contre-gambit-albin",
+    "name": "Contre-gambit Albin",
+    "lichessName": "Queen's Gambit Declined: Albin Countergambit",
+    "eco": "D08",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "d4",
+      "d5",
+      "c4",
+      "e5"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "contre-gambit-jaenisch",
+    "name": "Contre-gambit Jaenisch",
+    "lichessName": "Ruy Lopez: Schliemann Defense",
+    "eco": "C63",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bb5",
+      "f5"
+    ],
+    "provisionalLevel": "club",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-benko",
+    "name": "Gambit Benko",
+    "lichessName": "Benko Gambit",
+    "eco": "A57",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "gambit",
+    "moves": [
+      "d4",
+      "Nf6",
+      "c4",
+      "c5",
+      "d5",
+      "b5"
+    ],
+    "provisionalLevel": "avance",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-englund",
+    "name": "Gambit Englund",
+    "lichessName": "Englund Gambit",
+    "eco": "A40",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "d4",
+      "e5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-letton",
+    "name": "Gambit letton",
+    "lichessName": "Latvian Gambit",
+    "eco": "C40",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "f5"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "gambit-de-l-elephant",
+    "name": "Gambit de l'éléphant",
+    "lichessName": "Elephant Gambit",
+    "eco": "C40",
+    "side": "black",
+    "sideRule": "chosen",
+    "family": "exotique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "d5"
+    ],
+    "provisionalLevel": "intermediaire",
+    "source": "spec"
+  },
+  {
+    "id": "italian-game-scotch-gambit-anderssen-attack",
+    "name": "Partie italienne : Gambit écossais, attaque Anderssen",
+    "lichessName": "Italian Game: Scotch Gambit, Anderssen Attack",
+    "eco": "C56",
+    "side": "white",
+    "sideRule": "lastMover",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nf6",
+      "d4",
+      "exd4",
+      "O-O",
+      "Nxe4",
+      "Re1",
+      "d5",
+      "Bxd5",
+      "Qxd5",
+      "Nc3"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  },
+  {
+    "id": "vienna-game-stanley-variation-meitner-mieses-gambit",
+    "name": "Partie viennoise : variante Stanley, gambit Meitner-Mieses",
+    "lichessName": "Vienna Game: Stanley Variation, Meitner-Mieses Gambit",
+    "eco": "C25",
+    "side": "white",
+    "sideRule": "lastMover",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nc3",
+      "Nc6",
+      "Bc4",
+      "Bc5",
+      "Qg4",
+      "Qf6",
+      "Nd5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  },
+  {
+    "id": "ruy-lopez-open",
+    "name": "Partie espagnole : variante ouverte",
+    "lichessName": "Ruy Lopez: Open",
+    "eco": "C80",
+    "side": "white",
+    "sideRule": "lastMover",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bb5",
+      "a6",
+      "Ba4",
+      "Nf6",
+      "O-O",
+      "Nxe4",
+      "d4"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  },
+  {
+    "id": "ruy-lopez-exchange-variation-alapin-gambit",
+    "name": "Partie espagnole : variante d'échange, gambit Alapin",
+    "lichessName": "Ruy Lopez: Exchange Variation, Alapin Gambit",
+    "eco": "C69",
+    "side": "black",
+    "sideRule": "lastMover",
+    "family": "gambit",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bb5",
+      "a6",
+      "Bxc6",
+      "dxc6",
+      "O-O",
+      "Bg4",
+      "h3",
+      "h5"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  },
+  {
+    "id": "italian-game-giuoco-pianissimo-dubois-variation",
+    "name": "Partie italienne : Giuoco Pianissimo, variante Dubois",
+    "lichessName": "Italian Game: Giuoco Pianissimo, Dubois Variation",
+    "eco": "C50",
+    "side": "black",
+    "sideRule": "lastMover",
+    "family": "classique",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Bc5",
+      "d3",
+      "f5",
+      "Ng5",
+      "f4"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  },
+  {
+    "id": "indian-defense-gibbins-weidenhagen-gambit-accepted",
+    "name": "Défense indienne : gambit Gibbins-Weidenhagen accepté",
+    "lichessName": "Indian Defense: Gibbins-Weidenhagen Gambit Accepted",
+    "eco": "A45",
+    "side": "black",
+    "sideRule": "lastMover",
+    "family": "gambit",
+    "moves": [
+      "d4",
+      "Nf6",
+      "g4",
+      "Nxg4"
+    ],
+    "provisionalLevel": "debutant",
+    "source": "mesure"
+  }
+]

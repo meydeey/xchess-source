@@ -1,0 +1,17 @@
+{
+  "name": "XChess",
+  "short_name": "XChess",
+  "description": "Entraînement quotidien aux échecs : ouvertures, révisions et progression.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101b1b",
+  "theme_color": "#101b1b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

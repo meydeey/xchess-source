@@ -1,0 +1,49 @@
+[Event "Alien Gambit: Alien Gambit Accepted"]
+[Date "2025.06.23"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "Alien Gambit Accepted"]
+[ChapterURL "https://lichess.org/study/mWPyZi2j/k4ys5pI7"]
+[Annotator "https://lichess.org/@/ChessRaptorMan"]
+[UTCDate "2025.06.23"]
+[UTCTime "03:51:00"]
+[ChapterMode "gamebook"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 *
+
+
+[Event "Alien Gambit: Alien Gambit Accepted"]
+[Date "2025.06.23"]
+[Result "*"]
+[Variant "Standard"]
+[Annotator "https://lichess.org/@/ChessRaptorMan"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "Bg4 Pinned Knight"]
+[ChapterURL "https://lichess.org/study/mWPyZi2j/gqrLHchR"]
+[UTCDate "2025.06.23"]
+[UTCTime "04:04:38"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Be6 (7... Nbd7 8. Bc4+ Nd5 (8... e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 gxh6 (14... Qe7 15. Bxg7 Kxg7 (15... Qxg7 16. Qxe8+) 16. Re4 Qf7 (16... Nxe5 17. Rxe5 Qf6 18. Rg5+ Kf8 19. Qh4 Re7 20. Bxd5 exd5 21. Rg8+ Kf7 22. Rf8+ Kxf8 23. Qxf6+ Rf7 24. Qd8+ Kg7 25. Re1) 17. Rg4+ Kf8 18. Qh6+ Ke7 19. Rg7 Nxe5 20. Bxd5 cxd5 21. c4 dxc4 22. Rd1 b5 23. f4 Nd3 24. b3 Rb8 25. bxc4 bxc4 26. f5 exf5 27. Qh4+ Kf8 28. Rxf7+ Kxf7 29. Qxc4+ Be6 30. Qxd3) 15. Qg6+ Kf8 16. Qxh6+ Kf7 (16... Ke7 17. Qg7#) 17. Qh5+ (17. Qh7+ Kf8 18. Re3 Nxe3 (18... Nxe5 19. Rg3 Nf7 20. Rf3 Qd7 21. Rd1) 19. fxe3) (17. Bxd5 Nxe5) 17... Kf8 18. Bxd5 exd5 (18... Nxe5 19. Qh8+ Kf7 20. Qxe5 (20. Rxe5) (20. Qh5+ Kf8 21. Rxe5 (21. Qh8+))) 19. Qh8+ Ke7 20. Qh4+ Kf8 21. Qh6+ Kf7)) (7... e6 8. Bd3 Bd6 9. O-O Nbd7 (9... Re8 10. Re1 Nbd7 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 gxh6 15. Qg6+ Kf8 16. Qxh6+ Kg8 17. Qh7+ Kf8 18. Qh6+ Kg8 19. Bh7+ Kf7 20. Bg6+ Kg8 21. Qh7+ Kf8 22. Qf7#) 10. Re1 Re8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 Qe7 (14... gxh6 15. Qg6+ Kf8 16. Qxh6+ Ke7 (16... Kf7 17. Bg6+ Ke7 (17... Kg8 18. Qh7+ Kf8 19. Qf7#) 18. Qg7#) 17. Qg7#) 15. Bg5 Qf7 16. Bg6) *
+
+
+[Event "Alien Gambit: Alien Gambit Accepted"]
+[Date "2025.06.23"]
+[Result "*"]
+[Variant "Standard"]
+[Annotator "https://lichess.org/@/ChessRaptorMan"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "Chapter 3"]
+[ChapterURL "https://lichess.org/study/mWPyZi2j/jzCgbR6U"]
+[UTCDate "2025.06.23"]
+[UTCTime "05:04:52"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bg4 (7... Be6) (7... Nbd7 8. Bc4+ Nd5 (8... e6 9. O-O Bd6 10. Re1 Re8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 gxh6 (14... Qe7 15. Bxg7 Kxg7 (15... Qxg7 16. Qxe8+) 16. Re4 Qf7 (16... Nxe5 17. Rxe5 Qf6 18. Rg5+ Kf8 19. Qh4 Re7 20. Bxd5 exd5 21. Rg8+ Kf7 22. Rf8+ Kxf8 23. Qxf6+ Rf7 24. Qd8+ Kg7 25. Re1) 17. Rg4+ Kf8 18. Qh6+ Ke7 19. Rg7 Nxe5 20. Bxd5 cxd5 21. c4 dxc4 22. Rd1 b5 23. f4 Nd3 24. b3 Rb8 25. bxc4 bxc4 26. f5 exf5 27. Qh4+ Kf8 28. Rxf7+ Kxf7 29. Qxc4+ Be6 30. Qxd3) 15. Qg6+ Kf8 16. Qxh6+ Kf7 (16... Ke7 17. Qg7#) 17. Qh5+ (17. Qh7+ Kf8 18. Re3 Nxe3 (18... Nxe5 19. Rg3 Nf7 20. Rf3 Qd7 21. Rd1) 19. fxe3) (17. Bxd5 Nxe5) 17... Kf8 18. Bxd5 exd5 (18... Nxe5 19. Qh8+ Kf7 20. Qxe5 (20. Rxe5) (20. Qh5+ Kf8 21. Rxe5 (21. Qh8+))) 19. Qh8+ Ke7 20. Qh4+ Kf8 21. Qh6+ Kf7)) (7... e6 8. Bd3 Bd6 9. O-O Nbd7 10. Re1 Re8 11. Ne5+ Bxe5 12. dxe5 Nd5 13. Qh5+ Kg8 14. Bxh6 Qe7 (14... gxh6 15. Qg6+ Kf8 16. Qxh6+ Ke7 (16... Kf7 17. Bg6+ Ke7 (17... Kg8 18. Qh7+ Kf8 19. Qf7#) 18. Qg7#) 17. Qg7#) 15. Bg5 Qf7 16. Bg6) 8. Ne5+ Ke8 (8... Kg8 9. Bc4+ Kh7 10. Qd3+ Ne4 11. Qxe4+ Bf5 12. Qxf5+ g6 13. Qxg6#) (8... Ke6 9. Nxg4 Qd5 10. Ne5 Kd6 11. f3 Qe6 12. Bf4 Nd5 13. Bg3 g5 14. Bc4 h5 15. h3 Kc7 16. O-O Kc8 17. Qd3) 9. Bc4 (9. Nxg4 Nxg4 10. Qxg4 e6 11. Bc4 Qa5+ 12. Bd2 Qf5 13. Bxe6 Qxg4 14. Bxg4 Nd7 15. O-O) 9... Qa5+ 10. Bd2 Bxd1 11. Bf7+ Kd8 12. Bxa5+ b6 13. Rxd1 bxa5 14. Ng6 Nbd7 15. Nxh8 Rb8 16. b3 *
+
+

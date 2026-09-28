@@ -1,0 +1,80 @@
+[Event "Alien Gambit: sbd7"]
+[Date "2025.03.03"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "sbd7"]
+[ChapterURL "https://lichess.org/study/yJrcEQpP/3dq8DFZn"]
+[Annotator "https://lichess.org/@/Centymetr_HowOver"]
+[UTCDate "2025.03.03"]
+[UTCTime "13:31:07"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Nbd7 8. Bc4+ Ke8 9. O-O (9. Qd3 Nb6 10. Ne5 e6 11. Qg6+ Ke7 12. Qf7+ Kd6 13. b3 Nbd7 14. Bf4 g5 15. Nxc6+ gxf4 16. Nxd8) 9... Nb6 10. Bd3 Bg4 11. Ne5 Bxd1 (11... Qxd4 12. Bg6+ Kd8 13. Qxd4+) 12. Bg6# *
+
+
+[Event "Alien Gambit: gg4"]
+[Date "2025.03.03"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "gg4"]
+[ChapterURL "https://lichess.org/study/yJrcEQpP/nCvU08bk"]
+[Annotator "https://lichess.org/@/Centymetr_HowOver"]
+[UTCDate "2025.03.03"]
+[UTCTime "13:35:59"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bg4 8. Ne5+ Kg8 9. Bc4+ Kh7 (9... Nd5 10. Qxg4) 10. Qd3+ g6 11. Qxg6# *
+
+
+[Event "Alien Gambit: gf5"]
+[Date "2025.03.03"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "gf5"]
+[ChapterURL "https://lichess.org/study/yJrcEQpP/xxRLpJgK"]
+[Annotator "https://lichess.org/@/Centymetr_HowOver"]
+[UTCDate "2025.03.03"]
+[UTCTime "13:37:32"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 Bf5 8. Ne5+ Kg8 9. Bc4+ Nd5 (9... e6 10. g4) (9... Kh7 10. g4 Be4 11. g5 Bxh1 (11... hxg5 12. Nf7 Qd7 13. Nxg5+ Kg6 14. Bf7+ Kh6 15. Nxe4+ Kh7 16. Nxf6+ gxf6 17. Qh5+ Kg7 18. Qg6#) 12. g6#) *
+
+
+[Event "Alien Gambit: e6"]
+[Date "2025.03.03"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "B15"]
+[Opening "Caro-Kann Defense: Alien Gambit"]
+[StudyName "Alien Gambit"]
+[ChapterName "e6"]
+[ChapterURL "https://lichess.org/study/yJrcEQpP/ZFaav1y2"]
+[Annotator "https://lichess.org/@/Centymetr_HowOver"]
+[UTCDate "2025.03.03"]
+[UTCTime "13:43:43"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 e6 8. Ne5+ Kg8 (8... Ke7 9. Ng6+) 9. Bd3 Bd6 10. f4 Bxe5 11. fxe5 Nd5 12. Qh5 Nb4 13. Bg6 Qxd4 14. Bd2 *
+
+
+[Event "Alien Gambit: no h6"]
+[Date "2025.03.03"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "?"]
+[Opening "?"]
+[StudyName "Alien Gambit"]
+[ChapterName "no h6"]
+[ChapterURL "https://lichess.org/study/yJrcEQpP/nFsxNVD7"]
+[Annotator "https://lichess.org/@/Centymetr_HowOver"]
+[UTCDate "2025.03.03"]
+[UTCTime "13:47:39"]
+
+ *
+
+

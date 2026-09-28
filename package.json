@@ -1,0 +1,36 @@
+{
+  "name": "xchess",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.5",
+    "vite": "^8.3.0",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-shell": "^2.3.6",
+    "@tauri-apps/plugin-store": "^2.4.5",
+    "chess.js": "^1.4.0",
+    "chessground": "^9.2.1"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "bun test",
+    "catalog": "bun tools/build-catalog.mjs",
+    "stats": "infisical run --env=dev --silent -- bun tools/build-stats.mjs",
+    "trees": "infisical run --env=dev --silent -- bun tools/build-trees.mjs",
+    "fetch:stockfish": "bash tools/fetch-stockfish.sh",
+    "tauri": "tauri",
+    "app:dev": "tauri dev",
+    "app:build": "tauri build",
+    "ios:build:sim": "bash tools/build-ios-sim.sh",
+    "ios:build:device": "bash tools/build-ios-device.sh",
+    "release:all": "bash tools/release-all.sh",
+    "explain": "infisical run --env=dev --silent -- bun tools/build-explanations.mjs",
+    "full-catalog": "bun tools/build-full-catalog.mjs",
+    "puzzles": "bun tools/build-puzzles.mjs"
+  }
+}
