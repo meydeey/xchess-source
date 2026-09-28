@@ -68,6 +68,14 @@ if [[ "$mode" == '--check' ]]; then
   exit 0
 fi
 
+for udid in "${devices[@]}"; do
+  if ! xcrun devicectl device process launch --device "$udid" com.meydeey.theorie; then
+    echo "Release blocked: unlock iOS device $udid before publishing." >&2
+    exit 1
+  fi
+done
+echo 'Physical iOS targets are unlocked and launchable.'
+
 bun tools/publish-source.mjs "$release" --publish
 backup_dir="$HOME/Library/Application Support/XChess/releases/$release-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup_dir"
