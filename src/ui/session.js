@@ -16,14 +16,23 @@ import { eloToBand } from '../core/metrics.js'
 
 export async function mount(host, ctx) {
   const { state, saveProgress, setActions, game, t, params = {} } = ctx
+  host.classList.add('board-screen', 'session-screen')
   host.innerHTML = `
-    <p class="eyebrow"><a href="#/">${t('today')}</a> · ${t('session.title')}</p>
-    <h1 class="session-opening">${t('session.title')}</h1>
-    <p class="session-summary">${t('session.preparing')}</p>
-    <p class="session-difficulty" hidden></p>
+    <header class="session-top board-screen-top">
+      <div class="session-context">
+        <a class="session-back" href="#/" aria-label="${t('today')}">‹</a>
+        <h1 class="session-opening">${t('session.title')}</h1>
+      </div>
+      <div class="session-meta">
+        <span class="session-side" hidden></span>
+        <p class="session-summary">${t('session.preparing')}</p>
+        <p class="session-difficulty" hidden></p>
+      </div>
+    </header>
     <div class="session-body"></div>
   `
   const openingEl = host.querySelector('.session-opening')
+  const sideEl = host.querySelector('.session-side')
   const summaryEl = host.querySelector('.session-summary')
   const difficultyEl = host.querySelector('.session-difficulty')
   const bodyEl = host.querySelector('.session-body')
@@ -129,8 +138,14 @@ export async function mount(host, ctx) {
       },
     })
     hud = game ? mountHud(drillHost, game, { getOpeningId: () => item.openingId, getLineId: () => item.line.id, getSounds: () => state.settings.sounds, getLocale: () => state.settings.locale }) : null
+    // Les commandes suivent les explications dans la colonne latérale sur grand écran.
+    // Déplacer le même nœud conserve ses écouteurs entre 2 lignes.
+    drillHost.querySelector('.drill-info').append(actionsEl)
     hud?.startLine()
     openingEl.textContent = state.settings.locale === 'fr' ? opening.name : opening.lichessName || opening.name
+    openingEl.title = openingEl.textContent
+    sideEl.hidden = false
+    sideEl.textContent = t(`side.${sideEn}`)
     summaryEl.textContent = t('session.lineOf', { index: index + 1, total: session.queue.length })
     const difficulty = difficultyByOpening[item.openingId]
     difficultyEl.hidden = !difficulty
@@ -142,11 +157,14 @@ export async function mount(host, ctx) {
     index++
     if (index >= session.queue.length) {
       drill?.destroy()
+      host.classList.remove('is-playing')
       drillHost.hidden = true
       actionsEl.hidden = true
       bodyEl.querySelector('.btn-start').hidden = true
       const n = session.queue.length
       openingEl.textContent = t('session.completeTitle')
+      openingEl.removeAttribute('title')
+      sideEl.hidden = true
       summaryEl.textContent = t('session.completeSummary', { lines: n, flawless: flawlessCount, xp: sessionXp })
       difficultyEl.hidden = true
       bodyEl.insertAdjacentHTML('beforeend', `
@@ -161,6 +179,7 @@ export async function mount(host, ctx) {
   }
   function start() {
     sound.unlock()
+    host.classList.add('is-playing')
     startBtn.hidden = true
     drillHost.hidden = false
     actionsEl.hidden = false

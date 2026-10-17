@@ -791,6 +791,7 @@ function linesUnder(lines, path) {
 // ---------- écran : les 3 onglets pour une ouverture ----------
 export async function mount(host, ctx) {
   const { params, state, saveProgress, setActions, game, t } = ctx
+  host.classList.add('board-screen', 'training-screen')
   const opening = resolveOpening(params.id, { selection, openings })
   if (!opening) {
     host.innerHTML = `<p class="empty">${t('opening.missing')} <a href="#/library">${t('opening.back')}</a>.</p>`
@@ -802,7 +803,12 @@ export async function mount(host, ctx) {
   host.innerHTML = `
     <header class="train-top">
       <div class="train-heading">
-        <p class="eyebrow">${t(`side.${opening.side}`)} · <a href="#/opening/${opening.id}">${escapeHtml(openingName)}</a></p>
+        <p class="train-context">${t(`side.${opening.side}`)} · <a href="#/opening/${opening.id}">${escapeHtml(openingName)}</a></p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="${t('train.modes')}">
+        <button type="button" role="tab" data-tab="train" aria-selected="true">${t('train.tabDrill')}</button>
+        <button type="button" role="tab" data-tab="explore" aria-selected="false">${t('train.tabExplore')}</button>
+        <button type="button" role="tab" data-tab="lines" aria-selected="false">${t('train.tabLines')} <span class="lines-count"></span></button>
       </div>
       <div class="train-progress" aria-live="polite">
         <p class="counts">
@@ -819,15 +825,10 @@ export async function mount(host, ctx) {
       </div>
     </header>
     <main class="stage">
-      <div class="tabs" role="tablist" aria-label="${t('train.modes')}">
-        <button type="button" role="tab" data-tab="train" aria-selected="true">${t('train.tabDrill')}</button>
-        <button type="button" role="tab" data-tab="explore" aria-selected="false">${t('train.tabExplore')}</button>
-        <button type="button" role="tab" data-tab="lines" aria-selected="false">${t('train.tabLines')} <span class="lines-count"></span></button>
-      </div>
       <section class="pane" data-pane="train">
         <div class="scope" hidden><span>${t('train.branchTarget')} <b class="scope-name mono"></b></span><button type="button" class="scope-clear link">${t('train.fullOpening')}</button></div>
         <div class="drill-host"></div>
-        <div class="actions">
+        <div class="actions training-actions">
           <button type="button" class="btn-hint">${t('session.hint')}</button>
           <button type="button" class="btn-restart">${t('session.replay')}</button>
           <button type="button" class="btn-next primary">${t('train.nextLine')}</button>
@@ -848,6 +849,7 @@ export async function mount(host, ctx) {
   const scopeEl = host.querySelector('.scope')
   const scopeNameEl = host.querySelector('.scope-name')
   const drillHost = host.querySelector('.drill-host')
+  const trainingActions = host.querySelector('.training-actions')
   const explorePane = host.querySelector('[data-pane="explore"]')
   const linesPane = host.querySelector('.line-groups')
   const hintBtn = host.querySelector('.btn-hint')
@@ -967,6 +969,7 @@ export async function mount(host, ctx) {
     inlineNext.hidden = true
     inlineNext.addEventListener('click', next)
     drillHost.querySelector('.feedback').after(inlineNext)
+    drillHost.querySelector('.drill-info').append(trainingActions)
     if (game) hud = mountHud(drillHost, game, { getOpeningId: () => opening.id, getLineId: () => d.currentLine?.id, getSounds: () => state.settings.sounds, getLocale: () => state.settings.locale })
     // startLine garde une trace de la ligne en cours pour que onFinish sache laquelle enregistrer.
     const rawSetLine = d.setLine
@@ -1016,6 +1019,7 @@ export async function mount(host, ctx) {
       getSounds: () => state.settings.sounds,
       onOver: () => { resignBtn.disabled = true },
     })
+    drillHost.querySelector('.drill-info').append(trainingActions)
   }
   function exitPlay() {
     play?.destroy()

@@ -15,6 +15,7 @@ const importedOf = (events) => {
 
 export async function mount(host, ctx) {
   const { t, notify, saveGameFact, getGameEvents, game } = ctx
+  host.classList.add('board-screen', 'games-screen')
   const guided = (await ctx.getChallengePath()).focusIndex === 0
   let active = true
   let working = false
@@ -52,27 +53,32 @@ export async function mount(host, ctx) {
     const done = analyses()
     const ready = decisions()
     const solved = completed()
+    host.classList.toggle('has-decisions', ready.length > 0)
     host.innerHTML = `
       <div class="games-page">
-        <p class="eyebrow"><a href="#/progress/path">${t('progress.path')}</a></p>
-        <h1>${t('games.title')}</h1>
-        <p class="thesis">${t('games.thesis')}</p>
-        <section class="card games-import">
-          <h2>${t('games.import')}</h2>
-          <p class="muted">${t('games.importHelp')}</p>
-          <button type="button" class="games-file-trigger">${t('games.chooseFile')}</button><input class="games-file" type="file" accept=".pgn,text/plain,application/x-chess-pgn" hidden>
-          <div class="games-picker" hidden></div>
-          <p class="games-status" role="status"></p>
-        </section>
-        <section class="card games-practice">
-          <header class="card-head"><h2>${t('games.practice')}</h2><span class="muted">${t('games.practiced', { count: solved.size, total: ready.length })}</span></header>
-          <p class="muted">${ready.length ? t('games.practiceHelp') : t('games.noDecisions')}</p>
+        <header class="games-top board-screen-top">
+          <h1>${t('games.title')}</h1>
+          <a href="#/progress/path">${t('progress.path')}</a>
+          ${ready.length ? `<span class="games-retained muted">${t('games.practiced', { count: solved.size, total: ready.length })}</span>` : ''}
+        </header>
+        <section class="games-practice" aria-label="${t('games.practice')}">
+          ${ready.length ? '' : `<p class="muted">${t('games.noDecisions')}</p>`}
           <div class="games-board"></div>
         </section>
-        <section class="card games-list"><h2>${t('games.library')}</h2>
-          ${imports.length ? `<ul>${imports.map((e) => `<li><span><b>${escapeHtml(e.data.white || '?')} · ${escapeHtml(e.data.black || '?')}</b><small>${escapeHtml(e.data.date || '')} · ${escapeHtml(playerOf(e) || '')}</small></span><span>${done.has(e.data.gameId) ? t('games.analyzed') : t('games.waiting')}</span></li>`).join('')}</ul>` : `<p class="muted">${t('games.empty')}</p>`}
-          ${imports.some((e) => !done.has(e.data.gameId)) ? `<button type="button" class="games-analyze">${t('games.resume')}</button>` : ''}
-        </section>
+        <div class="games-tools">
+          <details class="card games-import" ${ready.length ? '' : 'open'}>
+            <summary>${t('games.import')}</summary>
+            <p class="muted">${t('games.importHelp')}</p>
+            <button type="button" class="games-file-trigger">${t('games.chooseFile')}</button><input class="games-file" type="file" accept=".pgn,text/plain,application/x-chess-pgn" hidden>
+            <div class="games-picker" hidden></div>
+          </details>
+          <p class="games-status" role="status"></p>
+          <details class="card games-list">
+            <summary>${t('games.library')}</summary>
+            ${imports.length ? `<ul>${imports.map((e) => `<li><span><b>${escapeHtml(e.data.white || '?')} · ${escapeHtml(e.data.black || '?')}</b><small>${escapeHtml(e.data.date || '')} · ${escapeHtml(playerOf(e) || '')}</small></span><span>${done.has(e.data.gameId) ? t('games.analyzed') : t('games.waiting')}</span></li>`).join('')}</ul>` : `<p class="muted">${t('games.empty')}</p>`}
+            ${imports.some((e) => !done.has(e.data.gameId)) ? `<button type="button" class="games-analyze">${t('games.resume')}</button>` : ''}
+          </details>
+        </div>
       </div>`
     host.querySelector('.games-file')?.addEventListener('change', onFile)
     host.querySelector('.games-file-trigger')?.addEventListener('click', () => host.querySelector('.games-file')?.click())
@@ -94,7 +100,10 @@ export async function mount(host, ctx) {
       showSideChoices()
       picker.querySelector('.games-confirm').addEventListener('click', onImport)
       host.querySelector('.games-status').textContent = t('games.found', { count: parsed.games.length, invalid: parsed.invalid.length })
-    } catch (error) { host.querySelector('.games-status').textContent = t(error.message.startsWith('games.') ? error.message : 'games.readError') }
+    } catch (error) {
+      host.querySelector('.games-import').open = true
+      host.querySelector('.games-status').textContent = t(error.message.startsWith('games.') ? error.message : 'games.readError')
+    }
   }
 
   function showSideChoices() {
@@ -121,7 +130,10 @@ export async function mount(host, ctx) {
       shell()
       host.querySelector('.games-status').textContent = t('games.imported', { added, duplicate, unknown })
       if (added) analyzePending()
-    } catch (error) { notify(t(error.message.startsWith('games.') ? error.message : 'games.saveError')) }
+    } catch (error) {
+      host.querySelector('.games-import').open = true
+      notify(t(error.message.startsWith('games.') ? error.message : 'games.saveError'))
+    }
   }
 
   async function analyzePending() {
@@ -171,7 +183,22 @@ export async function mount(host, ctx) {
       if (!dests.has(move.from)) dests.set(move.from, [])
       dests.get(move.from).push(move.to)
     }
-    spot.innerHTML = `<p class="games-prompt">${decision.mistake ? t('games.rethink') : t('games.findMove')}</p>${guided ? `<p class="games-guided">${t('games.guided')}</p>` : ''}<div class="board-frame"><div class="cg-wrap board"></div></div><div class="games-move-entry"><label>${t('games.move')}<select class="games-move-select">${legalMoves.map((move) => `<option value="${move.from}${move.to}${move.promotion || ''}">${escapeHtml(move.san)}</option>`).join('')}</select></label><button type="button" class="games-play">${t('games.play')}</button></div><p class="games-feedback" role="status"></p><div class="games-actions"><button type="button" class="games-hint">${t('games.hint')}</button><button type="button" class="games-next">${t('games.next')}</button></div>`
+    spot.innerHTML = `
+      <div class="board-frame"><div class="cg-wrap board"></div></div>
+      <div class="games-drill-info">
+        <p class="games-side">${t(`side.${decision.side}`)}</p>
+        <p class="games-prompt">${decision.mistake ? t('games.rethink') : t('games.findMove')}</p>
+        ${guided ? `<p class="games-guided">${t('games.guided')}</p>` : ''}
+        <div class="games-move-entry actions">
+          <label>${t('games.move')}<select class="games-move-select">${legalMoves.map((move) => `<option value="${move.from}${move.to}${move.promotion || ''}">${escapeHtml(move.san)}</option>`).join('')}</select></label>
+          <button type="button" class="games-play primary">${t('games.play')}</button>
+        </div>
+        <p class="games-feedback" role="status"></p>
+        <div class="games-actions actions">
+          <button type="button" class="games-hint">${t('games.hint')}</button>
+          <button type="button" class="games-next">${t('games.next')}</button>
+        </div>
+      </div>`
     board = Chessground(spot.querySelector('.board'), {
       fen: decision.fen, orientation: decision.side, coordinates: true,
       animation: { enabled: true, duration: 100 },

@@ -16,24 +16,24 @@ function destinations(chess) {
 
 export function mount(host, ctx) {
   const { t, state, setActions } = ctx
+  host.classList.add('board-screen', 'arena-screen')
   host.innerHTML = `
     <div class="arena-page">
-      <header class="exercise-head">
-        <div><p class="eyebrow"><a href="#/exercises">${t('exercises.title')}</a></p><h1>${t('arena.title')}</h1></div>
+      <header class="exercise-head arena-toolbar">
+        <a class="arena-back" href="#/exercises" aria-label="${t('exercises.back')}" title="${t('exercises.back')}"><span aria-hidden="true">←</span></a><h1 class="arena-title">${t('arena.title')}</h1>
       </header>
       <div class="drill-host arena-stage">
         <section class="board-col">
           <div class="board-frame"><div class="cg-wrap board"></div><div class="promotion-choices" role="dialog" aria-modal="true" hidden aria-label="${t('exercises.promotion')}"></div></div>
-          <div class="board-foot">${t('arena.boardHelp')}</div>
         </section>
         <section class="drill-info exercise-info arena-info">
-          <p class="eyebrow">${t('arena.solo')}</p>
           <h2 class="arena-status" role="status"></h2>
           <div class="actions arena-actions">
             <button type="button" class="arena-undo">${t('arena.undo')}</button>
             <button type="button" class="arena-reset">${t('arena.reset')}</button>
             <button type="button" class="arena-flip">${t('arena.flip')}</button>
           </div>
+          <p class="arena-help">${t('arena.boardHelp')}</p>
           <h3>${t('arena.moves')}</h3>
           <p class="arena-moves mono"></p>
           <details class="arena-fen">

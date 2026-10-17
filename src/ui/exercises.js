@@ -115,19 +115,19 @@ export async function mount(host, ctx) {
   const selectionMode = mode.startsWith('mate1') ? 'mate1' : mode === 'theme' ? 'mixed' : mode
   const challengePool = challengeStage ? puzzlesPack.puzzles.filter((puzzle) => puzzle.rating >= challengeStage.min && puzzle.rating <= challengeStage.max) : puzzlesPack.puzzles
   let guided = false
+  host.classList.add('board-screen', 'exercise-screen')
   host.innerHTML = `
     <div class="exercise-page">
-      <header class="exercise-head">
-        <div><p class="eyebrow"><a href="#/exercises">${t('exercises.title')}</a></p><h1>${mode === 'theme' ? t(`theme.${theme}`) : challengeStage ? `${t(`mode.${mode}`)} · ${t(`path.stage.${challengeStage.id}`)}` : t(`mode.${mode}`)}</h1></div>
+      <header class="exercise-head exercise-toolbar">
+        <div class="exercise-identity"><a class="exercise-back" href="#/exercises" aria-label="${t('exercises.back')}" title="${t('exercises.back')}"><span aria-hidden="true">←</span></a><h1 class="exercise-title">${mode === 'theme' ? t(`theme.${theme}`) : challengeStage ? `${t(`mode.${mode}`)} · ${t(`path.stage.${challengeStage.id}`)}` : t(`mode.${mode}`)}</h1></div>
         <div class="exercise-run-meta"><span class="exercise-record" ${EXTRA_MODES.includes(mode) ? '' : 'hidden'}>${t('exercises.bestRecord', { count: state.settings[mode === 'mate1-series' ? 'mate1SeriesBest' : 'mate1TimedBest'] || 0 })}</span><span class="exercise-timer mono" ${mode === 'mate1-timed' ? '' : 'hidden'}>3:00</span><p class="exercise-score mono" aria-live="polite">${t('exercises.score', { solved: 0, played: 0 })}</p></div>
       </header>
       <div class="drill-host exercise-stage">
         <section class="board-col">
           <div class="board-frame"><div class="cg-wrap board"></div><div class="promotion-choices" role="dialog" aria-modal="true" hidden aria-label="${t('exercises.promotion')}"></div></div>
-          <div class="board-foot"><span class="line-name">${t('exercises.bestMove')}</span></div>
         </section>
         <section class="drill-info exercise-info">
-          <p class="exercise-rating eyebrow"></p>
+          <p class="exercise-rating exercise-detail"></p>
           <h2 class="exercise-prompt"></h2>
           <p class="feedback" data-tone="neutral" role="status">${t('exercises.yourTurn')}</p>
           <div class="exercise-explanation" hidden></div>

@@ -54,10 +54,11 @@ export async function mount(host, ctx) {
     return { destroy() {} }
   }
 
+  host.classList.add('board-screen', 'rush-screen')
   host.innerHTML = `
     <div class="rush">
-      <header class="rush-top">
-        <div><p class="eyebrow"><a href="#/">${tr('today')}</a></p><h1>XChess Rush</h1></div>
+      <header class="rush-top rush-toolbar">
+        <div class="rush-identity"><a class="rush-back" href="#/" aria-label="${tr('today')}" title="${tr('today')}"><span aria-hidden="true">←</span></a><h1 class="rush-title">Rush</h1></div>
         <div class="rush-hud" aria-live="off">
           <span class="rush-time mono" title="${tr('rush.timeRemaining')}">${fmtTime(RUSH.seconds * 1000)}</span>
           <span class="rush-lives" title="${tr('rush.lives')}"></span>
