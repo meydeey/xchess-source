@@ -3,6 +3,8 @@ import { trainingMessages } from './i18n-training.js'
 import { gameMessages } from './i18n-game.js'
 import { challengeMessages } from './i18n-challenges.js'
 import { masteryMessages } from './i18n-mastery.js'
+import { companionMessages } from './i18n-companion.js'
+import { adventureMessages } from './i18n-adventure.js'
 
 export const LOCALES = ['en', 'fr', 'es']
 
@@ -17,6 +19,8 @@ export function deviceLocale() {
 
 export const messages = {
   en: {
+    ...companionMessages.en,
+    ...adventureMessages.en,
     ...progressMessages.en,
     ...trainingMessages.en,
     ...gameMessages.en,
@@ -208,6 +212,8 @@ export const messages = {
     'insights.method': 'First attempt per position or variation each day. A success means no mistake and no hint.',
   },
   fr: {
+    ...companionMessages.fr,
+    ...adventureMessages.fr,
     ...progressMessages.fr,
     ...trainingMessages.fr,
     ...gameMessages.fr,
@@ -399,6 +405,8 @@ export const messages = {
     'insights.method': 'Première tentative par position ou variante chaque jour. Une réussite est sans erreur ni indice.',
   },
   es: {
+    ...companionMessages.es,
+    ...adventureMessages.es,
     ...progressMessages.es,
     ...trainingMessages.es,
     ...gameMessages.es,

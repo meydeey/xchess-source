@@ -2,7 +2,13 @@
 // progression) persisté via platform.store (contrat 14.6), et le bus d'actions clavier / menu natif
 // qui relie les raccourcis web et platform.onMenu aux mêmes noms d'action.
 import './style.css'
+import './appearance.css'
+import './adventure.css'
 import { platform } from './platform/index.js'
+import { createAdventureWriter } from './platform/adventure-journal.js'
+import { deriveAdventure } from './core/adventure.js'
+import adventureSeason from '../catalog/adventure-season-1.json'
+import * as adventure from './ui/adventure.js'
 import { createPersister } from './platform/persister.js'
 import { eloToBand } from './core/metrics.js'
 import { deriveChallengePath } from './core/challenges.js'
@@ -21,10 +27,13 @@ import * as games from './ui/games.js'
 import * as progress from './ui/progress.js'
 import * as settings from './ui/settings.js'
 import * as selftest from './ui/selftest.js'
+import * as collection from './ui/collection.js'
+import { collectionFor, appearanceState } from './core/appearance.js'
+import { mountBoardCompanions } from './ui/companion.js'
 import { createGame, renderChip } from './ui/game.js'
 import { deviceLocale, resolveLocale, t } from './i18n.js'
 
-const SCREENS = { today, library, opening, train: trainer, session, rush, exercises, arena, games, progress, settings, selftest }
+const SCREENS = { today, library, opening, train: trainer, session, rush, exercises, arena, games, progress, settings, selftest, collection, adventure }
 const view = document.getElementById('view')
 const navEl = document.getElementById('nav')
 const chipEl = document.getElementById('player-chip')
@@ -37,6 +46,12 @@ const actionBus = createActionBus()
 let screen = null
 let mountToken = 0
 let game = null // contrôleur du jeu (src/ui/game.js), créé au démarrage après l'état
+let adventureWriter = null
+let boardCompanions = null
+let ownedCollection = collectionFor()
+function applyAppearance() {
+  document.documentElement.dataset.boardTheme = appearanceState(state.settings, ownedCollection).board
+}
 
 // ---------- sauvegarde confirmée (spec V2, L0 point 8) et message temporaire ----------
 const saveBanner = document.getElementById('save-banner')
@@ -131,11 +146,17 @@ const journalForGame = {
 }
 // Chaque save* rend true une fois l'écriture confirmée, false si elle reste en attente (bandeau).
 async function saveSettings(patch) {
+  const saved = journalEnabled
+    ? (await Promise.all(Object.entries(patch).map(([key, value]) =>
+      appendJournal(makeEvent('setting', { key, value }, journalDevice))))).every(Boolean)
+    : await persister.write('settings', { ...state.settings, ...patch })
+  if (!saved) return false
+  // Equipment and its visible theme follow durable confirmation, so an immediate
+  // close cannot turn a displayed success into a lost preference.
   state.settings = { ...state.settings, ...patch }
+  applyAppearance()
   if (game) renderChip(chipEl, game.derive(), state.settings.locale)
-  if (!journalEnabled) return persister.write('settings', state.settings)
-  return (await Promise.all(Object.entries(patch).map(([key, value]) =>
-    appendJournal(makeEvent('setting', { key, value }, journalDevice))))).every(Boolean)
+  return true
 }
 async function saveRepertoire(next) {
   const previous = new Set(state.repertoire)
@@ -190,6 +211,15 @@ async function getPuzzleAttempts() {
   if (journalEnabled) return journalEvents.filter((event) => event.kind === 'puzzle').map((event) => ({ ...event.data, at: event.at, day: event.day, id: event.id }))
   return (await platform.store.get('puzzleAttempts')) || []
 }
+function getAdventure() { return deriveAdventure(journalEvents, adventureSeason) }
+async function saveAdventureFact(fact) {
+  if (!journalEnabled || !adventureWriter) return false
+  return adventureWriter.save(fact)
+}
+async function getCollection() {
+  ownedCollection = collectionFor(getAdventure().completedChapters, { attempts: await getPuzzleAttempts() })
+  return ownedCollection
+}
 function getGameEvents() { return journalEvents.filter((event) => event.kind === 'game' || event.kind === 'drill') }
 async function getChallengePath(attempts = null) {
   return deriveChallengePath({ elo: state.settings.elo, source: state.settings.eloSource, attempts: attempts ?? await getPuzzleAttempts(), activity: game.events, journal: getGameEvents() })
@@ -207,6 +237,8 @@ async function saveGameFact(kind, data) {
 // de l'onglet Statistiques de Progrès.
 function parseRoute() {
   const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  if (parts[0] === 'adventure') return { name: 'adventure', params: { id: parts[1] || null } }
+  if (parts[0] === 'collection') return { name: 'collection', params: {} }
   if (parts[0] === 'opening' && parts[1]) return { name: 'opening', params: { id: decodeURIComponent(parts[1]) } }
   if (parts[0] === 'train' && parts[1]) return { name: 'train', params: { id: decodeURIComponent(parts[1]), tab: parts[2] || 'train' } }
   if (parts[0] === 'session') return { name: 'session', params: { go: parts[1] === 'go' } }
@@ -226,6 +258,17 @@ function navigate(hash) {
   location.hash = hash
 }
 function makeCtx(route) {
+  const token = mountToken
+  const reactCompanion = (facts) => { if (token === mountToken) boardCompanions?.react(facts) }
+  // Preserve the live getters and return values of the existing game controller.
+  const screenGame = game ? Object.create(game) : null
+  if (screenGame) for (const name of ['recordLine', 'recordPuzzle', 'recordDrill']) {
+    screenGame[name] = (facts) => {
+      const result = game[name](facts)
+      reactCompanion({ type: name === 'recordPuzzle' ? 'puzzle' : 'line', ...facts, resolved: true, scope: `${name}:${facts.id || facts.lineId || facts.ref || Date.now()}` })
+      return result
+    }
+  }
   return {
     params: route.params,
     state,
@@ -238,6 +281,12 @@ function makeCtx(route) {
     restoreBackup,
     savePuzzleAttempt,
     getPuzzleAttempts,
+    getCollection,
+    getAdventure,
+    saveAdventureFact,
+    canSaveAdventure: journalEnabled,
+    appearance: () => appearanceState(state.settings, ownedCollection),
+    reactCompanion,
     getGameEvents,
     getChallengePath,
     getMastery,
@@ -245,13 +294,13 @@ function makeCtx(route) {
     navigate,
     notify,
     setActions: (handlers) => actionBus.setLocal(handlers),
-    game,
+    game: screenGame,
     t: (key, values) => t(state.settings.locale, key, values),
   }
 }
 const NAV_OF = { today: 'today', session: 'today', rush: 'today', library: 'library', opening: 'library', train: 'library', exercises: 'exercises', arena: 'exercises', games: 'progress', progress: 'progress', settings: 'settings' }
 function highlightNav(route) {
-  const top = NAV_OF[route.name] ?? route.name
+  const top = route.name === 'adventure' ? 'today' : route.name === 'collection' ? 'progress' : NAV_OF[route.name] ?? route.name
   navEl.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', String(a.dataset.route === top)))
 }
 function applyShellLocale() {
@@ -268,6 +317,8 @@ function applyShellLocale() {
 async function render() {
   const route = parseRoute()
   const myToken = ++mountToken
+  boardCompanions?.destroy()
+  boardCompanions = null
   screen?.destroy?.()
   screen = null
   actionBus.setLocal({})
@@ -280,8 +331,10 @@ async function render() {
   highlightNav(route)
   if (game) renderChip(chipEl, game.derive(), state.settings.locale)
   const mod = SCREENS[route.name]
-  const result = await mod.mount(root, makeCtx(route))
+  const ctx = makeCtx(route)
+  const result = await mod.mount(root, ctx)
   if (myToken !== mountToken) { result?.destroy?.(); return } // une navigation plus récente a eu lieu pendant le montage
+  boardCompanions = mountBoardCompanions(root, ctx, ownedCollection)
   screen = result
 }
 
@@ -326,6 +379,19 @@ async function boot() {
   await loadState()
   game = createGame({ state, store: platform.store, persister, journal: journalEnabled ? journalForGame : null, navigate })
   await game.load()
+  adventureWriter = createAdventureWriter({
+    journal: platform.journal, device: journalDevice, getEvents: () => journalEvents,
+    async onCommitted(events) {
+      journalEvents = mergeEvents(journalEvents, events)
+      await game.load()
+      await getCollection()
+      applyAppearance()
+      renderChip(chipEl, game.derive(), state.settings.locale)
+    },
+    onError: (error) => console.warn('Adventure save failed', error),
+  })
+  await getCollection()
+  applyAppearance()
   game.subscribe((g) => renderChip(chipEl, g, state.settings.locale))
   renderChip(chipEl, game.state, state.settings.locale)
   window.addEventListener('hashchange', render)

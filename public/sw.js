@@ -6,6 +6,11 @@
 const CACHE = 'xchess-__XCHESS_RELEASE__'
 const SHELL = ['./', './manifest.webmanifest', './favicon.ico', './favicon.svg', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './engine/stockfish-19-lite-single.js', './engine/stockfish-19-lite-single.wasm', './packs/index.json', './packs/puzzles-2026-09.json', './packs/puzzles-motifs-2026-10.json', './packs/puzzles-advanced-2026-10.json']
 
+const COMPANION_OUTFITS = ['origin', 'explorer', 'code', 'twilight', 'egyptian', 'candy', 'horror']
+const COMPANION_POSES = ['idle', 'blink', 'thinking', 'joy', 'surprise', 'encouragement', 'victory']
+const PENDING_COMPANION_ART = ['code-encouragement']
+SHELL.push(...COMPANION_OUTFITS.flatMap((outfit) => COMPANION_POSES.map((pose) => `${outfit}-${pose}`)).filter((id) => !PENDING_COMPANION_ART.includes(id)).map((id) => `./companion/${id}.png`))
+
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()))
 })
@@ -16,7 +21,10 @@ self.addEventListener('activate', (event) => {
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: 'window' }))
-      .then((windows) => Promise.all(windows.map((client) => client.navigate?.(client.url)?.catch(() => {})))),
+      .then((windows) => {
+        // A controlled navigation waits for activation; awaiting it here would deadlock.
+        for (const client of windows) client.navigate?.(client.url)?.catch(() => {})
+      }),
   )
 })
 

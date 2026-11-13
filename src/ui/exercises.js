@@ -6,6 +6,7 @@ import { PUZZLE_MODES, playUci, puzzleStart } from '../core/puzzles.js'
 import { chooseTrainingPuzzle, derivePuzzleTraining, needsPuzzleGuidance, trainingTarget } from '../core/puzzle-training.js'
 import { CHALLENGE_STAGES } from '../core/challenges.js'
 import * as sound from './sound.js'
+import { adventureEntry } from './adventure-shared.js'
 import { showPromotion } from './promotion.js'
 
 const THEMES = ['fork', 'pin', 'hangingPiece', 'defensiveMove', 'mateIn1', 'mateIn2', 'promotion', 'endgame', 'skewer', 'discoveredAttack']
@@ -97,6 +98,7 @@ export async function mount(host, ctx) {
       <p class="eyebrow"><a href="#/">${t('today')}</a></p>
       <h1>${t('exercises.title')}</h1>
       <p class="thesis">${t('exercises.thesis')}</p>
+      ${adventureEntry(ctx, ctx.getAdventure())}
       <a class="exercise-card arena-entry" href="#/arena"><span class="exercise-card-symbol" aria-hidden="true">♔</span><span><b>${t('arena.title')}</b><small>${t('arena.summary')}</small></span><span class="exercise-card-arrow" aria-hidden="true">↗</span></a>
       <div class="exercise-hub">${[...PUZZLE_MODES, ...EXTRA_MODES].map((key) => `
         <a class="exercise-card" href="#/exercises/${key}">
@@ -393,3 +395,6 @@ export async function mount(host, ctx) {
   next()
   return { destroy() { clearTimeout(st.timer); clearInterval(st.clock); ro.disconnect(); cg.destroy() } }
 }
+
+// Finite campaign preparations share the verified packs and factual solution rendering.
+export { loadPack, solutionLine, primaryTheme }

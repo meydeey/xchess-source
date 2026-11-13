@@ -1,3 +1,4 @@
+import { factsForMove } from '../core/companion.js'
 import { Chessground } from 'chessground'
 import { Chess } from 'chess.js'
 import 'chessground/assets/chessground.base.css'
@@ -48,6 +49,8 @@ export function mount(host, ctx) {
     </div>`
   let chess = new Chess()
   let orientation = 'white'
+  let companionEpoch = 0
+  const resetCompanion = () => ctx.reactCompanion({ type: 'idle', scope: `arena:${++companionEpoch}` })
   let lastMove = null
   let initialPly = 0
   let pendingPromotion = null
@@ -101,6 +104,7 @@ export function mount(host, ctx) {
       const move = chess.move({ from: orig, to: dest, promotion })
       if (!move) { render(); return }
       lastMove = [move.from, move.to]
+      ctx.reactCompanion(factsForMove(chess, move, { scope: `arena:${companionEpoch}` }))
       sound.play('move', { sounds: state.settings.sounds })
     } catch { /* Chessground restores the legal position below. */ }
     render()
@@ -134,12 +138,14 @@ export function mount(host, ctx) {
   undoEl.addEventListener('click', () => {
     if (pendingPromotion) { pendingPromotion = null; promotionEl.hidden = true; render(); return }
     if (!chess.undo()) return
+    resetCompanion()
     const previous = chess.history({ verbose: true }).at(-1)
     lastMove = previous ? [previous.from, previous.to] : null
     render()
   })
   host.querySelector('.arena-reset').addEventListener('click', () => {
     chess = new Chess()
+    resetCompanion()
     initialPly = 0
     lastMove = null
     pendingPromotion = null
@@ -155,6 +161,7 @@ export function mount(host, ctx) {
     try {
       const candidate = new Chess(fenEl.value.trim())
       chess = candidate
+      resetCompanion()
       initialPly = (Number(chess.fen().split(' ')[5]) - 1) * 2 + (chess.turn() === 'b' ? 1 : 0)
       lastMove = null
       pendingPromotion = null

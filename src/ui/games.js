@@ -1,3 +1,4 @@
+import { GAME_ANALYSIS_VERSION } from '../core/pgn-games.js'
 import { Chess } from 'chess.js'
 import { Chessground } from 'chessground'
 import 'chessground/assets/chessground.base.css'
@@ -30,7 +31,7 @@ export async function mount(host, ctx) {
 
   function disposeBoard() { observer?.disconnect(); observer = null; board?.destroy(); board = null }
   const facts = () => getGameEvents()
-  const analyses = () => new Map(facts().filter((e) => e.kind === 'game' && e.data?.phase === 'analyzed').map((e) => [e.data.gameId, e]))
+  const analyses = () => new Map(facts().filter((e) => e.kind === 'game' && e.data?.phase === 'analyzed' && e.data.analysisVersion === GAME_ANALYSIS_VERSION).map((e) => [e.data.gameId, e]))
   const decisions = () => {
     const imports = new Map(importedOf(facts()).map((e) => [e.data.gameId, e]))
     return [...analyses().values()].flatMap((e) => (e.data.decisions || []).map((d) => ({ ...d, originAt: imports.get(e.data.gameId)?.at || 0, side: imports.get(e.data.gameId)?.data.side })))
@@ -148,18 +149,18 @@ export async function mount(host, ctx) {
         const parsedGame = parsePgnGames(entry.data.pgn).games[0]
         if (!parsedGame) continue
         const candidate = { ...parsedGame, gameId: entry.data.gameId }
-        const checkpoint = facts().filter((e) => e.kind === 'game' && e.data?.phase === 'checkpoint' && e.data.gameId === entry.data.gameId).sort((a, b) => b.data.nextPly - a.data.nextPly)[0]
+        const checkpoint = facts().filter((e) => e.kind === 'game' && e.data?.phase === 'checkpoint' && e.data.analysisVersion === GAME_ANALYSIS_VERSION && e.data.gameId === entry.data.gameId).sort((a, b) => b.data.nextPly - a.data.nextPly)[0]
         const result = await analyzeGame(candidate, entry.data.side, platform.engine, {
           fromPly: checkpoint?.data.nextPly || 0, previous: checkpoint?.data.decisions || [],
           shouldPause: () => !active || document.hidden,
           onCheckpoint: async (nextPly, partial) => {
-            await saveGameFact('game', { phase: 'checkpoint', gameId: entry.data.gameId, nextPly, decisions: topGameDecisions(partial) })
+            await saveGameFact('game', { phase: 'checkpoint', analysisVersion: GAME_ANALYSIS_VERSION, gameId: entry.data.gameId, nextPly, decisions: topGameDecisions(partial) })
             const label = host.querySelector('.games-status')
             if (label) label.textContent = t('games.progress', { current: nextPly, total: candidate.moves.length })
           },
         })
         if (!result.complete) break
-        await saveGameFact('game', { phase: 'analyzed', gameId: entry.data.gameId, decisions: result.decisions, engine: 'Stockfish 19 lite', depth: 14 })
+        await saveGameFact('game', { phase: 'analyzed', analysisVersion: GAME_ANALYSIS_VERSION, gameId: entry.data.gameId, decisions: result.decisions, engine: 'Stockfish 19 lite', depth: 14 })
         if (active) shell()
       }
     } catch (error) { if (active) { const status = host.querySelector('.games-status'); if (status) status.textContent = t('games.analysisFailed', { reason: error.message }) } }

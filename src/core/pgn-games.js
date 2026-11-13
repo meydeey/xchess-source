@@ -1,5 +1,7 @@
 import { Chess } from 'chess.js'
 
+export const GAME_ANALYSIS_VERSION = 2
+
 const MAX_PGN_BYTES = 10 * 1024 * 1024
 const STANDARD_FEN = new Chess().fen()
 
@@ -70,7 +72,7 @@ export async function analyzeGame(game, side, engine, { fromPly = 0, previous = 
   for (let ply = fromPly; ply < game.moves.length; ply++) {
     if (shouldPause()) return { complete: false, nextPly: ply, decisions }
     const move = game.moves[ply]
-    if (move.color !== (side === 'white' ? 'w' : 'b') || ply < 8) continue
+    if (move.color !== (side === 'white' ? 'w' : 'b')) continue
     const lines = await engine.analyse(move.before, { multipv: 3, depth: 10, movetime: 350 })
     if (!lines.length || !lines[0].uci) continue
     const best = lines[0]

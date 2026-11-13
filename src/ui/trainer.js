@@ -1,3 +1,4 @@
+import { factsForMove } from '../core/companion.js'
 // Écran d'entraînement : généralisation de l'entraîneur Alien Gambit à n'importe quelle ouverture et
 // aux 2 camps. Exporte 2 briques réutilisées par src/ui/session.js (mountLineDrill, le plateau et la
 // feuille de partie pour UNE ligne) et le point d'entrée d'écran `mount` (les 3 onglets historiques :
@@ -605,7 +606,7 @@ export function mountLineDrill(host, { sideEn, onFinish, onMoveResult = () => {}
 // onPlay(fen) : "Continuer contre Stockfish" depuis la position explorée (n'importe quel nœud de
 // l'arbre, section 6). Le bouton est câblé même sans moteur ; sa visibilité, décidée par l'appelant
 // (trainer.js, via setPlayVisible), suit platform.engine à chaque ouverture de l'onglet Explorer.
-function mountExplorer(host, { tree, sideEn, onDrill, onPlay, t = french }) {
+function mountExplorer(host, { tree, sideEn, onDrill, onPlay, onCompanion = () => {}, t = french }) {
   host.innerHTML = `
     <section class="board-col">
       <div class="board-frame"><div class="cg-wrap board"></div></div>
@@ -633,6 +634,7 @@ function mountExplorer(host, { tree, sideEn, onDrill, onPlay, t = french }) {
   const lineNameEl = host.querySelector('.line-name')
   let path = []
   let badMoveTimer = null
+  let companionDepth = 0, companionEpoch = 0
 
   function nodesAt(p) {
     let nodes = tree
@@ -665,6 +667,10 @@ function mountExplorer(host, { tree, sideEn, onDrill, onPlay, t = french }) {
       evals.push(n.e ?? null)
       nodes = n.c || []
     }
+    if (path.length < companionDepth) onCompanion({ type: 'idle', scope: `explorer:${++companionEpoch}` })
+    const companionMove = chess.history({ verbose: true }).at(-1)
+    if (path.length > companionDepth && companionMove?.color === (sideEn === 'white' ? 'w' : 'b')) onCompanion(factsForMove(chess, companionMove, { scope: `explorer:${companionEpoch}` }))
+    companionDepth = path.length
     const shapes = nodes.map((n) => {
       const mine = isMyPly(path.length, sideEn)
       const m = new Chess(chess.fen()).move(n.m)
@@ -1017,6 +1023,7 @@ export async function mount(host, ctx) {
       elo: state.settings.elo,
       t,
       getSounds: () => state.settings.sounds,
+      onCompanion: ctx.reactCompanion,
       onOver: () => { resignBtn.disabled = true },
     })
     drillHost.querySelector('.drill-info').append(trainingActions)
@@ -1074,6 +1081,7 @@ export async function mount(host, ctx) {
         // calculée) et dessinerait ses flèches d'indice à des coordonnées NaN (erreurs console).
         void explorePane.offsetHeight
         explorer = mountExplorer(explorePane, {
+          onCompanion: ctx.reactCompanion,
           tree,
           sideEn,
           t,

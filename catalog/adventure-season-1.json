@@ -1,0 +1,799 @@
+{
+  "id": "white-rabbit-1",
+  "version": 1,
+  "chapters": [
+    {
+      "id": "club",
+      "title": {
+        "fr": "La porte du club",
+        "en": "The club door",
+        "es": "La puerta del club"
+      },
+      "passage": {
+        "fr": "Derrière la pendule, une serrure tourne sans clé. Le lapin connaît déjà le chemin.",
+        "en": "Behind the clock, a lock turns without a key. The rabbit already knows the way.",
+        "es": "Detrás del reloj, una cerradura gira sin llave. El conejo ya conoce el camino."
+      },
+      "encounters": [
+        "club-loose",
+        "club-mate",
+        "club-final"
+      ],
+      "reward": {
+        "rabbit": "explorer",
+        "board": "burrow"
+      }
+    },
+    {
+      "id": "tournament",
+      "title": {
+        "fr": "Les coulisses du tournoi",
+        "en": "Behind the tournament",
+        "es": "Entre bastidores"
+      },
+      "passage": {
+        "fr": "Les résultats s’effacent du tableau. Des lignes vertes dessinent une autre salle, de l’autre côté du mur.",
+        "en": "The results fade from the board. Green lines trace another room beyond the wall.",
+        "es": "Los resultados se borran del tablón. Unas líneas verdes dibujan otra sala al otro lado del muro."
+      },
+      "encounters": [
+        "tournament-pin",
+        "tournament-skewer",
+        "tournament-final"
+      ],
+      "reward": {
+        "rabbit": "code",
+        "board": "code"
+      }
+    },
+    {
+      "id": "beyond",
+      "title": {
+        "fr": "De l’autre côté",
+        "en": "On the other side",
+        "es": "Al otro lado"
+      },
+      "passage": {
+        "fr": "Le passage revient au club. La pendule n’a presque pas bougé. Le lapin remet sa montre à l’heure, avec un sourire.",
+        "en": "The passage leads back to the club. The clock has barely moved. The rabbit sets his watch with a smile.",
+        "es": "El pasaje vuelve al club. El reloj apenas se ha movido. El conejo ajusta su reloj con una sonrisa."
+      },
+      "encounters": [
+        "beyond-discovery",
+        "beyond-promotion",
+        "beyond-final"
+      ],
+      "reward": {
+        "rabbit": "twilight",
+        "board": "passage"
+      }
+    }
+  ],
+  "encounters": [
+    {
+      "id": "club-loose",
+      "version": 1,
+      "chapterId": "club",
+      "number": 1,
+      "side": "white",
+      "theme": "hangingPiece",
+      "category": "tactics",
+      "goal": "material",
+      "title": {
+        "fr": "La table du fond",
+        "en": "The back table",
+        "es": "La mesa del fondo"
+      },
+      "opponent": {
+        "name": "Nora",
+        "portrait": 0,
+        "invitation": {
+          "fr": "Nora garde la meilleure table du club. Elle te propose une partie courte, avec quelques pièces laissées sans surveillance.",
+          "en": "Nora keeps the best table in the club. She offers you a short game, with a few pieces left unattended.",
+          "es": "Nora ocupa la mejor mesa del club. Te propone una partida breve, con algunas piezas desprotegidas."
+        },
+        "won": {
+          "fr": "La table du fond est à toi. Ne renverse pas le café.",
+          "en": "The back table is yours. Mind the coffee.",
+          "es": "La mesa del fondo es tuya. Cuidado con el café."
+        },
+        "lost": {
+          "fr": "Le café est encore chaud. Tu peux reprendre.",
+          "en": "The coffee is still warm. You can try again.",
+          "es": "El café sigue caliente. Puedes volver a intentarlo."
+        }
+      },
+      "duel": {
+        "initialFen": "3r3k/pq4pp/4r3/3R4/2p1p3/8/P1P2PPP/3R2K1 w - - 0 31",
+        "source": {
+          "puzzleId": "lichess:0URgB@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "d5d8",
+        "witness": {
+          "moves": [
+            "d5d8",
+            "e6e8"
+          ],
+          "evaluations": [
+            99900
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "club-mate",
+      "version": 1,
+      "chapterId": "club",
+      "number": 2,
+      "side": "black",
+      "theme": "mateIn1",
+      "category": "attack",
+      "goal": "mate",
+      "title": {
+        "fr": "Avant la fermeture",
+        "en": "Before closing",
+        "es": "Antes del cierre"
+      },
+      "opponent": {
+        "name": "Théo",
+        "portrait": 1,
+        "invitation": {
+          "fr": "Théo veut ranger les pièces avant la fermeture. Il joue vite. Son roi, lui, manque de place.",
+          "en": "Theo wants to put the pieces away before closing. He plays quickly. His king is running out of room.",
+          "es": "Theo quiere guardar las piezas antes del cierre. Juega deprisa. A su rey le falta espacio."
+        },
+        "won": {
+          "fr": "Tu as gagné. Je crois qu’on peut ranger la pendule.",
+          "en": "You won. I think we can put the clock away.",
+          "es": "Has ganado. Creo que podemos guardar el reloj."
+        },
+        "lost": {
+          "fr": "On a le temps pour une autre partie.",
+          "en": "There’s time for another game.",
+          "es": "Hay tiempo para otra partida."
+        }
+      },
+      "duel": {
+        "initialFen": "3r3k/p4ppp/1p3b2/8/8/7R/1P4PP/2BQ3K b - - 0 28",
+        "source": {
+          "puzzleId": "lichess:7kMmo@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "d8d1",
+        "witness": {
+          "moves": [
+            "d8d1"
+          ],
+          "evaluations": [],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "club-final",
+      "version": 1,
+      "chapterId": "club",
+      "number": 3,
+      "side": "white",
+      "theme": "fork",
+      "category": "tactics",
+      "goal": "material",
+      "title": {
+        "fr": "La pendule sans aiguilles",
+        "en": "The clock without hands",
+        "es": "El reloj sin agujas"
+      },
+      "opponent": {
+        "name": "Élise",
+        "portrait": 2,
+        "invitation": {
+          "fr": "Élise t’attend devant une pendule sans aiguilles. Une italienne pour commencer ; ensuite, il faudra regarder 2 cibles à la fois.",
+          "en": "Elise waits beside a clock without hands. Start with an Italian Game, then learn to watch 2 targets at once.",
+          "es": "Elise espera junto a un reloj sin agujas. Empieza con una italiana y después observa 2 objetivos a la vez."
+        },
+        "won": {
+          "fr": "Regarde derrière la pendule. Le lapin était déjà au courant.",
+          "en": "Look behind the clock. The rabbit already knew.",
+          "es": "Mira detrás del reloj. El conejo ya lo sabía."
+        },
+        "lost": {
+          "fr": "La pendule n’a pas bougé. Reviens voir.",
+          "en": "The clock hasn’t moved. Come and look again.",
+          "es": "El reloj no se ha movido. Vuelve a mirar."
+        }
+      },
+      "duel": {
+        "initialFen": "r1bqk2r/1pppbppp/p1n2n2/4p1N1/2B1P3/2NP4/PPP2PPP/R1BQK2R w KQkq - 0 7",
+        "source": {
+          "opening": "partie-italienne"
+        },
+        "firstMove": "g5f7",
+        "witness": {
+          "moves": [
+            "g5f7",
+            "c6d4",
+            "f7d8",
+            "e7b4"
+          ],
+          "evaluations": [
+            859,
+            906
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      },
+      "opening": {
+        "catalogId": "partie-italienne",
+        "preparation": [
+          "e4",
+          "e5",
+          "Nf3",
+          "Nc6",
+          "Bc4",
+          "Bc5"
+        ],
+        "continuation": [
+          "e4",
+          "e5",
+          "Nf3",
+          "Nc6",
+          "Bc4",
+          "Bc5",
+          "Nc3",
+          "Nf6",
+          "d3",
+          "Be7",
+          "Ng5",
+          "a6"
+        ],
+        "ideas": [
+          {
+            "fr": "Le pion occupe le centre en e4.",
+            "en": "The pawn occupies the center on e4.",
+            "es": "El peón ocupa el centro en e4."
+          },
+          {
+            "fr": "Le pion occupe le centre en e5.",
+            "en": "The pawn occupies the center on e5.",
+            "es": "El peón ocupa el centro en e5."
+          },
+          {
+            "fr": "Le cavalier se développe en f3 et attaque aussi le pion e5.",
+            "en": "The knight develops to f3 and also attacks the pawn on e5.",
+            "es": "El caballo se desarrolla a f3 y también ataca el peón de e5."
+          },
+          {
+            "fr": "Le cavalier se développe en c6.",
+            "en": "The knight develops to c6.",
+            "es": "El caballo se desarrolla a c6."
+          },
+          {
+            "fr": "Le fou se développe en c4 et attaque aussi le pion f7.",
+            "en": "The bishop develops to c4 and also attacks the pawn on f7.",
+            "es": "El alfil se desarrolla a c4 y también ataca el peón de f7."
+          },
+          {
+            "fr": "Le fou se développe en c5 et attaque aussi le pion f2.",
+            "en": "The bishop develops to c5 and also attacks the pawn on f2.",
+            "es": "El alfil se desarrolla a c5 y también ataca el peón de f2."
+          }
+        ],
+        "ideaSources": [
+          "catalog/explain/partie-italienne.json#e4",
+          "catalog/explain/partie-italienne.json#e4 e5",
+          "catalog/explain/partie-italienne.json#e4 e5 Nf3",
+          "catalog/explain/partie-italienne.json#e4 e5 Nf3 Nc6",
+          "catalog/explain/partie-italienne.json#e4 e5 Nf3 Nc6 Bc4",
+          "catalog/explain/partie-italienne.json#e4 e5 Nf3 Nc6 Bc4 Bc5"
+        ]
+      }
+    },
+    {
+      "id": "tournament-pin",
+      "version": 1,
+      "chapterId": "tournament",
+      "number": 4,
+      "side": "black",
+      "theme": "pin",
+      "category": "technique",
+      "goal": "material",
+      "title": {
+        "fr": "Une pièce qui reste",
+        "en": "A piece that stays",
+        "es": "Una pieza inmóvil"
+      },
+      "opponent": {
+        "name": "Ada",
+        "portrait": 3,
+        "invitation": {
+          "fr": "Ada vérifie chaque bulletin du tournoi. Sur son échiquier aussi, certaines pièces ont une obligation précise.",
+          "en": "Ada checks every tournament score sheet. On her board, some pieces have a very specific duty.",
+          "es": "Ada revisa cada planilla del torneo. En su tablero, algunas piezas tienen una obligación muy concreta."
+        },
+        "won": {
+          "fr": "Je note ton nom. Cette fois, sur la feuille des gagnants.",
+          "en": "I’ll write down your name. This time, on the winners’ sheet.",
+          "es": "Anoto tu nombre. Esta vez, en la lista de ganadores."
+        },
+        "lost": {
+          "fr": "Je garde ta place pour la prochaine ronde.",
+          "en": "I’ll keep your seat for the next round.",
+          "es": "Te guardo el sitio para la próxima ronda."
+        }
+      },
+      "duel": {
+        "initialFen": "3r2k1/pp3ppp/4p3/8/3r1PR1/2P3P1/PP4P1/4Q1K1 b - - 0 26",
+        "source": {
+          "puzzleId": "lichess:C73TJ@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "d4d1",
+        "witness": {
+          "moves": [
+            "d4d1",
+            "e1d1",
+            "d8d1",
+            "g1h2"
+          ],
+          "evaluations": [
+            -251,
+            -237
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "tournament-skewer",
+      "version": 1,
+      "chapterId": "tournament",
+      "number": 5,
+      "side": "white",
+      "theme": "skewer",
+      "category": "tactics",
+      "goal": "material",
+      "title": {
+        "fr": "Dans l’alignement",
+        "en": "In the same line",
+        "es": "En la misma línea"
+      },
+      "opponent": {
+        "name": "Oscar",
+        "portrait": 4,
+        "invitation": {
+          "fr": "Oscar a aligné ses trophées derrière sa table. Il aime les belles lignes. À toi de voir ce qui se cache derrière la première cible.",
+          "en": "Oscar has lined up his trophies behind the table. He likes straight lines. Look for what lies behind the first target.",
+          "es": "Oscar ha alineado sus trofeos detrás de la mesa. Le gustan las líneas rectas. Mira qué hay detrás del primer objetivo."
+        },
+        "won": {
+          "fr": "Mes trophées vont rester sur l’étagère aujourd’hui.",
+          "en": "My trophies will stay on the shelf today.",
+          "es": "Hoy mis trofeos se quedarán en la estantería."
+        },
+        "lost": {
+          "fr": "Une nouvelle ligne, et on recommence.",
+          "en": "A fresh line, and we start again.",
+          "es": "Una línea nueva y volvemos a empezar."
+        }
+      },
+      "duel": {
+        "initialFen": "2r1k3/7R/1p2P2p/p2K2bP/P2P4/1pP5/1P6/8 w - - 1 41",
+        "source": {
+          "puzzleId": "lichess:GDTQC@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "h7h8",
+        "witness": {
+          "moves": [
+            "h7h8",
+            "e8e7",
+            "h8c8",
+            "g5c1"
+          ],
+          "evaluations": [
+            705,
+            801
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "tournament-final",
+      "version": 1,
+      "chapterId": "tournament",
+      "number": 6,
+      "side": "black",
+      "theme": "defensiveMove",
+      "category": "defense",
+      "goal": "defense",
+      "title": {
+        "fr": "Tenir la salle",
+        "en": "Hold the room",
+        "es": "Mantener la sala"
+      },
+      "opponent": {
+        "name": "Mina",
+        "portrait": 5,
+        "invitation": {
+          "fr": "Mina avance ses pièces vers ton roi. Le lapin observe une porte qui clignote. Prépare la Caro-Kann, puis garde ton calme pendant 4 coups.",
+          "en": "Mina brings her pieces toward your king. The rabbit watches a flickering door. Prepare the Caro-Kann, then stay calm for 4 moves.",
+          "es": "Mina acerca sus piezas a tu rey. El conejo observa una puerta que parpadea. Prepara la Caro-Kann y mantén la calma durante 4 jugadas."
+        },
+        "won": {
+          "fr": "La salle se calme. Tu peux ouvrir la porte.",
+          "en": "The room is settling down. You can open the door.",
+          "es": "La sala se calma. Puedes abrir la puerta."
+        },
+        "lost": {
+          "fr": "Respire. La porte peut attendre.",
+          "en": "Take a breath. The door can wait.",
+          "es": "Respira. La puerta puede esperar."
+        }
+      },
+      "duel": {
+        "initialFen": "r2qkb1r/pp1nppp1/2p2n1p/5Q1P/3P4/5NN1/PPP2PP1/R1B1K2R b KQkq - 2 11",
+        "source": {
+          "opening": "defense-caro-kann"
+        },
+        "firstMove": "e7e6",
+        "witness": {
+          "moves": [
+            "e7e6",
+            "f5f4",
+            "c6c5",
+            "g3e4",
+            "d8b6",
+            "c2c3",
+            "c5d4",
+            "f3d4"
+          ],
+          "evaluations": [
+            -54,
+            -59,
+            -60,
+            -51
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      },
+      "opening": {
+        "catalogId": "defense-caro-kann",
+        "preparation": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "Nc3",
+          "dxe4"
+        ],
+        "continuation": [
+          "e4",
+          "c6",
+          "d4",
+          "d5",
+          "Nc3",
+          "dxe4",
+          "Nxe4",
+          "Bf5",
+          "Ng3",
+          "Bg6",
+          "h4",
+          "h6",
+          "Nf3",
+          "Nd7",
+          "h5",
+          "Bh7",
+          "Bd3",
+          "Bxd3",
+          "Qxd3",
+          "Ngf6",
+          "Qf5"
+        ],
+        "ideas": [
+          {
+            "fr": "Le pion occupe le centre en e4.",
+            "en": "The pawn occupies the center on e4.",
+            "es": "El peón ocupa el centro en e4."
+          },
+          {
+            "fr": "Le pion va en c6.",
+            "en": "The pawn moves to c6.",
+            "es": "El peón avanza a c6."
+          },
+          {
+            "fr": "Le pion occupe le centre en d4.",
+            "en": "The pawn occupies the center on d4.",
+            "es": "El peón ocupa el centro en d4."
+          },
+          {
+            "fr": "Le pion occupe le centre en d5 et attaque aussi le pion e4.",
+            "en": "The pawn occupies the center on d5 and also attacks the pawn on e4.",
+            "es": "El peón ocupa el centro en d5 y también ataca el peón de e4."
+          },
+          {
+            "fr": "Le cavalier se développe en c3 et attaque aussi le pion d5.",
+            "en": "The knight develops to c3 and also attacks the pawn on d5.",
+            "es": "El caballo se desarrolla a c3 y también ataca el peón de d5."
+          },
+          {
+            "fr": "Le pion prend le pion e4.",
+            "en": "The pawn captures the pawn on e4.",
+            "es": "El peón captura el peón de e4."
+          }
+        ],
+        "ideaSources": [
+          "catalog/explain/defense-caro-kann.json#e4",
+          "catalog/explain/defense-caro-kann.json#e4 c6",
+          "catalog/explain/defense-caro-kann.json#e4 c6 d4",
+          "catalog/explain/defense-caro-kann.json#e4 c6 d4 d5",
+          "catalog/explain/defense-caro-kann.json#e4 c6 d4 d5 Nc3",
+          "chess.js move facts"
+        ]
+      }
+    },
+    {
+      "id": "beyond-discovery",
+      "version": 1,
+      "chapterId": "beyond",
+      "number": 7,
+      "side": "white",
+      "theme": "discoveredAttack",
+      "category": "tactics",
+      "goal": "material",
+      "title": {
+        "fr": "Derrière le rideau",
+        "en": "Behind the curtain",
+        "es": "Detrás de la cortina"
+      },
+      "opponent": {
+        "name": "Sacha",
+        "portrait": 6,
+        "invitation": {
+          "fr": "Sacha joue dans une salle qui semble changer quand on détourne les yeux. Une pièce peut en cacher une autre.",
+          "en": "Sacha plays in a room that seems to change when you look away. One piece can hide another.",
+          "es": "Sacha juega en una sala que parece cambiar cuando miras a otro lado. Una pieza puede esconder a otra."
+        },
+        "won": {
+          "fr": "Tu regardes aussi ce qu’il y a derrière. C’est une bonne habitude.",
+          "en": "You look at what lies behind, too. That’s a good habit.",
+          "es": "También miras lo que hay detrás. Es una buena costumbre."
+        },
+        "lost": {
+          "fr": "Le rideau bougera encore. Tu auras un autre essai.",
+          "en": "The curtain will move again. You’ll have another try.",
+          "es": "El telón volverá a moverse. Tendrás otro intento."
+        }
+      },
+      "duel": {
+        "initialFen": "r3r1k1/pp1n1ppp/2p2n2/3p4/3q4/P1NB1PP1/1PPQ2KP/R4R2 w - - 2 16",
+        "source": {
+          "puzzleId": "lichess:k0EQP@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "d3h7",
+        "witness": {
+          "moves": [
+            "d3h7",
+            "f6h7",
+            "d2d4",
+            "h7g5"
+          ],
+          "evaluations": [
+            700,
+            733
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "beyond-promotion",
+      "version": 1,
+      "chapterId": "beyond",
+      "number": 8,
+      "side": "black",
+      "theme": "promotion",
+      "category": "technique",
+      "goal": "promotion",
+      "title": {
+        "fr": "Le dernier pas",
+        "en": "The last step",
+        "es": "El último paso"
+      },
+      "opponent": {
+        "name": "Inès",
+        "portrait": 7,
+        "invitation": {
+          "fr": "Inès garde un petit échiquier au bord du passage. Il reste peu de pièces, mais un pion peut encore changer toute la partie.",
+          "en": "Ines keeps a small board beside the passage. Few pieces remain, but one pawn can still change the whole game.",
+          "es": "Ines guarda un pequeño tablero junto al pasaje. Quedan pocas piezas, pero un peón aún puede cambiar toda la partida."
+        },
+        "won": {
+          "fr": "Un pion peut emporter toute une partie avec lui.",
+          "en": "A pawn can carry the whole game with it.",
+          "es": "Un peón puede llevarse toda la partida consigo."
+        },
+        "lost": {
+          "fr": "Il reste toujours un dernier pas à essayer.",
+          "en": "There’s always one more step to try.",
+          "es": "Siempre queda un paso más por intentar."
+        }
+      },
+      "duel": {
+        "initialFen": "8/8/8/P1k5/K7/1p2N3/8/8 b - - 1 46",
+        "source": {
+          "puzzleId": "lichess:eVCoz@2026-09",
+          "license": "CC0"
+        },
+        "firstMove": "b3b2",
+        "witness": {
+          "moves": [
+            "b3b2",
+            "a4b3",
+            "b2b1q",
+            "b3c3"
+          ],
+          "evaluations": [
+            -543,
+            -553
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      }
+    },
+    {
+      "id": "beyond-final",
+      "version": 1,
+      "chapterId": "beyond",
+      "number": 9,
+      "side": "white",
+      "theme": "advantage",
+      "category": "tactics",
+      "goal": "advantage",
+      "title": {
+        "fr": "La porte du retour",
+        "en": "The way home",
+        "es": "La puerta de regreso"
+      },
+      "opponent": {
+        "name": "Le Veilleur",
+        "portrait": 8,
+        "invitation": {
+          "fr": "Le Veilleur joue près de la dernière porte. Prépare le gambit dame, puis conserve ton avantage pendant 6 coups. Le lapin range enfin sa montre.",
+          "en": "The Watcher plays beside the final door. Prepare the Queen’s Gambit, then keep your advantage for 6 moves. The rabbit finally puts his watch away.",
+          "es": "El Guardián juega junto a la última puerta. Prepara el gambito de dama y conserva tu ventaja durante 6 jugadas. El conejo guarda por fin su reloj."
+        },
+        "won": {
+          "fr": "La porte du retour est ouverte. À toi de choisir la suite.",
+          "en": "The way home is open. You choose what comes next.",
+          "es": "La puerta de regreso está abierta. Tú eliges lo que viene después."
+        },
+        "lost": {
+          "fr": "Le chemin du retour sera encore là.",
+          "en": "The way home will still be here.",
+          "es": "El camino de regreso seguirá aquí."
+        }
+      },
+      "duel": {
+        "initialFen": "rnbqkb1r/p3pppp/5n2/1p6/2pP4/4PQ2/1P3PPP/RNB1KBNR w KQkq - 2 7",
+        "source": {
+          "opening": "gambit-dame"
+        },
+        "firstMove": "f3a8",
+        "witness": {
+          "moves": [
+            "f3a8",
+            "c8d7",
+            "g1f3",
+            "e7e6",
+            "c1d2",
+            "f8d6",
+            "a8a7",
+            "e8g8",
+            "a7a2",
+            "b8c6",
+            "f1e2",
+            "e6e5"
+          ],
+          "evaluations": [
+            802,
+            694,
+            686,
+            666,
+            651,
+            635
+          ],
+          "verified": "2026-10-18",
+          "engine": "Stockfish",
+          "depth": 12,
+          "movetime": 500
+        }
+      },
+      "opening": {
+        "catalogId": "gambit-dame",
+        "preparation": [
+          "d4",
+          "d5",
+          "c4",
+          "dxc4",
+          "e3"
+        ],
+        "continuation": [
+          "d4",
+          "d5",
+          "c4",
+          "dxc4",
+          "e3",
+          "b5",
+          "a4",
+          "c6",
+          "axb5",
+          "cxb5",
+          "Qf3",
+          "Nf6"
+        ],
+        "ideas": [
+          {
+            "fr": "Le pion occupe le centre en d4.",
+            "en": "The pawn occupies the center on d4.",
+            "es": "El peón ocupa el centro en d4."
+          },
+          {
+            "fr": "Le pion occupe le centre en d5.",
+            "en": "The pawn occupies the center on d5.",
+            "es": "El peón ocupa el centro en d5."
+          },
+          {
+            "fr": "Le pion va en c4 et attaque aussi le pion d5.",
+            "en": "The pawn moves to c4 and also attacks the pawn on d5.",
+            "es": "El peón avanza a c4 y también ataca el peón de d5."
+          },
+          {
+            "fr": "Le pion prend le pion c4.",
+            "en": "The pawn captures the pawn on c4.",
+            "es": "El peón captura el peón de c4."
+          },
+          {
+            "fr": "Le pion va en e3.",
+            "en": "The pawn moves to e3.",
+            "es": "El peón avanza a e3."
+          }
+        ],
+        "ideaSources": [
+          "catalog/explain/gambit-dame.json#d4",
+          "catalog/explain/gambit-dame.json#d4 d5",
+          "catalog/explain/gambit-dame.json#d4 d5 c4",
+          "catalog/explain/gambit-dame.json#d4 d5 c4 dxc4",
+          "chess.js move facts"
+        ]
+      }
+    }
+  ]
+}

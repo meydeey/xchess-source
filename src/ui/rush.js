@@ -161,6 +161,8 @@ export async function mount(host, ctx) {
     const pos = drawRush(positions, rand, new Set(st.recent))
     st.recent = [...st.recent, pos.key].slice(-RECENT)
     st.pos = pos
+    st.companionScope = `rush:${st.startedAt}:${pos.openingId}:${pos.lineId}:${pos.ply}:${st.score}:${st.lives}`
+    ctx.reactCompanion({ type: 'idle', scope: st.companionScope })
     const chess = new Chess()
     for (const san of pos.moves.slice(0, pos.ply)) chess.move(san)
     st.chess = chess
@@ -194,6 +196,7 @@ export async function mount(host, ctx) {
     const expected = st.pos.moves[st.pos.ply]
     st.busy = true
     if (mv.san === expected) {
+      ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'solved', scope: st.companionScope })
       st.score++
       st.streak++
       sound.play(mv.captured ? 'capture' : 'move', { sounds: getSounds() })
@@ -211,11 +214,13 @@ export async function mount(host, ctx) {
     }
     st.chess.undo()
     if (st.pos.alts.includes(mv.san)) {
+      ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'solved', scope: st.companionScope })
       const exp = showExpected('paleGreen')
       setFeedback('warn', tr('rush.alsoValid', { played: mv.san, expected: exp.san }))
       later(next, 1100)
       return
     }
+    ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'failed', scope: st.companionScope })
     st.lives--
     st.streak = 0
     sound.play('error', { sounds: getSounds() })

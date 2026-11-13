@@ -1,0 +1,573 @@
+{
+  "date": "2026-10-18",
+  "mode": "built-in imagegen",
+  "pending": [
+    "code-encouragement"
+  ],
+  "assets": [
+    {
+      "id": "candy-blink",
+      "file": "public/companion/candy-blink.png",
+      "sha256": "b63fa4e0dba47826bd35b04d343a867a147efe4b8f8c92ac66a70969df17fb1c",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a pastel pink and mint-green short jacket with candy-shaped buttons and a small striped bow. The rabbit face stays white. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-blink",
+      "generatedFile": "exec-cc70ec12-7545-411a-9426-c15d06bd7c98.png"
+    },
+    {
+      "id": "candy-encouragement",
+      "file": "public/companion/candy-encouragement.png",
+      "sha256": "6150f35ad55fef870718296a44ee0458e99d5d9ed90f52cdee725f22db4735e6",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Use case: identity-preserve\nAsset type: chess companion expression\nPlease create a encouragement expression for this toy rabbit. A gentle smile with an open paw extended toward us. Keep its pink jacket and mint bow tie, face, long asymmetric ears and 3D figurine appearance. Full figure, same camera and proportions. Transparent background.",
+      "reference": "candy-idle",
+      "generatedFile": "exec-17ca295f-9ad2-489a-8428-cfeb78f096d0.png"
+    },
+    {
+      "id": "candy-idle",
+      "file": "public/companion/candy-idle.png",
+      "sha256": "32cd66f08fa443c039b4709575b88fdaee5c8365d784eafe72448411a9de7840",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a pastel pink and mint-green short jacket with candy-shaped buttons and a small striped bow. The rabbit face stays white. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-82d456cb-b1bc-4844-89dd-af4d7526b52c.png"
+    },
+    {
+      "id": "candy-joy",
+      "file": "public/companion/candy-joy.png",
+      "sha256": "6bfe50f8610d26191c234de5b3a4bf1ee10ed4a5dc2430585764c129f9b601e3",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired joy expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the pink and mint candy jacket and bow tie, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "candy-idle",
+        "origin-joy"
+      ],
+      "generatedFile": "exec-1115366a-5671-476e-9a9c-4481f27562d2.png"
+    },
+    {
+      "id": "candy-surprise",
+      "file": "public/companion/candy-surprise.png",
+      "sha256": "18d50c1d1562858c1ed4cec13d85d945db7ebb6a8dab1de7c0c0e53e0851ebda",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired surprise expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the pink and mint candy jacket and bow tie, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "candy-idle",
+        "origin-surprise"
+      ],
+      "generatedFile": "exec-af1f6bf2-39e6-40c9-8e02-06ec5c6355f1.png"
+    },
+    {
+      "id": "candy-thinking",
+      "file": "public/companion/candy-thinking.png",
+      "sha256": "4953f72c4e8b7f1f543f35dbf243f9b8130d7a9c7d9e0ef179c8a58abd71fffa",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Use case: identity-preserve\nAsset type: chess companion expression\nPlease create a thinking expression for this toy rabbit. One paw rests under the chin in thought. Keep its pink jacket and mint bow tie, face, long asymmetric ears and 3D figurine appearance. Full figure, same camera and proportions. Transparent background.",
+      "reference": "candy-idle",
+      "generatedFile": "exec-af88afc6-5943-44ae-89a9-c1b332109881.png"
+    },
+    {
+      "id": "candy-victory",
+      "file": "public/companion/candy-victory.png",
+      "sha256": "670890f2b00394c4ed54766f01344ab8f48107c3b7f22349fc3af020c5be7a7c",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a pastel pink and mint-green short jacket with candy-shaped buttons and a small striped bow. The rabbit face stays white. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-victory",
+      "generatedFile": "exec-311782d2-b9b3-42f2-99e3-c58f250cad33.png"
+    },
+    {
+      "id": "code-blink",
+      "file": "public/companion/code-blink.png",
+      "sha256": "1b64f01da09351897a5d89916fdaf0d70700d52533934b59ed9d3b06b2cd268d",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired blink expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the charcoal jacket with green trim, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "code-idle",
+        "origin-blink"
+      ],
+      "generatedFile": "exec-bdebe443-ef19-4d4e-8527-01c36adcf428.png"
+    },
+    {
+      "id": "code-idle",
+      "file": "public/companion/code-idle.png",
+      "sha256": "d0f5a2499305816c9eea5f8d6c2e04e01e1a880a3900e039c26033958028ba14",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference game mascot. Add a fitted charcoal jacket with a high collar and restrained green piping. Keep the same rabbit face, eye shape, mischievous expression, ear shapes and the bent ear tip, body proportions, standing pose, framing and soft matte 3D figurine rendering. The whole rabbit remains visible, same size, on a transparent background. No scenery, glow, shadow, text or other characters.",
+      "reference": "figurine-origin",
+      "generatedFile": "exec-65b3e13a-3e08-4e81-b022-5feda676ed72.png"
+    },
+    {
+      "id": "code-joy",
+      "file": "public/companion/code-joy.png",
+      "sha256": "7043ae0a47cc30e1f483539b0f3b00171d9f53750a07d79522e70296f7f41046",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired happy pose. Render the rabbit from image 1 in the pose from image 2, keeping the charcoal jacket with green trim, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "code-idle",
+        "origin-joy"
+      ],
+      "generatedFile": "exec-22319518-162b-4b3d-9d0c-38f22f2f4ed8.png"
+    },
+    {
+      "id": "code-surprise",
+      "file": "public/companion/code-surprise.png",
+      "sha256": "14527387f4e581554e3a531dc0399918a4efd26821b33e71ba521aa99e13c1f7",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Use case: identity-preserve\nAsset type: chess companion expression\nPlease create a surprise expression for this toy rabbit. Wide eyes, small open mouth and both paws raised in surprise. Keep its charcoal jacket with green piping, face, long asymmetric ears and 3D figurine appearance. Full figure, same camera and proportions. Transparent background.",
+      "reference": "code-idle",
+      "generatedFile": "exec-69570cac-20ef-42ba-813d-ff7a55da1c20.png"
+    },
+    {
+      "id": "code-thinking",
+      "file": "public/companion/code-thinking.png",
+      "sha256": "8c3fa91c2128658582b4ce446ee132662720a6bcb2eb9c3969b07e7ff3d25bda",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired thinking expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the charcoal jacket with green trim, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "code-idle",
+        "origin-thinking"
+      ],
+      "generatedFile": "exec-3785108c-0d59-41e2-a328-ef3a08ad7915.png"
+    },
+    {
+      "id": "code-victory",
+      "file": "public/companion/code-victory.png",
+      "sha256": "83c9fadc69dd873e52912dd787aa9159ae08a9d97dffa4ed1afa385f752aa56a",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a fitted charcoal high-collar jacket with restrained green piping. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-victory",
+      "generatedFile": "exec-7b5b8903-eae1-4e61-8164-3fa0fcd48881.png"
+    },
+    {
+      "id": "egyptian-blink",
+      "file": "public/companion/egyptian-blink.png",
+      "sha256": "7fc95ebda4a3d3c6c3df74d1841c4c24e5fa16e363b666bddaf95a0276bd6fe8",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add an Egyptian-inspired blue-and-gold broad collar, a small golden headband and a neat ivory linen waist wrap. Both long ears remain fully visible. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-blink",
+      "generatedFile": "exec-942313e3-4c22-48bf-aa20-9e88b417a27a.png"
+    },
+    {
+      "id": "egyptian-encouragement",
+      "file": "public/companion/egyptian-encouragement.png",
+      "sha256": "584513b8d26117f5794a596051c3ac050985b2cf4936708c0ef6b49ba79a4b63",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add an Egyptian-inspired blue-and-gold broad collar, a small golden headband and a neat ivory linen waist wrap. Both long ears remain fully visible. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-encouragement",
+      "generatedFile": "exec-672130d4-ad1c-464f-ad49-e89a02479e3d.png"
+    },
+    {
+      "id": "egyptian-idle",
+      "file": "public/companion/egyptian-idle.png",
+      "sha256": "42e3a61e6f196aa508179c727e3509d95f1b375fc9f4d65622db395124d42103",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Open the rabbit's eyes, with a mischievous smile. Preserve the same face, ears, clothing and standing pose. Transparent background.",
+      "reference": "egyptian-blink",
+      "generatedFile": "exec-d495b9f0-adff-4a0d-8ef3-54b8311a6d4d.png"
+    },
+    {
+      "id": "egyptian-joy",
+      "file": "public/companion/egyptian-joy.png",
+      "sha256": "a3643f90f00012f5870c2b119c8af97b3d7597b1f8e9ed9d6c50bdbef22a99bb",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add an Egyptian-inspired blue-and-gold broad collar, a small golden headband and a neat ivory linen waist wrap. Both long ears remain fully visible. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-joy",
+      "generatedFile": "exec-27829133-75c1-4124-a96d-7b85cc87972e.png"
+    },
+    {
+      "id": "egyptian-surprise",
+      "file": "public/companion/egyptian-surprise.png",
+      "sha256": "1c080ef82e13cefe47aab9bfc40122b110ee2414503f774c987f969d7cb439fb",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired surprise expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the gold and blue Egyptian collar and jewellery, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "egyptian-idle",
+        "origin-surprise"
+      ],
+      "generatedFile": "exec-a8eb57f1-d134-4a12-9779-0b5f0a2097a9.png"
+    },
+    {
+      "id": "egyptian-thinking",
+      "file": "public/companion/egyptian-thinking.png",
+      "sha256": "70bfd8bf252b6db49debcbee141231949b43fbdd9f7698a489f81dd3e505e16b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add an Egyptian-inspired blue-and-gold broad collar, a small golden headband and a neat ivory linen waist wrap. Both long ears remain fully visible. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-thinking",
+      "generatedFile": "exec-ffc99855-ff95-44a9-b3e8-fb6f2437d442.png"
+    },
+    {
+      "id": "egyptian-victory",
+      "file": "public/companion/egyptian-victory.png",
+      "sha256": "fb21eb79fc1ad99320edb7029763dd030234349fb70a11307e1ace1745c4a05f",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add an Egyptian-inspired blue-and-gold broad collar, a small golden headband and a neat ivory linen waist wrap. Both long ears remain fully visible. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-victory",
+      "generatedFile": "exec-ff64b42a-a2e2-41ab-9feb-9ae9abecf1f8.png"
+    },
+    {
+      "id": "explorer-blink",
+      "file": "public/companion/explorer-blink.png",
+      "sha256": "d327676743bf9d2c1c988f9df437a68f8ed4b7e48d3c06d704e20591738b268f",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Create a blink pose for the chess rabbit companion. The first image defines its identity and costume, the second image defines the expression and body gesture. Keep the first rabbit's clothing, face proportions, ear shapes and 3D figurine material. Copy the second rabbit's pose. Full figure on transparent background.",
+      "reference": [
+        "explorer-thinking",
+        "origin-blink"
+      ],
+      "generatedFile": "exec-c37818d5-474c-49e8-96f0-c11f1e9717ce.png"
+    },
+    {
+      "id": "explorer-encouragement",
+      "file": "public/companion/explorer-encouragement.png",
+      "sha256": "481765421860c893a3ed47ecf7f77e6762b4366049cbb212b0b544d210ef5ebe",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a fitted brown explorer waistcoat with a small brass pocket watch on a chain. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-encouragement",
+      "generatedFile": "exec-41784fae-9a7a-4de8-ab69-4be8b0f73307.png"
+    },
+    {
+      "id": "explorer-idle",
+      "file": "public/companion/explorer-idle.png",
+      "sha256": "7678a777655787e121d07558549ed056b233084e925af7b20fcd888b5fd7f17f",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference game mascot. Add a fitted brown explorer waistcoat with a brass pocket watch and chain. Keep the same rabbit face, eye shape, mischievous expression, ear shapes and the bent ear tip, body proportions, standing pose, framing and soft matte 3D figurine rendering. The whole rabbit remains visible, same size, on a transparent background. No scenery, glow, shadow, text or other characters.",
+      "reference": "figurine-origin",
+      "generatedFile": "exec-0f11d6f8-dedb-4e3a-9d66-4fca8251415f.png"
+    },
+    {
+      "id": "explorer-joy",
+      "file": "public/companion/explorer-joy.png",
+      "sha256": "5c3be8c5aaabdf111b2d7c0b939a28f4131839e054ec1cd281ddfb811580b088",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit this same 3D rabbit in its brown waistcoat and brass pocket watch. A pleased smile and one paw raised in a small friendly celebratory gesture, both feet remain grounded. Preserve exact face identity, folded ear shape, proportions, outfit and materials. Same camera angle, full character visible and same height, centered with safe margins. Transparent background, no scenery, words, extra objects or glow.",
+      "reference": "explorer-idle",
+      "generatedFile": "exec-dd16cadd-a40d-48e1-af46-678fcf30b6f9.png"
+    },
+    {
+      "id": "explorer-surprise",
+      "file": "public/companion/explorer-surprise.png",
+      "sha256": "9f21593c0c06e773de50f667b797c8a046daf15931ff0d9884cb42b0b43e39a2",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Create a surprise pose for the chess rabbit companion. The first image defines its identity and costume, the second image defines the expression and body gesture. Keep the first rabbit's clothing, face proportions, ear shapes and 3D figurine material. Copy the second rabbit's pose. Full figure on transparent background.",
+      "reference": [
+        "explorer-joy",
+        "origin-surprise"
+      ],
+      "generatedFile": "exec-14f745a3-e565-4cb9-a95a-014bdc84bca7.png"
+    },
+    {
+      "id": "explorer-thinking",
+      "file": "public/companion/explorer-thinking.png",
+      "sha256": "e48e4d269e2220f75606c7c3a04018b92c96ac15457d2ddb58182e2bf4a919bb",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit this same 3D rabbit in its brown waistcoat and brass pocket watch. A thoughtful pose, one paw lightly under the chin, eyes looking slightly down at an imagined chessboard, mouth closed. Preserve exact face identity, folded ear shape, proportions, outfit and materials. Same camera angle, full character visible and same height, centered with safe margins. Transparent background, no scenery, words, extra objects or glow.",
+      "reference": "explorer-idle",
+      "generatedFile": "exec-74fe4fa5-edad-4ef3-9c94-c3e166be3c1d.png"
+    },
+    {
+      "id": "explorer-victory",
+      "file": "public/companion/explorer-victory.png",
+      "sha256": "00fc4384580cbe6e8a6d7ca17ae01f766da416fbfcd13ac64489367601b8f2aa",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit this same 3D rabbit in its brown waistcoat and brass pocket watch. A triumphant happy pose with both paws raised, one foot lifted a little, playful but restrained celebration. Preserve exact face identity, folded ear shape, proportions, outfit and materials. Same camera angle, full character visible and same height, centered with safe margins. Transparent background, no scenery, words, extra objects or glow.",
+      "reference": "explorer-idle",
+      "generatedFile": "exec-9f49ce45-7b13-45ae-86c4-c8a9db24d13d.png"
+    },
+    {
+      "id": "horror-blink",
+      "file": "public/companion/horror-blink.png",
+      "sha256": "06ded633deee6292251cc4c5d0d163589565592bfe55ab90fb72ad914dd7b81b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a playful gothic purple-lined black cape, a dark plum waistcoat and a small bat-shaped clasp. Friendly spooky costume, no blood or injury. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-blink",
+      "generatedFile": "exec-1631929c-b1e5-4ef6-b5f4-20521bedb422.png"
+    },
+    {
+      "id": "horror-encouragement",
+      "file": "public/companion/horror-encouragement.png",
+      "sha256": "c99714bc926fab7ba876b14dc45eb76b75fb6e69f73fb175e4284173907f7be4",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a playful gothic purple-lined black cape, a dark plum waistcoat and a small bat-shaped clasp. Friendly spooky costume, no blood or injury. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-encouragement",
+      "generatedFile": "exec-cb7ac76d-6d18-4acd-8fce-f98644cc223a.png"
+    },
+    {
+      "id": "horror-idle",
+      "file": "public/companion/horror-idle.png",
+      "sha256": "ba4b0a757d833c4fc5434d3178f238fedff345bfdf5a5c260e147a18dad4a806",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a playful gothic purple-lined black cape, a dark plum waistcoat and a small bat-shaped clasp. Friendly spooky costume, no blood or injury. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-4f5870ba-5aa3-4b7b-9c54-9e8b9be65e2e.png"
+    },
+    {
+      "id": "horror-joy",
+      "file": "public/companion/horror-joy.png",
+      "sha256": "1a99918de090d79040ac9dcb633af43feeb5c773b5e62997783fa669aa0c1e3a",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a playful gothic purple-lined black cape, a dark plum waistcoat and a small bat-shaped clasp. Friendly spooky costume, no blood or injury. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-joy",
+      "generatedFile": "exec-7009a2f9-4581-4437-8056-601d62ff3a9b.png"
+    },
+    {
+      "id": "horror-surprise",
+      "file": "public/companion/horror-surprise.png",
+      "sha256": "e32821481efd619f542373622aee70bc96401d490a2b1df05b01a7ab9abf80ce",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a playful gothic purple-lined black cape, a dark plum waistcoat and a small bat-shaped clasp. Friendly spooky costume, no blood or injury. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-surprise",
+      "generatedFile": "exec-fc7d5753-b8fa-4294-8155-5193c2af47d1.png"
+    },
+    {
+      "id": "horror-thinking",
+      "file": "public/companion/horror-thinking.png",
+      "sha256": "d95f7f5dd3b817b894509bab643d0bfd695015f91271a75abc754f65089a9423",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired thinking expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the purple waistcoat and black cape, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "horror-idle",
+        "origin-thinking"
+      ],
+      "generatedFile": "exec-d20cf694-5f3d-490c-a105-b30e9c871198.png"
+    },
+    {
+      "id": "horror-victory",
+      "file": "public/companion/horror-victory.png",
+      "sha256": "f6c13d1457ec900452946607bacf5b708bd33e2232724354cc4c012897482905",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Use case: identity-preserve\nAsset type: chess companion expression\nPlease create a victory expression for this toy rabbit. Both paws up in a joyful victory pose. Keep its purple waistcoat and black cape, face, long asymmetric ears and 3D figurine appearance. Full figure, same camera and proportions. Transparent background.",
+      "reference": "horror-idle",
+      "generatedFile": "exec-789c70bd-eb24-4140-afb1-f8bb775378be.png"
+    },
+    {
+      "id": "origin-blink",
+      "file": "public/companion/origin-blink.png",
+      "sha256": "96f62c2c7daf70bd718b93be3005cd45b59adc67c4d515bc88358d50035eef93",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: Keep the same standing pose and expression, with both eyes gently closed for a natural blink. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-b1aa03f3-99f2-494e-8204-afb8b3e3f253.png"
+    },
+    {
+      "id": "origin-encouragement",
+      "file": "public/companion/origin-encouragement.png",
+      "sha256": "cacafdf28355f84893318659618b4d68d736a85a9bd8af5b00aef4238dbd476b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: A warm encouraging small smile, one open paw extended toward the viewer, a patient supportive gesture. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-be38bab9-7925-4a97-9f26-6772eed5d23e.png"
+    },
+    {
+      "id": "origin-idle",
+      "file": "public/companion/origin-idle.png",
+      "sha256": "5f395a671b1ec728de53762a8be1e5164b42428ac516da3d5bd82f37a6b52071",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Référence figurine 3D Origine choisie le 18/10/2026, conservée à l’identique.",
+      "reference": "Lot 0 validé par Meydeey",
+      "generatedFile": "figurine-origin.png"
+    },
+    {
+      "id": "origin-joy",
+      "file": "public/companion/origin-joy.png",
+      "sha256": "e8978f416ea3dc67dd0ef56c37bce5094b25537c97d8a3dfd8d63ef375ab6b1b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: A pleased smile and one paw raised in a small friendly celebratory gesture, both feet remain grounded. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-eda1e2f9-2b27-4136-b635-ec9bd75c1942.png"
+    },
+    {
+      "id": "origin-surprise",
+      "file": "public/companion/origin-surprise.png",
+      "sha256": "80c94db504f28a98bf6fef16c55379d91ba8e7ca563108f0c1f50ba097a538c3",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: A surprised expression, gently widened eyes and both paws slightly raised, ears preserve their identifying shapes. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-1691083d-22eb-43b3-b6dc-a37ae13c54a2.png"
+    },
+    {
+      "id": "origin-thinking",
+      "file": "public/companion/origin-thinking.png",
+      "sha256": "7fe252d46194f33b556e6c42e6f2dfec1fd2bb2553cd840c9e52d1115240bfba",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: A thoughtful pose, one paw lightly under the chin, eyes looking slightly down at an imagined chessboard, mouth closed. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-c846fb65-cb2e-4628-b6f8-8a8645aaeec7.png"
+    },
+    {
+      "id": "origin-victory",
+      "file": "public/companion/origin-victory.png",
+      "sha256": "32eb3a9fe03ceef32479b7c83f438ee9f69787749aacf9c70af65dbed3cfbc65",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference 3D game mascot into this expression and pose: A triumphant happy pose with both paws raised, one foot lifted a little, playful but restrained celebration. Preserve the exact rabbit identity, face proportions, asymmetric long ears with one bent tip, white colouring, body proportions and matte figurine material. Same camera angle, centered composition and character height. All ears, paws and feet visible with safe margin. Genuine transparent background, no glow, scenery, shadow, words or extra objects.",
+      "reference": "origin-idle",
+      "generatedFile": "exec-0b4b5eb8-929b-4fff-a949-0f3235f34047.png"
+    },
+    {
+      "id": "twilight-encouragement",
+      "file": "public/companion/twilight-encouragement.png",
+      "sha256": "a2994bb8ce5eed05381ebc610ede60bdca3c81e9bc43b9ff66ad4f5ab830b6a3",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Create a encouragement pose for the chess rabbit companion. The first image defines its identity and costume, the second image defines the expression and body gesture. Keep the first rabbit's clothing, face proportions, ear shapes and 3D figurine material. Copy the second rabbit's pose. Full figure on transparent background.",
+      "reference": [
+        "twilight-victory",
+        "origin-encouragement"
+      ],
+      "generatedFile": "exec-7b9e411e-58e7-4f87-9a2d-0549ece95e32.png"
+    },
+    {
+      "id": "twilight-idle",
+      "file": "public/companion/twilight-idle.png",
+      "sha256": "d72bfb2d66042496a67c45b3e7ccde73ff17072422d251177d409950c30cb20b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Edit the reference game mascot. Add a short midnight-blue scarf with a small silver moon brooch; the coat of the rabbit is pearl grey with an ivory face. Keep the same rabbit face, eye shape, mischievous expression, ear shapes and the bent ear tip, body proportions, standing pose, framing and soft matte 3D figurine rendering. The whole rabbit remains visible, same size, on a transparent background. No scenery, glow, shadow, text or other characters.",
+      "reference": "figurine-origin",
+      "generatedFile": "exec-f5076dd7-0d9b-4691-bdb8-504d6a461515.png"
+    },
+    {
+      "id": "twilight-joy",
+      "file": "public/companion/twilight-joy.png",
+      "sha256": "c39beb3c1f4c58cbb21d6e68feaad0f5e4b570720e42ccc4db40164a5c7f254c",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Create a joy pose for the chess rabbit companion. The first image defines its identity and costume, the second image defines the expression and body gesture. Keep the first rabbit's clothing, face proportions, ear shapes and 3D figurine material. Copy the second rabbit's pose. Full figure on transparent background.",
+      "reference": [
+        "twilight-thinking",
+        "origin-joy"
+      ],
+      "generatedFile": "exec-641bc03e-5a9f-40e8-902a-24d19426c30e.png"
+    },
+    {
+      "id": "twilight-surprise",
+      "file": "public/companion/twilight-surprise.png",
+      "sha256": "6d5ead624b6eb1e8b7eeb4c97d2fd37774a174d5fdb1b712c7d8eea42385576b",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a midnight-blue short scarf and small silver moon brooch; pearl grey coat and ivory face. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-surprise",
+      "generatedFile": "exec-53431c57-cda2-43ed-9cda-f1d4f3918114.png"
+    },
+    {
+      "id": "twilight-thinking",
+      "file": "public/companion/twilight-thinking.png",
+      "sha256": "77113cc17211a18b1a9003e71ff355b1ba2c74e08f1bdd09579e120bda38a550",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Change only the costume of this same 3D rabbit mascot: add a midnight-blue short scarf and small silver moon brooch; pearl grey coat and ivory face. Preserve the exact expression, pose, face, eye shape, long ears with one bent tip, body proportions, camera and matte figurine rendering of the reference. Keep the same centered composition and full character size. Transparent background, no scenery, text, glow or extra characters.",
+      "reference": "origin-thinking",
+      "generatedFile": "exec-b85dc3a9-e8d1-4397-8a29-b7d4b30e86a3.png"
+    },
+    {
+      "id": "twilight-victory",
+      "file": "public/companion/twilight-victory.png",
+      "sha256": "a05a95f25f71ab19ce9afdda90870b62d46a28dccbb369de1e349e733f7d1a2d",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Game character expression asset. Image 1 is the rabbit's design and costume. Image 2 is the desired victory expression and pose. Render the rabbit from image 1 in the pose from image 2, keeping the pearl-grey fur and midnight blue scarf, face, ear shapes and full-body proportions of image 1. Soft 3D toy rendering, transparent background.",
+      "reference": [
+        "twilight-idle",
+        "origin-victory"
+      ],
+      "generatedFile": "exec-b8e3634e-11e4-4378-86b6-6892d8d826fe.png"
+    },
+    {
+      "id": "twilight-blink",
+      "file": "public/companion/twilight-blink.png",
+      "sha256": "f9b47e856213c56e38a55bd767ca3469064f3b0a114fa44f99baa7f16f4cb9ab",
+      "width": 1254,
+      "height": 1254,
+      "transparent": true,
+      "prompt": "Ferme uniquement les paupières de cette figurine de lapin, pour un clignement des yeux. Conserve exactement son visage, ses oreilles, son pelage gris perle, son écharpe, son corps, sa pose et le fond transparent.",
+      "reference": "twilight-idle",
+      "generatedFile": "exec-0e548f94-7dda-4763-b0a9-dcebc1348eb7.png"
+    }
+  ]
+}

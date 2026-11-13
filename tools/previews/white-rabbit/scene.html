@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Scène du lapin blanc · XChess</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <script type="module" src="./scene.js"></script>
+  </head>
+  <body class="theme-club" data-reaction="waiting">
+    <header class="scene-header"><a href="./index.html" target="_top" aria-label="Revenir au comparatif">←</a><b>La porte du club</b><span>Préparation · 1/3</span></header>
+    <main class="encounter">
+      <section class="board-column" aria-label="Position d’échecs"><div class="board-frame"><div class="cg-wrap board"></div></div></section>
+      <aside class="encounter-info">
+        <div class="encounter-goal"><span>Les Blancs jouent</span><h1>Observer la position</h1><p>Italienne après 3… Fc5.</p></div>
+        <div class="companion" role="status" aria-live="polite"><div class="rabbit-stage"><img id="rabbit" alt="Ton compagnon, le lapin blanc" width="160" height="180"><span id="reaction-mark" aria-hidden="true">…</span></div><div class="rabbit-words"><b id="reaction-title">À toi de jouer</b><p id="reaction-text"></p></div></div>
+        <p class="simulation-label">Réaction simulée pour le comparatif</p>
+        <div class="scene-actions"><button type="button" id="hint">Voir la réaction d’indice</button><button type="button" id="reset">Revenir à l’attente</button></div>
+        <p class="scene-footnote">Position de comparaison fixe.</p>
+      </aside>
+    </main>
+  </body>
+</html>

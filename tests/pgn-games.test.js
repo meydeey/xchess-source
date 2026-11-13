@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { Chess } from 'chess.js'
 import { analyzeGame, gameFingerprint, parsePgnGames, pgnPlayers, sideForPlayer, winningChance } from '../src/core/pgn-games.js'
 
 const one = `[Event "Training"]\n[Site "Chess.com"]\n[Date "2026.09.26"]\n[White "Alice"]\n[Black "Bob"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 *`
@@ -44,4 +45,26 @@ describe('PGN import and game decisions', () => {
     expect(complete.complete).toBe(true)
     expect(complete.decisions[0].mistake).toBe(false)
   })
+})
+
+
+test('analyzes opening errors and short games from the first move in both camps', async () => {
+  const game = { ...parsePgnGames('[Event "Short"]\n[White "Alice"]\n[Black "Bob"]\n\n1. f3 e5 2. g4 Qh4#').games[0], gameId: 'short' }
+  for (const side of ['white', 'black']) {
+    const positions = []
+    const engine = { analyse: async (fen, options) => {
+      positions.push(fen)
+      const move = new Chess(fen).moves({ verbose: true })[0]
+      return [{ uci: options.searchmoves?.[0] || `${move.from}${move.to}${move.promotion || ''}`, score: side === 'white' ? 100 : -100 }]
+    } }
+    const result = await analyzeGame(game, side, engine)
+    const first = game.moves.find((move) => move.color === side[0])
+    expect(positions).toContain(first.before)
+    expect(result.decisions.some((decision) => decision.ply < 8)).toBe(true)
+    for (const decision of result.decisions) {
+      const chess = new Chess(decision.fen)
+      expect(chess.turn()).toBe(side[0])
+      for (const uci of decision.accepted) expect(chess.moves({ verbose: true }).some((m) => `${m.from}${m.to}${m.promotion || ''}` === uci)).toBe(true)
+    }
+  }
 })

@@ -19,6 +19,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "bun test",
+    "docs:index": "bash \"$HOME/agents-config/scripts/check-docs-corpus.sh\" . --write-index",
+    "docs:index:check": "bash \"$HOME/agents-config/scripts/check-docs-corpus.sh\" . --check-index",
     "catalog": "bun tools/build-catalog.mjs",
     "stats": "infisical run --env=dev --silent -- bun tools/build-stats.mjs",
     "trees": "infisical run --env=dev --silent -- bun tools/build-trees.mjs",
@@ -31,6 +33,7 @@
     "release:all": "bash tools/release-all.sh",
     "explain": "infisical run --env=dev --silent -- bun tools/build-explanations.mjs",
     "full-catalog": "bun tools/build-full-catalog.mjs",
-    "puzzles": "bun tools/build-puzzles.mjs"
+    "puzzles": "bun tools/build-puzzles.mjs",
+    "release:mac": "bash tools/release-mac.sh"
   }
 }

@@ -9,6 +9,7 @@ import { openingMemory, rushPositions, TITLES, RUSH, GOALS } from '../core/game.
 import {
   resolveOpening, getCachedLines, difficultyOf, bandStatsFor, escapeHtml, movesText,
 } from './shared.js'
+import { adventureEntry } from './adventure-shared.js'
 import { flameSvg } from './game.js'
 
 const SECONDS_PER_LINE = 60 // temps médian de départ d'une ligne (spec V2 L3)
@@ -48,6 +49,8 @@ export async function mount(host, ctx) {
     </div>
   `
   const grid = host.querySelector('.today-grid')
+  host.querySelector('.today-head').insertAdjacentHTML('afterend', adventureEntry(ctx, ctx.getAdventure()))
+  host.querySelector('.today-head').insertAdjacentHTML('beforeend', `<a class="collection-entry" href="#/collection"><img src="companion/origin-idle.png" alt="" width="36" height="44">${t('collection.open')}</a>`)
 
   // Lignes du répertoire et des ouvertures déjà jouées : séance, mémoire et positions du Rush.
   const ids = [...new Set([...state.repertoire, ...Object.keys(state.progress)])]

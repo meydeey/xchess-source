@@ -51,6 +51,8 @@ profile = plistlib.loads(subprocess.check_output(['security', 'cms', '-D', '-i',
 expiry = profile['ExpirationDate'].replace(tzinfo=datetime.timezone.utc)
 if expiry <= datetime.datetime.now(datetime.timezone.utc):
     raise SystemExit('Release blocked: iOS provisioning profile expired')
+if (profile['ExpirationDate'] - profile['CreationDate']).total_seconds() <= 7 * 86400:
+    raise SystemExit('Release blocked: 7-day Personal Team profile; activate paid membership for private distribution')
 missing = set(sys.argv[2:]) - set(profile.get('ProvisionedDevices', []))
 if missing:
     raise SystemExit('Release blocked: iOS provisioning profile excludes a target device')
@@ -68,17 +70,15 @@ if [[ "$mode" == '--check' ]]; then
   exit 0
 fi
 
+# An expired installation can refuse to launch while the device is fully accessible.
+# Verify the actual lock state and persistent data before changing any installed app.
+bun tools/lib/ios-release.mjs unlocked "${devices[@]}"
+backup_dir="$HOME/Library/Application Support/XChess/releases/$release-$(date +%Y%m%d-%H%M%S)-$$"
+mkdir -m 700 -p "$backup_dir"
 for udid in "${devices[@]}"; do
-  if ! xcrun devicectl device process launch --device "$udid" com.meydeey.theorie; then
-    echo "Release blocked: unlock iOS device $udid before publishing." >&2
-    exit 1
-  fi
+  bun tools/lib/ios-release.mjs backup "$udid" "$backup_dir/$udid-before"
 done
-echo 'Physical iOS targets are unlocked and launchable.'
 
-bun tools/publish-source.mjs "$release" --publish
-backup_dir="$HOME/Library/Application Support/XChess/releases/$release-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$backup_dir"
 osascript -e 'tell application id "com.meydeey.theorie" to quit' >/dev/null 2>&1 || true
 for _ in {1..20}; do
   if ! pgrep -f '/Applications/XChess.app/Contents/MacOS/theorie' >/dev/null; then break; fi
@@ -88,6 +88,14 @@ if pgrep -f '/Applications/XChess.app/Contents/MacOS/theorie' >/dev/null; then
   echo 'Release blocked: XChess Mac is still running.' >&2
   exit 1
 fi
+for folder in 'Application Support' WebKit; do
+  mac_data="$HOME/Library/$folder/com.meydeey.theorie"
+  if [[ -d "$mac_data" ]]; then
+    ditto "$mac_data" "$backup_dir/mac-data-before/$folder"
+    diff -qr "$mac_data" "$backup_dir/mac-data-before/$folder"
+  fi
+done
+bun tools/publish-source.mjs "$release" --publish
 if [[ -d /Applications/XChess.app ]]; then
   mv /Applications/XChess.app "$backup_dir/XChess.app"
 fi

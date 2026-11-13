@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Le lapin blanc · Atelier XChess</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./preview.css">
+    <script type="module" src="./preview.js"></script>
+  </head>
+  <body>
+    <header class="site-head">
+      <a class="brand" href="#" aria-label="Revenir en haut du comparatif"><img src="/favicon.svg" alt="" width="28" height="28">XChess</a>
+      <span>Atelier du lapin blanc</span>
+      <a href="#gallery">Voir les 12 lapins <span aria-hidden="true">↘</span></a>
+    </header>
+    <main>
+      <header class="intro">
+        <h1>Quel lapin suivras-tu ?</h1>
+        <p>3 façons de dessiner ton complice, 4 apparences et 5 plateaux à associer dans une même scène.</p>
+        <p class="notice">Comparatif visuel local. Les réactions sont simulées et ton choix reste modifiable.</p>
+      </header>
+      <div class="workbench">
+        <form class="controls" aria-label="Composer le comparatif" onsubmit="return false">
+          <fieldset><legend>Le dessin du lapin</legend><div class="styles" id="style-choices"></div></fieldset>
+          <fieldset><legend>Son apparence</legend><div class="outfits" id="outfit-choices"></div><p class="control-note" id="outfit-note"></p></fieldset>
+          <fieldset><legend>Le plateau</legend><div class="boards" id="board-choices"></div><p class="control-note" id="board-note"></p></fieldset>
+          <fieldset><legend>Sa réaction</legend><div class="pills" id="reaction-choices"></div></fieldset>
+          <label class="motion"><input id="motion" type="checkbox" checked> Animer les réactions</label>
+          <p id="motion-note" class="control-note"></p>
+          <div class="selection-actions"><button type="button" class="primary" id="save-choice">Garder cette combinaison</button><button type="button" id="copy-link">Copier le lien</button></div>
+          <output id="saved-status" aria-live="polite"></output>
+          <label class="link-label" for="choice-link">Lien de cette combinaison</label><input id="choice-link" type="text" readonly>
+        </form>
+        <section class="preview" aria-label="Aperçu en situation">
+          <div class="preview-toolbar"><div id="device-choices" class="pills" role="group" aria-label="Format de l’aperçu"></div><label class="baseline-toggle"><input id="baseline" type="checkbox"> Comparer au plateau actuel</label></div>
+          <div class="device-caption"><span id="device-caption"></span><span id="scale-caption"></span></div>
+          <div class="preview-pair">
+            <div class="preview-column"><p class="preview-label" id="composition-label"></p><div class="device-space"><iframe title="Scène avec la combinaison sélectionnée" src="./scene.html" id="scene"></iframe></div></div>
+            <div class="preview-column reference-column reference-hidden" aria-hidden="true" inert><p class="preview-label">Référence · sans compagnon</p><div class="device-space"><iframe title="Plateau actuel sans compagnon" src="./scene.html?baseline=1" id="reference"></iframe></div></div>
+          </div>
+          <p class="preview-note">Même position d’italienne et mêmes pièces que dans XChess. Le cadre se dessine autour des 64 cases.</p>
+          <div class="size-proof"><div><img id="small-rabbit" src="./assets/illustration-origin.png" alt="Lapin à sa taille compacte" width="64" height="64"><span>À 64 px<br><small>Taille réelle, hors aperçu réduit</small></span></div><p id="board-measure" aria-live="polite">Mesure du plateau en cours…</p></div>
+        </section>
+      </div>
+      <section class="gallery" id="gallery" aria-labelledby="gallery-title">
+        <header><h2 id="gallery-title">Les 12 propositions</h2><p>Une oreille pliée et 4 apparences pour chaque direction.</p><p class="notice">Les variantes 3D habillées et Crépuscule pixel présentent encore des écarts de visage et de silhouette, à harmoniser sur la référence choisie.</p></header>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </section>
+      <footer class="page-foot"><p>Les 7 poses de chaque apparence seront dessinées après le choix du style.</p><p>La campagne de 3 chapitres et 9 rencontres constitue la suite du chantier.</p></footer>
+    </main>
+  </body>
+</html>

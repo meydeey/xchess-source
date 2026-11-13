@@ -1,3 +1,4 @@
+import { factsForMove } from '../core/companion.js'
 // Mode partie (spec section 6) : à la fin d'une ligne, ou depuis une position quelconque de
 // l'explorateur, la partie continue en jeu libre contre Stockfish. Même plateau et même orientation
 // que le drill de trainer.js (réutilise les classes .board-col/.drill-info, mises en page par la
@@ -47,7 +48,7 @@ function outcomeOf(chess) {
 // capturé une fois, pour suivre un changement de réglage en direct ; par défaut activé si omis.
 // Rend { resign(), destroy() } ; "Revenir à l'entraînement" reste piloté par l'appelant (trainer.js),
 // qui possède les boutons partagés avec le reste de l'écran.
-export function mountPlay(host, { fen, sideEn, engine, elo, onOver, t, getSounds = () => true }) {
+export function mountPlay(host, { fen, sideEn, engine, elo, onOver, t, onCompanion = () => {}, getSounds = () => true }) {
   host.innerHTML = `
     <section class="board-col">
       <div class="board-frame"><div class="cg-wrap board"></div></div>
@@ -168,6 +169,7 @@ export function mountPlay(host, { fen, sideEn, engine, elo, onOver, t, getSounds
     } else {
       message = t(res.key)
     }
+    onCompanion({ type: 'game', resolved: true, result: res.mate ? (chess.turn() === (sideEn === 'white' ? 'w' : 'b') ? 'lost' : 'won') : 'draw', duel: true, final: true })
     setFeedback(tone, message)
     stepEl.textContent = t('play.over')
     onOver?.()
@@ -208,7 +210,7 @@ export function mountPlay(host, { fen, sideEn, engine, elo, onOver, t, getSounds
     syncBoard(true)
   }
   function onBoardMove(orig, dest) {
-    if (st.busy || st.over) return
+    if (st.destroyed || st.busy || st.over) return
     let mv
     try {
       mv = chess.move({ from: orig, to: dest, promotion: 'q' })
@@ -220,6 +222,7 @@ export function mountPlay(host, { fen, sideEn, engine, elo, onOver, t, getSounds
     st.moves.push({ san: mv.san, color: mv.color })
     renderSheet()
     if (finishIfOver()) return
+    onCompanion(factsForMove(chess, mv, { duel: true }))
     setFeedback('neutral', t('play.yourMove', { move: mv.san }))
     stepEl.textContent = t('play.stockfishTurn')
     engineReply()

@@ -40,6 +40,7 @@ export async function mount(host, ctx) {
         <button type="button" class="btn-test-sound link">${t('settings.testSound')}</button>
       </label>
     </form>
+    <a class="collection-entry" href="#/collection"><img src="companion/origin-idle.png" alt="" width="36" height="44">${t('collection.open')}</a>
     <section class="backup-settings" aria-labelledby="backup-title">
       <h2 id="backup-title">${t('settings.backup')}</h2>
       <p>${t('settings.backupDesc')}</p>

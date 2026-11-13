@@ -1,0 +1,91 @@
+{
+  "generated": "2026-10-18",
+  "usage": "Lot 0, exploration locale. Aucun visuel de production choisi.",
+  "identityNote": "Les 3 variantes 3D habillées et Crépuscule pixel ont dû être générés depuis la description commune après les refus du service sur leurs éditions. Leurs visages, oreilles et proportions restent à harmoniser après le choix artistique.",
+  "assets": [
+    {
+      "id": "illustration-origin",
+      "file": "assets/illustration-origin.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: transparent character concept for XChess, adult offline chess adventure.\nPrimary request: Create a full-body original white rabbit companion in expressive hand-drawn 2D illustration, grown-up storybook graphic-novel aesthetic, clean confident dark ink contours, flat ivory and subtle warm grey shading. Clever, mischievous, quietly confident, not babyish. Identifying silhouette: long slim asymmetric ears with ONE bent tip, compact upright pear-shaped body, small dark almond eyes with one eyebrow raised, tiny dusty rose triangular nose, small cheek tufts. No human hands, no large teeth. Standing 3/4 facing viewer, one paw resting at the hip. Plain white fur, no clothing for this Origin appearance. Full rabbit including both ears and both feet, centered, occupies 82% of square, enough safe margin. Transparent background, no ground shadow or scenery, no words or symbols, no watermark. This is the master identity for later 3D and pixel art interpretations, must read clearly at 64 pixels. Restrained detail, approachable yet sly. Original character inspired by curiosity and secret passages, no copyrighted character likeness.",
+      "reference": null
+    },
+    {
+      "id": "illustration-explorer",
+      "file": "assets/illustration-explorer.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Edit only the outfit of the reference rabbit: add a tailored moss-brown explorer waistcoat and a brass pocket-watch on a small chain, a restrained original adult adventurer. Preserve its exact face, white fur, asymmetric ears with bent tip, pose, body shape, confident mischievous expression, 2D ink illustration medium, canvas framing and scale. Full body, transparent background. No scenery, no words. Outfit must stay legible at 64 px.",
+      "reference": "assets/illustration-origin.png"
+    },
+    {
+      "id": "illustration-code",
+      "file": "assets/illustration-code.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Game mascot rabbit wearing a charcoal jacket with green piping and high collar. Keep the reference character, ears, face, expression, pose and hand-drawn ink illustration style. Transparent background. No text.",
+      "reference": "assets/illustration-origin.png"
+    },
+    {
+      "id": "illustration-twilight",
+      "file": "assets/illustration-twilight.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Edit only the fur and outfit of the reference rabbit: pearl grey fur with soft ivory face, midnight-blue short scarf and small moon-silver brooch. Preserve exact face, asymmetric ears with bent tip, pose, body shape, confident mischievous expression, 2D ink illustration medium, canvas framing and scale. Full body, transparent background. No scenery, no words. Outfit must stay legible at 64 px.",
+      "reference": "assets/illustration-origin.png"
+    },
+    {
+      "id": "figurine-origin",
+      "file": "assets/figurine-origin.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use reference as identity and pose reference. Reinterpret this exact original rabbit as a high quality tangible soft matte resin 3D collectible figurine, subtle fur sculpting, warm soft studio illumination, restrained detail. Preserve the face identity, one raised eyebrow, mischievous small smile, dusty rose nose, white fur, asymmetric long ears with one bent tip, full body upright 3/4 stance with paw at hip and pear shaped proportions. No clothing, same framing and scale. Transparent background, no stage or floor, no cast shadow, no text. Adult game companion, clearly recognizable at 64 px.",
+      "reference": "assets/illustration-origin.png"
+    },
+    {
+      "id": "pixel-origin",
+      "file": "assets/pixel-origin.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use reference as identity and pose reference. Reinterpret this exact original rabbit as authentic handcrafted game pixel art, limited 16 colour palette, hard crisp square pixel edges, stepped 1-pixel contours, no smooth gradients, no blur, logical native sprite resolution around 96 x 128 pixels, enlarged with nearest-neighbour edges. Preserve identity and silhouette, long asymmetric ears with one bent tip, raised eyebrow, dusty pink nose, mischievous expression, upright 3/4 stance paw at hip, white fur, no clothing. Full body, identical framing and relative scale. Transparent background, no text or scene. Adult indie chess game character.",
+      "reference": "assets/illustration-origin.png"
+    },
+    {
+      "id": "pixel-explorer",
+      "file": "assets/pixel-explorer.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Reinterpret the reference illustration as crisp handcrafted pixel art for a game. Stepped square pixel contours, limited palette, no smooth gradients, native sprite around 96 by 128 pixels enlarged with nearest-neighbour edges. Keep the same rabbit identity, clothing and colours, face and folded ear, pose and framing. The whole character is visible on a transparent background. No scenery or words.",
+      "reference": "assets/illustration-explorer.png"
+    },
+    {
+      "id": "pixel-code",
+      "file": "assets/pixel-code.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "Reinterpret the reference illustration as crisp handcrafted pixel art for a game. Stepped square pixel contours, limited palette, no smooth gradients, native sprite around 96 by 128 pixels enlarged with nearest-neighbour edges. Keep the same rabbit identity, clothing and colours, face and folded ear, pose and framing. The whole character is visible on a transparent background. No scenery or words.",
+      "reference": "assets/illustration-code.png"
+    },
+    {
+      "id": "figurine-explorer",
+      "file": "assets/figurine-explorer.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "An original friendly mischievous rabbit chess-game mascot. Long asymmetric ears, left ear upright and right ear tip folded down, small dusty pink triangular nose, dark almond eyes with one raised eyebrow, cheek tufts, subtle small smile. Upright pear-shaped body in three-quarter view with one paw resting at side. Whole character visible, centered with margin. Transparent background, no scene, no text. Soft 3D render, tactile matte vinyl sculpture, warm gentle studio light. White rabbit wearing a brown waistcoat and brass pocket watch on chain.",
+      "reference": "Description commune après refus du service sur les éditions depuis une image."
+    },
+    {
+      "id": "figurine-code",
+      "file": "assets/figurine-code.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "An original friendly mischievous rabbit chess-game mascot. Long asymmetric ears, left ear upright and right ear tip folded down, small dusty pink triangular nose, dark almond eyes with one raised eyebrow, cheek tufts, subtle small smile. Upright pear-shaped body in three-quarter view with one paw resting at side. Whole character visible, centered with margin. Transparent background, no scene, no text. Soft 3D render, tactile matte vinyl sculpture, warm gentle studio light. White rabbit wearing a charcoal high-collar jacket with green trim.",
+      "reference": "Description commune après refus du service sur les éditions depuis une image."
+    },
+    {
+      "id": "figurine-twilight",
+      "file": "assets/figurine-twilight.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "An original friendly mischievous rabbit chess-game mascot. Long asymmetric ears, left ear upright and right ear tip folded down, small dusty pink triangular nose, dark almond eyes with one raised eyebrow, cheek tufts, subtle small smile. Upright pear-shaped body in three-quarter view with one paw resting at side. Whole character visible, centered with margin. Transparent background, no scene, no text. Soft 3D render, tactile matte vinyl sculpture, warm gentle studio light. Pearl grey rabbit with ivory face wearing a midnight blue scarf and silver moon brooch.",
+      "reference": "Description commune après refus du service sur les éditions depuis une image."
+    },
+    {
+      "id": "pixel-twilight",
+      "file": "assets/pixel-twilight.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "An original friendly mischievous rabbit chess-game mascot. Long asymmetric ears, left ear upright and right ear tip folded down, small dusty pink triangular nose, dark almond eyes with one raised eyebrow, cheek tufts, subtle small smile. Upright pear-shaped body in three-quarter view with one paw resting at side. Whole character visible, centered with margin. Transparent background, no scene, no text. Crisp handcrafted pixel art sprite with hard stepped square edges and limited colour palette, around 96 by 128 native resolution enlarged with nearest neighbour. Pearl grey rabbit with ivory face wearing a midnight blue scarf and silver moon brooch.",
+      "reference": "Description commune après refus du service sur les éditions depuis une image."
+    }
+  ]
+}
