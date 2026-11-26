@@ -3,6 +3,7 @@
 
 // Étiquette d'un coup à l'affichage : "5.Ng5" ou "5…h6". Mot-jointeur pour ne jamais couper le coup.
 export const moveLabel = (ply, san) => `${Math.floor(ply / 2) + 1}${ply % 2 ? '…' : '.'}⁠${san}`
+export const MAIN_LINE_LABEL = 'Variante principale'
 
 // side = camp entraîné ('white' ou 'black'). Les embranchements qui comptent (pour nommer et grouper
 // les lignes) sont ceux de l'adversaire : les plis pairs (0, 2, 4…) sont les coups blancs, les impairs
@@ -14,8 +15,8 @@ function isOpponentPly (ply, side) {
 }
 
 function makeLine (moves, alts, evals, branchPoints) {
-  const name = branchPoints.length ? branchPoints.join('  ') : 'Variante principale'
-  const group = branchPoints[0] ?? 'Variante principale'
+  const name = branchPoints.length ? branchPoints.join('  ') : MAIN_LINE_LABEL
+  const group = branchPoints[0] ?? MAIN_LINE_LABEL
   return { id: moves.join(' '), moves, alts, evals, name, group }
 }
 

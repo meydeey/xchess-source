@@ -1,0 +1,216 @@
+.exercise-visual-landing {
+  gap: clamp(22px, 3vw, 30px);
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.exercise-landing-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.exercise-visual-landing section > h2 {
+  margin: 0 0 12px;
+  font-family: var(--f-body);
+  font-size: clamp(1.22rem, 2.4vw, 1.9rem);
+  font-weight: 760;
+  letter-spacing: -.035em;
+}
+
+.exercise-warmup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 42%);
+  min-height: 166px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--surface) 80%, var(--raise));
+}
+
+.exercise-warmup-copy {
+  align-self: center;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: clamp(14px, 2.3vw, 24px);
+}
+
+.exercise-warmup-label {
+  color: var(--accent);
+  font-size: .79rem;
+  font-weight: 750;
+}
+
+.exercise-warmup-copy h2 {
+  margin: 0;
+  font-family: var(--f-body);
+  font-size: clamp(1.25rem, 3vw, 1.9rem);
+  font-weight: 790;
+  line-height: 1.13;
+  letter-spacing: -.035em;
+}
+
+.exercise-warmup-copy p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.exercise-warmup-copy .cta {
+  min-width: 0;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-align: center;
+  white-space: normal;
+}
+
+.exercise-warmup-photo { position: relative; min-width: 0; }
+
+.exercise-warmup-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 28%;
+}
+
+.exercise-illustrated-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.exercise-advanced-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.exercise-illustrated-tile {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.exercise-illustrated-tile:hover,
+.exercise-illustrated-tile:focus-visible {
+  border-color: var(--accent);
+  background: var(--raise);
+  text-decoration: none;
+}
+
+.exercise-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--line);
+  background: var(--raise);
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.exercise-cover:is([data-art='skill-attack'], [data-art='skill-tactics'], [data-art='skill-defense'], [data-art='advanced-series'], [data-art='advanced-arena']) {
+  object-position: 50% 20%;
+}
+
+.exercise-cover:is([data-art='advanced-timed'], [data-art='advanced-rush']) {
+  object-position: 50% 27%;
+}
+
+.exercise-tile-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 72px;
+  padding: 11px 12px;
+  overflow-wrap: anywhere;
+}
+
+.exercise-tile-copy strong,
+.exercise-tile-copy small { display: block; }
+
+.exercise-tile-copy strong { font-size: .99rem; font-weight: 760; line-height: 1.25; }
+
+.exercise-tile-copy small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.35;
+}
+
+.exercise-tile-arrow {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+
+.exercise-motifs { max-width: 52rem; }
+.exercise-motifs-intro { margin: 8px 0 16px; color: var(--muted); }
+
+.exercise-motifs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 9px;
+}
+
+.exercise-motifs-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 50px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.exercise-motifs-grid a:hover,
+.exercise-motifs-grid a:focus-visible { border-color: var(--accent); text-decoration: none; }
+
+.exercise-visual-run {
+  --exercise-accent: var(--accent);
+  --exercise-tint: var(--accent-soft);
+}
+
+.exercise-session-art { display: none; }
+.rush-locked-card { max-width: 46rem; }
+
+@media (min-width: 900px) and (orientation: landscape) {
+  .exercise-session-art {
+    display: block;
+    width: 100%;
+    height: clamp(82px, 15vh, 126px);
+    margin: 0 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    object-fit: cover;
+    object-position: 50% 28%;
+  }
+}
+
+@media (max-width: 970px) {
+  .exercise-advanced-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .exercise-illustrated-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .exercise-cover { aspect-ratio: 1.55; }
+  .exercise-tile-copy { gap: 3px; padding: 8px 9px; }
+  .exercise-tile-copy strong { font-size: .91rem; }
+  .exercise-tile-copy small { font-size: .76rem; }
+  .exercise-tile-arrow { width: 13px; height: 13px; }
+  .exercise-warmup { grid-template-columns: minmax(0, 1fr) minmax(0, 37%); }
+  .exercise-warmup-copy p { font-size: .88rem; }
+}

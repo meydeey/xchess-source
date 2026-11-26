@@ -31,6 +31,7 @@ function stampServiceWorker() {
 export default defineConfig(async () => ({
   plugins: [viteSingleFile(), stampServiceWorker()],
   define: { __XCHESS_RELEASE__: JSON.stringify(releaseId) },
+  envPrefix: ['VITE_', 'TAURI_ENV_PLATFORM'],
   clearScreen: false,
   server: {
     port: 5173,

@@ -1,317 +1,246 @@
-// Aujourd'hui (spec V2 D6 et L10) : l'accueil. Niveau, série et objectif du jour, la séance en 1 geste,
-// les 3 défis du jour et leur coffre, le Rush, les ouvertures à raviver (mémoire qui baisse) et la
-// découverte du jour. Répertoire vide : le répertoire de départ (D7) en 1 clic.
-import { selection, openings, stats, catalogMeta } from '../data.js'
+// Present the next playable activity and the current learning phase.
+import { selection, openings, stats } from '../data.js'
 import { buildSession, starterRepertoire } from '../core/session.js'
 import { introducedTodayCount } from '../core/stats.js'
-import { recentInsights } from '../core/insights.js'
-import { openingMemory, rushPositions, TITLES, RUSH, GOALS } from '../core/game.js'
-import {
-  resolveOpening, getCachedLines, difficultyOf, bandStatsFor, escapeHtml, movesText,
-} from './shared.js'
-import { adventureEntry } from './adventure-shared.js'
-import { flameSvg } from './game.js'
+import { rushPositions, RUSH, TITLES } from '../core/game.js'
+import { resolveLocale } from '../i18n.js'
+import { homeVisualMessages } from '../i18n-home-visual.js'
+import '../visual-home.css'
+import { resolveOpening, getCachedLines, difficultyOf, bandStatsFor, escapeHtml } from './shared.js'
+import { hasPendingSession } from './session.js'
 
-const SECONDS_PER_LINE = 60 // temps médian de départ d'une ligne (spec V2 L3)
-
-function dots(d, t) {
-  if (!d) return ''
-  return `<span class="lib-dots" aria-label="${t('library.difficulty')} ${t('library.dots', { value: d })}">${'●'.repeat(d)}<span class="lib-dots-off">${'○'.repeat(5 - d)}</span></span>`
+function activityCard({ kind, label, title, description = '', action, href, primary = false }) {
+  return `
+    <article class="home-activity home-activity-${kind}${primary ? ' home-activity-primary' : ''}">
+      <div class="home-activity-copy">
+        <p class="home-activity-label">${escapeHtml(label)}</p>
+        <h2>${escapeHtml(title)}</h2>
+        <p class="home-activity-description"${description ? '' : ' hidden'}>${escapeHtml(description)}</p>
+        <a class="${primary ? 'cta primary' : 'home-activity-link'}" href="${href}">
+          <span>${escapeHtml(action)}</span><span aria-hidden="true">${primary ? '→' : '›'}</span>
+        </a>
+        ${primary ? '<a class="home-repertoire-link" href="#/library/repertoire" hidden></a>' : ''}
+      </div>
+    </article>`
 }
 
 export async function mount(host, ctx) {
   const { state, band, game, saveRepertoire, navigate, setActions, t } = ctx
-  const locale = state.settings.locale
-  const DATE_FMT = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' })
-  const NUM = new Intl.NumberFormat(locale)
-  const formatPct = (value) => value == null ? '-' : new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(value)
-  const openingName = (opening) => locale === 'fr' ? opening.name : opening.lichessName || opening.name
-  const sideName = (side) => t(`side.${side}`)
-  const levelTitle = (level) => t(`title.${TITLES.filter(([min]) => min <= level).at(-1)[0]}`)
-  const rewardText = (reward) => {
-    if (!reward) return ''
-    if (reward.kind === 'xp') return `+${reward.xp} XP`
-    if (reward.kind === 'jackpot') return t('today.jackpot', { xp: reward.xp })
-    if (reward.kind === 'freeze') return t('today.rewardFreeze')
-    if (reward.kind === 'boost') return t('today.rewardBoost', { minutes: reward.minutes || 15 })
-    return ''
+  const locale = resolveLocale(state.settings.locale)
+  const words = homeVisualMessages[locale]
+  const openingName = (opening) => escapeHtml(locale === 'fr' ? opening.name : opening.lichessName || opening.name)
+  const firstOpening = !state.repertoire.length && !Object.values(state.progress).some((lines) => Object.keys(lines).length)
+  const welcome = {
+    label: words.start, title: words.italian, description: words.guided,
+    action: words.firstMove, href: '#/first-opening',
   }
-  const questOpening = (id) => id && resolveOpening(id, { selection, openings })
-  const questText = (q) => t(`quest.${q.kind}`, {
-    count: q.target, side: q.side ? sideName(q.side) : '',
-    opening: questOpening(q.openingId) ? `: ${openingName(questOpening(q.openingId))}` : '',
-  })
+  const preparing = {
+    label: '', title: t('today.session'), description: t('today.preparing'),
+    action: t('today.start'), href: '#/session',
+  }
+  const exercises = {
+    kind: 'tactics', label: words.quick, title: t('mode.mate1'),
+    action: words.tryMate, href: '#/exercises/mate1',
+  }
+  const library = {
+    kind: 'openings', label: words.yourPace, title: words.chooseOpening, description: words.openingHint,
+    action: words.selection, href: '#/library/selection',
+  }
+
   setActions({})
   host.innerHTML = `
-    <div class="today">
-      <header class="today-head"><p class="eyebrow">${DATE_FMT.format(new Date())}</p><h1>${t('today')}</h1></header>
-      <div class="today-grid"><p class="empty">${t('today.preparing')}</p></div>
+    <div class="today home-visual">
+      <h1 class="home-heading">${escapeHtml(words.home)}</h1>
+      <div class="home-activities">
+        ${activityCard({ kind: 'opening', primary: true, ...(firstOpening ? welcome : preparing) })}
+        ${activityCard(exercises)}
+        ${activityCard(library)}
+      </div>
+      <section class="home-progress" aria-labelledby="home-progress-title">
+        <div class="home-section-head">
+          <h2 id="home-progress-title">${escapeHtml(words.progress)}</h2>
+          <a href="#/progress">${escapeHtml(t('coach.openProgress'))} <span aria-hidden="true">›</span></a>
+        </div>
+        <div class="home-progress-grid">
+          <a class="home-level" href="#/progress/trophies"></a>
+          <div class="home-path">
+            <h3>${escapeHtml(firstOpening ? words.firstPath : words.path)}</h3>
+            <ol class="home-steps">
+              ${['discover', 'recall', 'review'].map((step, i) => `
+                <li data-step="${step}"><span class="home-step-number" aria-hidden="true">${i + 1}</span>
+                  <div><strong>${escapeHtml(t(`phase.${step}`))}</strong><small>${escapeHtml(words[step])}</small></div>
+                </li>`).join('')}
+            </ol>
+          </div>
+        </div>
+      </section>
+      <div class="today-content">${firstOpening ? '' : `<p class="empty" role="status">${t('today.preparing')}</p>`}</div>
     </div>
   `
-  const grid = host.querySelector('.today-grid')
-  host.querySelector('.today-head').insertAdjacentHTML('afterend', adventureEntry(ctx, ctx.getAdventure()))
-  host.querySelector('.today-head').insertAdjacentHTML('beforeend', `<a class="collection-entry" href="#/collection"><img src="companion/origin-idle.png" alt="" width="36" height="44">${t('collection.open')}</a>`)
+  const content = host.querySelector('.today-content')
+  const levelCard = host.querySelector('.home-level')
 
-  // Lignes du répertoire et des ouvertures déjà jouées : séance, mémoire et positions du Rush.
-  const ids = [...new Set([...state.repertoire, ...Object.keys(state.progress)])]
-  const loaded = new Map()
-  await Promise.all(ids.map(async (id) => {
-    const opening = resolveOpening(id, { selection, openings })
-    if (!opening) return
-    const { lines, header } = await getCachedLines(opening)
-    loaded.set(id, { opening, lines, header })
-  }))
+  function renderLevel({ level, today }) {
+    const rank = TITLES.findLast(([threshold]) => level.level >= threshold)[0]
+    const name = t('today.level', { level: level.level }).replace(/^./u, (char) => char.toLocaleUpperCase(locale))
+    levelCard.innerHTML = `
+      <div class="home-level-heading">
+        <span class="home-level-emblem" data-rank="${rank}" aria-hidden="true"><span>◇</span></span>
+        <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(t(`title.${rank}`))}</small></span>
+        <span class="home-level-chevron" aria-hidden="true">›</span>
+      </div>
+      <progress class="xpbar" value="${level.into}" max="${level.span}" aria-label="${escapeHtml(t('today.myLevel'))}"></progress>
+      <div class="home-level-meta">
+        <span>${level.into} / ${level.span} XP</span>
+        <span>${escapeHtml(t('header.goal', { xp: today.xp, goal: today.goal }))}</span>
+      </div>
+    `
+  }
+  renderLevel(game.derive())
+  if (firstOpening) host.querySelector('[data-step="discover"]').setAttribute('aria-current', 'step')
 
   const now = Date.now()
-  const linesByOpening = Object.fromEntries(state.repertoire.filter((id) => loaded.has(id)).map((id) => [id, loaded.get(id).lines]))
+  const repertoire = state.repertoire
+  const needQuests = !game.derive().today.questsGenerated
+  const ids = [...new Set(needQuests ? [...repertoire, ...Object.keys(state.progress)] : repertoire)]
+  const openingsById = new Map((await Promise.all(ids.map(async (id) => {
+    const opening = resolveOpening(id, { selection, openings })
+    return opening && [id, { side: opening.side, ...await getCachedLines(opening) }]
+  }))).filter(Boolean))
   const session = buildSession({
-    repertoire: state.repertoire, linesByOpening, progress: state.progress, now,
-    newPerDay: state.settings.newPerDay, introducedToday: introducedTodayCount(state.progress, state.repertoire, now),
+    repertoire, linesByOpening: Object.fromEntries(repertoire.map((id) => [id, openingsById.get(id)?.lines])),
+    progress: state.progress, now, newPerDay: state.settings.newPerDay,
+    introducedToday: introducedTodayCount(state.progress, repertoire, now),
   })
-  const rushPool = rushPositions([...loaded.values()].map(({ opening, lines }) => ({
-    openingId: opening.id, side: opening.side, lines, progress: state.progress[opening.id] || {},
-  })), now)
-  const sides = [...new Set(state.repertoire.map((id) => loaded.get(id)?.opening.side).filter(Boolean))]
-  const puzzleAttempts = await ctx.getPuzzleAttempts()
-  const path = await ctx.getChallengePath(puzzleAttempts)
-  const insights = recentInsights({ puzzles: puzzleAttempts, activity: game.events, now })
-  const mastery = await ctx.getMastery(puzzleAttempts)
-  let justOpenedChest = false
-  game.ensureQuests({ dueCount: session.dueCount, newAvailable: session.newCount, repertoireSides: sides, rushReady: rushPool.length >= RUSH.minPositions, challengeFocus: path.focus.id, personalDue: path.personalDue })
+  const resume = session.total > 0 && await hasPendingSession()
 
-  // Répertoire de départ (D7), calculé seulement pour un répertoire vide.
-  let starter = []
-  if (!state.repertoire.length) {
-    const diffs = new Map()
-    await Promise.all(selection.map(async (o) => diffs.set(o.id, difficultyOf((await getCachedLines({ ...o, tier: 'selection' })).header))))
-    starter = starterRepertoire(selection, {
-      difficultyOf: (id) => diffs.get(id),
-      scoreOf: (id) => bandStatsFor(stats, id, 'selection', band)?.scoreLow ?? null,
+  if (needQuests && host.isConnected) {
+    const path = await ctx.getChallengePath()
+    const rushPool = rushPositions([...openingsById].map(([openingId, { side, lines }]) => ({
+      openingId, side, lines, progress: state.progress[openingId] || {},
+    })), now)
+    if (host.isConnected) game.ensureQuests({
+      dueCount: session.dueCount, newAvailable: session.newCount,
+      repertoireSides: [...new Set(repertoire.map((id) => openingsById.get(id)?.side).filter(Boolean))],
+      rushReady: rushPool.length >= RUSH.minPositions, challengeFocus: path.focus.id, personalDue: path.personalDue,
     })
   }
 
-  function heroCard(g) {
-    const { level, streak, today } = g
-    const goalPct = Math.min(100, Math.round((today.xp / today.goal) * 100))
-    const streakNote = streak.todayActive
-      ? (streak.freezes ? t('today.freeze', { count: streak.freezes }) : t('today.streakSafe'))
-      : streak.current ? t('today.streakPlay') : t('today.streakStart')
-    return `
-      <section class="card hero" aria-label="${t('today.myLevel')}">
-        <div class="hero-level">
-          <span class="level-badge mono" aria-hidden="true">${level.level}</span>
-          <div>
-            <p class="hero-title">${levelTitle(level.level)} <small>${t('today.level', { level: level.level })}</small></p>
-            <p class="hero-sub mono">${t('today.toNext', { into: NUM.format(level.into), span: NUM.format(level.span), next: level.level + 1 })}</p>
-          </div>
-        </div>
-        <progress class="xpbar" value="${level.into}" max="${level.span}"></progress>
-        ${level.nextTitle ? `<p class="hero-next">${t('today.nextTitle', { title: levelTitle(level.nextTitle.level), level: level.nextTitle.level })}</p>` : ''}
-        <div class="hero-stats">
-          <div class="stat streak${streak.todayActive ? ' on' : streak.atRisk ? ' risk' : ''}">
-            ${flameSvg()}
-            <div><b class="mono">${streak.current}</b> ${t(streak.current === 1 ? 'today.streakOne' : 'today.streakMany')}<small>${streakNote}</small></div>
-          </div>
-          <div class="stat goal${today.goalMet ? ' met' : ''}">
-            <span class="ring" style="--p:${goalPct}" aria-hidden="true"></span>
-            <div><b class="mono">${today.xp}</b> / ${today.goal} XP<small>${t('today.goal')} « ${t(`goal.${GOALS[today.goal] ? today.goal : 60}`)} »${today.goalMet ? t('today.goalMet') : ''}</small></div>
-          </div>
-          ${g.boost ? `<div class="stat boost"><b class="mono">×2</b><div>${t('today.boost')}<small>${t('today.until', { time: new Date(g.boost.until).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) })}</small></div></div>` : ''}
-        </div>
-      </section>
-    `
+  if (!host.isConnected) return { destroy() {} }
+
+  if (!firstOpening) {
+    const card = host.querySelector('.home-activity-primary')
+    const actionLink = card.querySelector('.cta')
+    const repertoireLink = card.querySelector('.home-repertoire-link')
+    const counts = [
+      session.dueCount ? t('today.dueShort', { count: session.dueCount }) : '',
+      session.newCount ? t('today.freshShort', { count: session.newCount }) : '',
+      t('today.minutesShort', { count: session.total }),
+    ].filter(Boolean).join(' · ')
+    const [label, title, description, href, action] = session.total
+      ? ['', t('today.session'), counts, '#/session/go', resume ? t('coach.resume') : t('today.start')]
+      : repertoire.length
+        ? [words.yourPace, t('today.repertoireReady'), t('today.repertoireReadyDesc'), '#/exercises', t('today.tryPuzzle')]
+        : ['', t('today.starter'), t('today.starterDesc'), '#/library', t('nav.library')]
+
+    card.querySelector('.home-activity-label').textContent = label
+    card.querySelector('h2').textContent = title
+    const descriptionEl = card.querySelector('.home-activity-description')
+    descriptionEl.textContent = resume ? `${description} · ${t('coach.resumeNote')}` : description
+    descriptionEl.hidden = false
+    actionLink.href = href
+    actionLink.querySelector('span').textContent = action
+
+    if (!session.total && repertoire.length) {
+      repertoireLink.textContent = t('today.myRepertoire')
+      repertoireLink.hidden = false
+    }
+    if (session.queue.length) {
+      const currentPhase = session.queue[0].isNew ? 'discover' : 'review'
+      host.querySelector(`[data-step="${currentPhase}"]`).setAttribute('aria-current', 'step')
+    }
   }
 
-  function sessionCard() {
-    if (!state.repertoire.length) {
-      return `
-        <section class="card session-card starter">
-          <h2>${t('today.starter')}</h2>
-          <button type="button" class="cta primary btn-starter"${starter.length ? '' : ' disabled'}>${t('today.starterStart', { count: starter.length })}</button>
-          <p class="muted">${t('today.starterDesc')}</p>
-          <a class="starter-rating" href="#/settings">${t('today.starterRating')}</a>
-          <ul class="starter-list">
-            ${starter.map((o) => `
-              <li><a href="#/opening/${o.id}"><b>${escapeHtml(openingName(o))}</b><small>${sideName(o.side)} · <span class="mono">${movesText(o.moves)}</span></small></a></li>
-            `).join('')}
-          </ul>
-        </section>
+  const discoveryId = game.pickOfDay()
+  const discovery = discoveryId && resolveOpening(discoveryId, { selection, openings })
+  content.innerHTML = `
+    <div class="today-options">
+      ${!repertoire.length ? `<details class="today-details today-starter">
+        <summary>${t('today.starter')}</summary>
+        <div class="today-details-body" aria-live="polite"></div>
+      </details>` : ''}
+      <details class="today-details today-challenges">
+        <summary><span>${t('today.quests')}</span><span class="today-challenge-count"></span></summary>
+        <div class="today-details-body"></div>
+      </details>
+      ${discovery ? `<a class="today-discovery" href="#/opening/${encodeURIComponent(discovery.id)}">
+        <span>${t('today.discovery')}<b>${openingName(discovery)}</b></span><span aria-hidden="true">›</span>
+      </a>` : ''}
+    </div>
+  `
+
+  function renderChallenges(claimed = false) {
+    const { today, streak, boost } = game.derive()
+    const summary = content.querySelector('.today-challenge-count')
+    const details = content.querySelector('.today-challenges .today-details-body')
+    const done = today.quests.filter((quest) => quest.done).length
+    summary.textContent = today.chest.available ? t('today.chestReady') : `${done}/${today.quests.length}`
+    const reward = today.chest.opened
+    const rewardText = reward?.kind === 'freeze' ? t('today.rewardFreeze')
+      : reward?.kind === 'boost' ? t('today.rewardBoost', { minutes: reward.minutes || 15 })
+        : reward ? `+${reward.xp} XP` : ''
+    details.innerHTML = `
+      <ul class="quest-list">${today.quests.map((quest) => {
+        const o = quest.openingId && resolveOpening(quest.openingId, { selection, openings })
+        const description = t(`quest.${quest.kind}`, { count: quest.target, side: quest.side ? t(`side.${quest.side}`) : '', opening: o ? `: ${openingName(o)}` : '' })
+        return `<li class="today-quest"><span>${description}</span><b class="mono">${quest.progress}/${quest.target}</b></li>`
+      }).join('')}</ul>
+      ${reward ? `<p class="today-reward" tabindex="-1">${t('today.chestOpen')} · ${rewardText}</p>` : today.chest.available
+        ? `<button type="button" class="cta btn-chest">${t('today.chestReady')}</button>`
+        : `<p class="muted">${t('today.chestLockedDesc')}</p>`}
+      ${streak.freezes ? `<p class="muted">${t('today.freeze', { count: streak.freezes })}</p>` : ''}
+      ${boost ? `<p class="muted">${t('today.boost')} · ${t('today.until', { time: new Intl.DateTimeFormat(locale, { timeStyle: 'short' }).format(boost.until) })}</p>` : ''}
+    `
+    details.querySelector('.btn-chest')?.addEventListener('click', () => {
+      if (game.openChest()) renderChallenges(true)
+    })
+    if (claimed) details.querySelector('.today-reward')?.focus()
+  }
+
+  const starterDetails = content.querySelector('.today-starter')
+  if (starterDetails) {
+    let loading = false
+    starterDetails.addEventListener('toggle', async () => {
+      if (!starterDetails.open || loading) return
+      loading = true
+      const body = starterDetails.querySelector('.today-details-body')
+      body.textContent = t('today.preparing')
+      const difficulties = new Map(await Promise.all(selection.map(async (o) => [
+        o.id, difficultyOf((await getCachedLines({ ...o, tier: 'selection' })).header),
+      ])))
+      if (!starterDetails.isConnected) return
+      const starter = starterRepertoire(selection, {
+        difficultyOf: (id) => difficulties.get(id),
+        scoreOf: (id) => bandStatsFor(stats, id, 'selection', band)?.scoreLow ?? null,
+      })
+      body.innerHTML = `
+        <p class="muted">${t('today.starterDesc')}</p>
+        <ul class="starter-list">${starter.map((o) => `<li><a href="#/opening/${o.id}">${openingName(o)} <small>${t(`side.${o.side}`)}</small></a></li>`).join('')}</ul>
+        <a class="today-secondary-link" href="#/settings">${t('today.starterRating')}</a>
+        <button class="cta btn-starter" type="button"${starter.length ? '' : ' disabled'}>${t('today.starterStart', { count: starter.length })}</button>
       `
-    }
-    if (session.total) {
-      const minutes = Math.max(1, Math.round((session.total * SECONDS_PER_LINE) / 60))
-      return `
-        <section class="card session-card">
-          <h2>${t('today.session')}</h2>
-          <p class="session-counts">${t('today.sessionCounts', { due: session.dueCount, fresh: session.newCount, minutes })}</p>
-          <a class="cta primary cta-start" href="#/session/go">${t('today.start')}</a>
-        </section>
-      `
-    }
-    return `
-      <section class="card session-card done">
-        <h2>${t('today.repertoireReady')}</h2>
-        <p class="muted">${t('today.repertoireReadyDesc')}</p>
-        <a class="cta" href="#/library/repertoire">${t('today.myRepertoire')}</a>
-      </section>
-    `
-  }
-
-  function questsCard(g) {
-    const quests = g.today.quests
-    const done = quests.filter((q) => q.done).length
-    const chest = g.today.chest
-    const worked = [...mastery.practiced].sort((a, b) => b.lastAt - a.lastAt)[0]
-    const workedName = worked?.kind === 'theme' ? t(`theme.${worked.id}`) : worked ? openingName(resolveOpening(worked.id, { selection, openings }) || { name: worked.id }) : ''
-    const cardNote = worked ? `${t('mastery.chestCard', { name: escapeHtml(workedName), level: worked.level })} · ${worked.next ? t(`mastery.next.${worked.next.kind}`, worked.next) : t('mastery.max')}` : t('mastery.chestNone')
-    let chestHtml
-    if (chest.opened) chestHtml = `<div class="chest open${justOpenedChest ? ' chest-reveal' : ''}"${justOpenedChest ? ' role="status"' : ''}><span class="chest-icon" aria-hidden="true"></span><p><b>${t(justOpenedChest ? 'mastery.chestReveal' : 'today.chestOpen')}</b> ${escapeHtml(rewardText(chest.opened))}<small>${cardNote}</small></p></div>`
-    else if (chest.available) chestHtml = `<button type="button" class="chest ready btn-chest"><span class="chest-icon" aria-hidden="true"></span><span><b>${t('today.chestReady')}</b> ${t('today.surprise')}</span></button>`
-    else chestHtml = `<div class="chest locked"><span class="chest-icon" aria-hidden="true"></span><p><b>${t('today.chestLocked')}</b> ${t('today.chestLockedDesc')}</p></div>`
-    return `
-      <section class="card quests">
-        <header class="card-head"><h2>${t('today.quests')}</h2><span class="muted mono">${done}/${quests.length}</span></header>
-        <ul class="quest-list">
-          ${quests.map((q) => `
-            <li class="quest${q.done ? ' done' : ''}" data-level="${q.level}">
-              <span class="quest-check" aria-hidden="true"></span>
-              <div class="quest-body">
-                <p>${escapeHtml(questText(q))}</p>
-                <div class="qbar" aria-hidden="true"><i style="width:${Math.round((q.progress / q.target) * 100)}%"></i></div>
-              </div>
-              <span class="quest-count mono">${q.progress}/${q.target}</span>
-              <span class="quest-xp mono">+${q.xp}</span>
-            </li>
-          `).join('')}
-        </ul>
-        ${chestHtml}
-      </section>
-    `
-  }
-
-  function focusCard(g) {
-    const nameOf = (group) => {
-      if (group.kind === 'theme') return t(`theme.${group.id}`)
-      const opening = resolveOpening(group.id, { selection, openings })
-      return opening ? openingName(opening) : group.id
-    }
-    const hrefOf = (group) => group.kind === 'theme'
-      ? `#/exercises/theme/${encodeURIComponent(group.id)}`
-      : `#/train/${encodeURIComponent(group.id)}`
-    const priorities = insights.weaknesses.slice(0, 3)
-    const firstCard = priorities.length ? mastery.byKey.get(`${priorities[0].kind}\0${priorities[0].id}`) : null
-    const proof = path.next.kind === 'puzzle' ? t('path.puzzles') : path.next.kind === 'memory' ? t('path.recall') : t('path.games')
-    return `
-      <section class="card today-focus" aria-label="${t('today.focus')}">
-        <div class="focus-stage">
-          <span class="focus-symbol" aria-hidden="true">♟</span>
-          <div>
-            <p class="eyebrow">${t('today.currentStage')}</p>
-            <h2>${t(`path.stage.${path.focus.id}`)}</h2>
-            <p>${t('today.xpLevel', { level: g.level.level })} · ${t('today.nextStep', { proof })}</p>
-          </div>
-        </div>
-        <div class="focus-work">
-          <p class="eyebrow">${t('today.priority')}</p>
-          ${priorities.length ? `
-            <ol class="focus-list">${priorities.map((group, i) => `
-              <li${i === 0 ? ' class="first"' : ''}>
-                <span class="focus-rank mono">${i + 1}</span>
-                <a href="${hrefOf(group)}">${escapeHtml(nameOf(group))}</a>
-                <span class="focus-rate mono">${t('today.cleanAttempts', { rate: formatPct(group.clean / group.count), clean: group.clean, count: group.count })}</span>
-              </li>`).join('')}</ol>
-            <a class="cta primary focus-action" href="${hrefOf(priorities[0])}">${t('insights.action')} ↗</a>
-            ${firstCard ? `<a class="focus-mastery" href="#/progress/cards"><span aria-hidden="true">♞</span> ${t(`mastery.level.${firstCard.level}`)} · ${firstCard.next ? t(`mastery.next.${firstCard.next.kind}`, firstCard.next) : t('mastery.max')} ↗</a>` : ''}
-          ` : `
-            <p class="focus-empty">${t(insights.eligible.length ? 'today.noWeakness' : 'today.noPriority', { count: insights.count })}</p>
-            <a class="cta primary focus-action" href="${path.next.href}">${t(`path.action.${path.next.kind}`)} ↗</a>
-          `}
-          <div class="focus-foot"><span>${t('insights.period')} · ${t('insights.local')}</span><a class="focus-details" href="#/progress/stats">${t('today.seeInsights')} ↗</a></div>
-        </div>
-      </section>
-    `
-  }
-
-  function rushCard(g) {
-    const ready = rushPool.length >= RUSH.minPositions
-    return `
-      <section class="card rush-card">
-        <header class="card-head"><h2>XChess Rush</h2><span class="muted">${t('today.rushLives', { minutes: RUSH.seconds / 60, lives: RUSH.lives })}</span></header>
-        <p class="muted">${t('today.rushDesc')}</p>
-        <p class="rush-records"><span>${t('today.record')} <b class="mono">${g.counters.rushBest}</b></span><span>${t('today')} <b class="mono">${g.today.rushMax}</b></span><span><b class="mono">${NUM.format(rushPool.length)}</b> ${t('today.positions')}</span></p>
-        ${ready
-          ? `<a class="cta primary" href="#/rush">${t('today.launchRush')}</a>`
-          : `<p class="locked-note">${t('today.rushLocked', { count: rushPool.length, needed: RUSH.minPositions })}</p>`}
-      </section>
-    `
-  }
-
-  function memoryCard() {
-    const rows = state.repertoire
-      .map((id) => loaded.get(id))
-      .filter(Boolean)
-      .map(({ opening, lines }) => ({ opening, m: openingMemory(lines, state.progress[opening.id] || {}, now) }))
-      .filter((r) => r.m)
-      .sort((a, b) => a.m.memory - b.m.memory)
-    if (!rows.length) return ''
-    const fading = rows.filter((r) => r.m.memory < 0.85).slice(0, 4)
-    return `
-      <section class="card memory">
-        <header class="card-head"><h2>${t('today.refresh')}</h2><span class="muted">${t('today.memoryEstimated')}</span></header>
-        ${fading.length ? `<ul class="memory-list">
-          ${fading.map(({ opening, m }) => {
-            const tone = m.memory < 0.5 ? 'bad' : m.memory < 0.7 ? 'warn' : 'good'
-            return `
-              <li>
-                <a href="#/train/${opening.id}" class="memory-row">
-                  <span class="memory-name">${escapeHtml(openingName(opening))}<small>${t('today.linesPlayed', { played: m.played, total: m.total })}</small></span>
-                  <span class="gauge" data-tone="${tone}" aria-hidden="true"><i style="width:${Math.round(m.memory * 100)}%"></i></span>
-                  <b class="mono">${formatPct(m.memory)}</b>
-                </a>
-              </li>`
-          }).join('')}
-        </ul>` : `<p class="muted">${t('today.memoryFresh')}</p>`}
-      </section>
-    `
-  }
-
-  function discoveryCard(g) {
-    const id = game.pickOfDay()
-    const o = id && resolveOpening(id, { selection, openings })
-    if (!o) return ''
-    const meta = catalogMeta(id)
-    const score = stats.catalog?.[id]?.scoreLow
-    const played = g.today.openings.has(id)
-    return `
-      <section class="card discovery">
-        <header class="card-head"><h2>${t('today.discovery')}</h2><span class="badge-x2 mono">XP ×2</span></header>
-        <p class="discovery-name">${escapeHtml(openingName(o))}</p>
-        <p class="muted">${o.eco} · ${sideName(o.side)}${meta ? ` · ${NUM.format(meta.lines)} ${t(meta.lines === 1 ? 'today.line' : 'today.lines')} ${dots(meta.difficulty, t)}` : ''}${score != null ? ` · ${t('today.beginnerScore', { score: formatPct(score) })}` : ''}</p>
-        <p class="mono discovery-moves">${movesText(o.moves)}</p>
-        ${played ? `<p class="good-note">${t('today.discoveryPlayed')}</p>` : ''}
-        <a class="cta" href="#/opening/${o.id}">${t('today.discover')}</a>
-      </section>
-    `
-  }
-
-  function render() {
-    const g = game.derive()
-    grid.innerHTML = `
-      ${focusCard(g)}
-      <div class="today-main">${sessionCard()}${heroCard(g)}${questsCard(g)}</div>
-      <div class="today-side">${rushCard(g)}${memoryCard()}${discoveryCard(g)}</div>
-    `
-    grid.querySelector('.btn-starter')?.addEventListener('click', async () => {
-      await saveRepertoire(starter.map((o) => o.id))
-      navigate('#/session/go')
-    })
-    grid.querySelector('.btn-chest')?.addEventListener('click', () => {
-      if (!game.openChest()) return
-      justOpenedChest = true
-      render()
+      const start = body.querySelector('.btn-starter')
+      start.addEventListener('click', async () => {
+        start.disabled = true
+        const saved = await saveRepertoire(starter.map((o) => o.id))
+        if (!start.isConnected) return
+        if (saved) navigate('#/session/go')
+        else start.disabled = false
+      })
     })
   }
-  render()
 
-  return { destroy() {} }
+  renderChallenges()
+  const unsubscribe = game.subscribe(renderLevel)
+  return { destroy: unsubscribe }
 }

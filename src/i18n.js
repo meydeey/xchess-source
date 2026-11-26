@@ -3,24 +3,47 @@ import { trainingMessages } from './i18n-training.js'
 import { gameMessages } from './i18n-game.js'
 import { challengeMessages } from './i18n-challenges.js'
 import { masteryMessages } from './i18n-mastery.js'
-import { companionMessages } from './i18n-companion.js'
-import { adventureMessages } from './i18n-adventure.js'
+import { boardMessages } from './i18n-board-themes.js'
+import { coachMessages } from './i18n-coach.js'
+import { musicMessages } from './i18n-music.js'
+import { visualMessages } from './i18n-visual.js'
+import { ptMessages } from './i18n-pt.js'
+import { deMessages } from './i18n-de.js'
 
-export const LOCALES = ['en', 'fr', 'es']
+export const LOCALE_NAMES = { en: 'English', fr: 'Français', es: 'Español', 'pt-BR': 'Português (Brasil)', de: 'Deutsch' }
+export const LOCALES = Object.keys(LOCALE_NAMES)
+const byLanguage = new Map(LOCALES.map((locale) => [locale.split('-')[0], locale]))
 
-export function resolveLocale(value) {
-  const code = String(value || '').toLowerCase().split('-')[0]
-  return LOCALES.includes(code) ? code : 'en'
+function supportedLocale(value) {
+  return byLanguage.get(String(value || '').toLowerCase().split(/[-_]/)[0])
 }
 
+export const resolveLocale = (value) => supportedLocale(value) ?? 'en'
+
 export function deviceLocale() {
-  return resolveLocale(globalThis.navigator?.language || 'en')
+  const device = globalThis.navigator
+  return [device?.language, ...(device?.languages ?? [])].map(supportedLocale).find(Boolean) ?? 'en'
 }
 
 export const messages = {
+  'pt-BR': { ...ptMessages, ...musicMessages['pt-BR'], ...visualMessages['pt-BR'] },
+  de: { ...deMessages, ...musicMessages.de, ...visualMessages.de },
   en: {
-    ...companionMessages.en,
-    ...adventureMessages.en,
+    'today.dueShort': '{count} to review',
+    'today.freshShort': '{count} new',
+    'today.minutesShort': 'about {count} min',
+    'today.tryPuzzle': 'Solve a puzzle',
+    'today.chooseOpenings': 'Build your repertoire',
+    'exercises.skills': 'Practise a skill',
+    'exercises.challenges': 'Play a challenge',
+    'train.mainLine': 'Main line',
+    'settings.exportFailed': 'Could not export your progress. Try again.',
+    'settings.importFailed': 'Could not import this backup. Check that it’s an XChess backup file.',
+    'library.noResults': 'No openings match. Change your search or filters.',
+    'library.emptyRepertoire': 'Add an opening from its page to build your repertoire.',
+    ...boardMessages.en,
+    ...coachMessages.en,
+    ...musicMessages.en,
     ...progressMessages.en,
     ...trainingMessages.en,
     ...gameMessages.en,
@@ -40,7 +63,7 @@ export const messages = {
     'session.finishedPerfect': 'Flawless line ({opening}). {verdict}{gain}', 'session.finish': 'Finish session',
     'session.lineOf': 'Line {index} of {total}', 'session.openingDifficulty': 'Opening difficulty {difficulty}/5',
     'session.newLine': 'New line', 'session.reviewLine': 'Review',
-    'session.completeTitle': 'Session complete', 'session.completeSummary': '{lines} lines, {flawless} flawless, +{xp} XP.',
+    'session.completeTitle': 'Session complete', 'session.completeSummary': 'Lines played {lines} · Flawless {flawless} · +{xp} XP',
     'session.challenges': 'See my challenges', 'session.rush': 'Play Rush',
     'mode.mate1-series': 'Mate in 1 · Streak', 'mode.mate1-series.summary': 'Keep going until 3 mistakes.',
     'mode.mate1-timed': 'Mate in 1 · 3 minutes', 'mode.mate1-timed.summary': 'Find as many as you can before time runs out.',
@@ -73,6 +96,7 @@ export const messages = {
     'settings.export': 'Export', 'settings.import': 'Import', 'settings.reset': 'Reset all progress',
     'settings.resetConfirm': 'Delete all your progress across every opening?',
     'settings.version': 'Version', 'settings.sourceCode': 'Source code',
+    'settings.supportPage': 'Support', 'settings.privacyPolicy': 'Privacy policy',
     'band.debutant': 'Beginner', 'band.intermediaire': 'Intermediate', 'band.club': 'Club', 'band.avance': 'Advanced', 'band.expert': 'Expert',
     'goal.30': 'Relaxed', 'goal.60': 'Regular', 'goal.120': 'Focused', 'goal.200': 'Intense',
     'exercises.title': 'Puzzles', 'exercises.loading': 'Loading puzzles…', 'exercises.retry': 'Try again',
@@ -84,7 +108,7 @@ export const messages = {
     'mode.tactics': 'Tactics', 'mode.tactics.summary': 'Forks, pins and material gains.',
     'mode.defense': 'Defense', 'mode.defense.summary': 'Find the move that saves the position.',
     'mode.technique': 'Technique', 'mode.technique.summary': 'Endgames, promotions and precision.',
-    'mode.mate1': 'Mate in 1', 'mode.mate1.summary': 'Find the mate, or spot that there is none.',
+    'mode.mate1': 'Mate in 1', 'mode.mate1.summary': 'Find the move that delivers checkmate.',
     'exercises.score': '{solved} solved · {played} played', 'exercises.bestMove': 'Find the best move',
     'exercises.yourTurn': 'Your move.', 'exercises.noMate': 'No mate', 'exercises.next': 'Next position', 'exercises.autoNext': 'Automatically go to the next position',
     'arena.title': 'Free arena', 'arena.summary': 'Play both sides to explore an opening at your own pace.',
@@ -93,7 +117,7 @@ export const messages = {
     'arena.undo': 'Undo move', 'arena.reset': 'New game', 'arena.flip': 'Flip board', 'arena.moves': 'Moves', 'arena.noMoves': 'No moves yet.',
     'arena.fen': 'Set up a position (FEN)', 'arena.fenHelp': 'Paste a FEN position to continue from it.', 'arena.load': 'Load position', 'arena.invalidFen': 'Invalid FEN position.',
     'exercises.source': 'Source: Lichess, CC0 dataset.', 'exercises.difficulty': 'Difficulty {rating}',
-    'exercises.mateQuestion': 'Is there a mate in 1?', 'exercises.moveQuestion': 'What is your best move?',
+    'exercises.mateQuestion': 'Deliver checkmate in 1 move.', 'exercises.moveQuestion': 'What is your best move?',
     'exercises.none': 'No position is available for this mode.', 'exercises.saveError': 'Saving is temporarily unavailable. Retry from the banner.',
     'exercises.tryAgain': 'That move does not solve the position. Try again.',
     'exercises.oneMore': 'One more try. Look for your opponent’s threats.',
@@ -138,9 +162,9 @@ export const messages = {
     'today.starterDesc': 'One opening as White and 2 responses as Black, chosen for your rating. You can change them later.',
     'today.starterRating': 'Adjust my rating',
     'today.starterStart': 'Start with these {count} openings', 'today.session': 'Your session',
-    'today.sessionCounts': '{due} to review · {fresh} new · about {minutes} min', 'today.start': 'Start',
-    'today.repertoireReady': 'Repertoire up to date',
-    'today.repertoireReadyDesc': 'No review is due, and you have started today’s new lines. Rush and the daily discovery await.',
+    'today.sessionCounts': '{due} to review · {fresh} new · about {minutes} min', 'today.start': 'Start session',
+    'today.repertoireReady': 'All caught up',
+    'today.repertoireReadyDesc': 'No reviews or new lines are scheduled for today.',
     'today.myRepertoire': 'My repertoire', 'today.quests': 'Daily challenges',
     'today.chestOpen': 'Chest opened', 'today.chestReady': 'Open the chest',
     'today.surprise': 'Surprise reward', 'today.chestLocked': 'Chest locked',
@@ -210,10 +234,24 @@ export const messages = {
     'insights.action': 'Practice this weakness', 'insights.details': 'Detailed opening statistics',
     'insights.start': 'Practice a position',
     'insights.method': 'First attempt per position or variation each day. A success means no mistake and no hint.',
+    ...visualMessages.en,
   },
   fr: {
-    ...companionMessages.fr,
-    ...adventureMessages.fr,
+    'today.dueShort': '{count} à revoir',
+    'today.freshShort': '{count} à apprendre',
+    'today.minutesShort': 'environ {count} min',
+    'today.tryPuzzle': 'Faire un exercice',
+    'today.chooseOpenings': 'Compose ton répertoire',
+    'exercises.skills': 'Travailler une compétence',
+    'exercises.challenges': 'Relever un défi',
+    'train.mainLine': 'Variante principale',
+    'settings.exportFailed': 'Impossible d’exporter ta progression. Réessaie.',
+    'settings.importFailed': 'Impossible d’importer ce fichier. Vérifie qu’il s’agit d’une sauvegarde XChess.',
+    'library.noResults': 'Aucune ouverture ne correspond. Modifie la recherche ou les filtres.',
+    'library.emptyRepertoire': 'Ajoute une ouverture depuis sa fiche pour composer ton répertoire.',
+    ...boardMessages.fr,
+    ...coachMessages.fr,
+    ...musicMessages.fr,
     ...progressMessages.fr,
     ...trainingMessages.fr,
     ...gameMessages.fr,
@@ -233,7 +271,7 @@ export const messages = {
     'session.finishedPerfect': 'Variante sans faute ({opening}). {verdict}{gain}', 'session.finish': 'Terminer la séance',
     'session.lineOf': 'Variante {index} sur {total}', 'session.openingDifficulty': 'Difficulté de l’ouverture {difficulty}/5',
     'session.newLine': 'Nouvelle variante', 'session.reviewLine': 'À revoir',
-    'session.completeTitle': 'Séance terminée', 'session.completeSummary': '{lines} variantes, dont {flawless} sans faute, +{xp} XP.',
+    'session.completeTitle': 'Séance terminée', 'session.completeSummary': 'Variantes jouées {lines} · Sans faute {flawless} · +{xp} XP',
     'session.challenges': 'Voir mes défis', 'session.rush': 'Enchaîner un Rush',
     'mode.mate1-series': 'Mat en 1 · Série', 'mode.mate1-series.summary': 'Continue jusqu’à 3 erreurs.',
     'mode.mate1-timed': 'Mat en 1 · 3 minutes', 'mode.mate1-timed.summary': 'Trouve le plus de mats possible avant la fin.',
@@ -266,6 +304,7 @@ export const messages = {
     'settings.export': 'Exporter', 'settings.import': 'Importer', 'settings.reset': 'Remettre toute la progression à zéro',
     'settings.resetConfirm': 'Effacer toute ta progression sur toutes les ouvertures ?',
     'settings.version': 'Version', 'settings.sourceCode': 'Code source',
+    'settings.supportPage': 'Assistance', 'settings.privacyPolicy': 'Politique de confidentialité',
     'band.debutant': 'Débutant', 'band.intermediaire': 'Intermédiaire', 'band.club': 'Club', 'band.avance': 'Avancé', 'band.expert': 'Expert',
     'goal.30': 'Détente', 'goal.60': 'Régulier', 'goal.120': 'Sérieux', 'goal.200': 'Intense',
     'exercises.title': 'Exercices', 'exercises.loading': 'Chargement des exercices…', 'exercises.retry': 'Réessayer',
@@ -277,7 +316,7 @@ export const messages = {
     'mode.tactics': 'Tactique', 'mode.tactics.summary': 'Fourchettes, clouages et gains de matériel.',
     'mode.defense': 'Défense', 'mode.defense.summary': 'Trouve le coup qui tient la position.',
     'mode.technique': 'Technique', 'mode.technique.summary': 'Finales, promotions et précision.',
-    'mode.mate1': 'Mat en 1', 'mode.mate1.summary': 'Trouve le mat, ou constate qu’il n’y en a pas.',
+    'mode.mate1': 'Mat en 1', 'mode.mate1.summary': 'Trouve le coup qui donne échec et mat.',
     'exercises.score': '{solved} réussi · {played} joué', 'exercises.bestMove': 'Trouve le meilleur coup',
     'exercises.yourTurn': 'À toi de jouer.', 'exercises.noMate': 'Pas de mat', 'exercises.next': 'Position suivante', 'exercises.autoNext': 'Passer automatiquement à la position suivante',
     'arena.title': 'Arène libre', 'arena.summary': 'Joue les 2 camps pour explorer une ouverture à ton rythme.',
@@ -286,7 +325,7 @@ export const messages = {
     'arena.undo': 'Annuler le coup', 'arena.reset': 'Nouvelle partie', 'arena.flip': 'Retourner le plateau', 'arena.moves': 'Coups joués', 'arena.noMoves': 'Aucun coup joué.',
     'arena.fen': 'Charger une position (FEN)', 'arena.fenHelp': 'Colle une position FEN pour poursuivre depuis celle-ci.', 'arena.load': 'Charger la position', 'arena.invalidFen': 'Position FEN invalide.',
     'exercises.source': 'Source : Lichess, corpus CC0.', 'exercises.difficulty': 'Difficulté {rating}',
-    'exercises.mateQuestion': 'Y a-t-il un mat en 1 ?', 'exercises.moveQuestion': 'Quel est ton meilleur coup ?',
+    'exercises.mateQuestion': 'Donne échec et mat en 1 coup.', 'exercises.moveQuestion': 'Quel est ton meilleur coup ?',
     'exercises.none': 'Aucune position disponible pour ce mode.', 'exercises.saveError': 'Sauvegarde temporairement indisponible. Réessaie depuis le bandeau.',
     'exercises.tryAgain': 'Ce coup ne résout pas la position. Réessaie.',
     'exercises.oneMore': 'Encore un essai. Observe les menaces adverses.',
@@ -331,9 +370,9 @@ export const messages = {
     'today.starterDesc': 'Une ouverture avec les Blancs et 2 réponses avec les Noirs, choisies pour ton niveau. Tu pourras les modifier ensuite.',
     'today.starterRating': 'Ajuster mon Elo',
     'today.starterStart': 'Commencer avec ces {count} ouvertures', 'today.session': 'Ta séance',
-    'today.sessionCounts': '{due} à revoir · {fresh} nouvelles · environ {minutes} min', 'today.start': 'Commencer',
+    'today.sessionCounts': '{due} à revoir · {fresh} nouvelles · environ {minutes} min', 'today.start': 'Commencer la séance',
     'today.repertoireReady': 'Répertoire à jour',
-    'today.repertoireReadyDesc': "Aucune révision due, et tes nouvelles variantes du jour sont entamées. Le Rush et la découverte du jour t'attendent.",
+    'today.repertoireReadyDesc': 'Tu as terminé les variantes prévues pour aujourd’hui.',
     'today.myRepertoire': 'Mon répertoire', 'today.quests': 'Défis du jour',
     'today.chestOpen': 'Coffre ouvert', 'today.chestReady': 'Ouvrir le coffre',
     'today.surprise': 'Récompense surprise', 'today.chestLocked': 'Coffre verrouillé',
@@ -403,10 +442,24 @@ export const messages = {
     'insights.action': 'Travailler cette difficulté', 'insights.details': 'Statistiques détaillées des ouvertures',
     'insights.start': 'Faire un exercice',
     'insights.method': 'Première tentative par position ou variante chaque jour. Une réussite est sans erreur ni indice.',
+    ...visualMessages.fr,
   },
   es: {
-    ...companionMessages.es,
-    ...adventureMessages.es,
+    'today.dueShort': '{count} para repasar',
+    'today.freshShort': '{count} para aprender',
+    'today.minutesShort': 'unos {count} min',
+    'today.tryPuzzle': 'Resolver un ejercicio',
+    'today.chooseOpenings': 'Crea tu repertorio',
+    'exercises.skills': 'Entrenar una habilidad',
+    'exercises.challenges': 'Superar un desafío',
+    'train.mainLine': 'Variante principal',
+    'settings.exportFailed': 'No se pudo exportar tu progreso. Vuelve a intentarlo.',
+    'settings.importFailed': 'No se pudo importar el archivo. Comprueba que sea una copia de seguridad de XChess.',
+    'library.noResults': 'No hay aperturas que coincidan. Cambia la búsqueda o los filtros.',
+    'library.emptyRepertoire': 'Añade una apertura desde su ficha para crear tu repertorio.',
+    ...boardMessages.es,
+    ...coachMessages.es,
+    ...musicMessages.es,
     ...progressMessages.es,
     ...trainingMessages.es,
     ...gameMessages.es,
@@ -426,7 +479,7 @@ export const messages = {
     'session.finishedPerfect': 'Línea sin errores ({opening}). {verdict}{gain}', 'session.finish': 'Terminar sesión',
     'session.lineOf': 'Línea {index} de {total}', 'session.openingDifficulty': 'Dificultad de la apertura {difficulty}/5',
     'session.newLine': 'Línea nueva', 'session.reviewLine': 'Repaso',
-    'session.completeTitle': 'Sesión terminada', 'session.completeSummary': '{lines} líneas, {flawless} sin errores, +{xp} XP.',
+    'session.completeTitle': 'Sesión terminada', 'session.completeSummary': 'Variantes jugadas {lines} · Sin errores {flawless} · +{xp} XP',
     'session.challenges': 'Ver mis desafíos', 'session.rush': 'Jugar Rush',
     'mode.mate1-series': 'Mate en 1 · Racha', 'mode.mate1-series.summary': 'Continúa hasta 3 errores.',
     'mode.mate1-timed': 'Mate en 1 · 3 minutos', 'mode.mate1-timed.summary': 'Encuentra tantos mates como puedas antes de que termine el tiempo.',
@@ -439,7 +492,7 @@ export const messages = {
     'exercises.restartRun': 'Empezar de nuevo', 'exercises.seriesEnd': 'Racha terminada tras 3 errores: {solved} resueltos.',
     'exercises.timeEnd': 'Tiempo agotado: {solved} resueltos en 3 minutos.',
     'exercises.bestRecord': 'Récord: {count}',
-    'theme.fork': 'Tenedor', 'theme.pin': 'Clavada', 'theme.hangingPiece': 'Pieza indefensa', 'theme.defensiveMove': 'Defensa',
+    'theme.fork': 'Ataque doble', 'theme.pin': 'Clavada', 'theme.hangingPiece': 'Pieza indefensa', 'theme.defensiveMove': 'Defensa',
     'theme.mateIn1': 'Mate en 1', 'theme.mateIn2': 'Mate en 2', 'theme.promotion': 'Promoción',
     'theme.endgame': 'Final', 'theme.skewer': 'Enfilada', 'theme.discoveredAttack': 'Ataque descubierto',
     'themeHint.fork': '¿Puede una pieza atacar 2 objetivos?', 'themeHint.pin': '¿Hay una pieza atada a otra más valiosa?',
@@ -459,6 +512,7 @@ export const messages = {
     'settings.export': 'Exportar', 'settings.import': 'Importar', 'settings.reset': 'Borrar todo el progreso',
     'settings.resetConfirm': '¿Borrar todo tu progreso en todas las aperturas?',
     'settings.version': 'Versión', 'settings.sourceCode': 'Código fuente',
+    'settings.supportPage': 'Ayuda', 'settings.privacyPolicy': 'Política de privacidad',
     'band.debutant': 'Principiante', 'band.intermediaire': 'Intermedio', 'band.club': 'Club', 'band.avance': 'Avanzado', 'band.expert': 'Experto',
     'goal.30': 'Relajado', 'goal.60': 'Habitual', 'goal.120': 'Concentrado', 'goal.200': 'Intenso',
     'exercises.title': 'Ejercicios', 'exercises.loading': 'Cargando ejercicios…', 'exercises.retry': 'Reintentar',
@@ -467,10 +521,10 @@ export const messages = {
     'exercises.played': '{count} posiciones diferentes ya jugadas',
     'mode.mixed': 'Práctica mixta', 'mode.mixed.summary': 'Descubre los patrones que debes practicar hoy.',
     'mode.attack': 'Ataque', 'mode.attack.summary': 'Mates y ataques al rey.',
-    'mode.tactics': 'Táctica', 'mode.tactics.summary': 'Tenedores, clavadas y ganancias de material.',
+    'mode.tactics': 'Táctica', 'mode.tactics.summary': 'Ataques dobles, clavadas y ganancias de material.',
     'mode.defense': 'Defensa', 'mode.defense.summary': 'Encuentra la jugada que salva la posición.',
     'mode.technique': 'Técnica', 'mode.technique.summary': 'Finales, promociones y precisión.',
-    'mode.mate1': 'Mate en 1', 'mode.mate1.summary': 'Encuentra el mate o comprueba que no existe.',
+    'mode.mate1': 'Mate en 1', 'mode.mate1.summary': 'Encuentra la jugada que da jaque mate.',
     'exercises.score': '{solved} resueltos · {played} jugados', 'exercises.bestMove': 'Encuentra la mejor jugada',
     'exercises.yourTurn': 'Te toca.', 'exercises.noMate': 'No hay mate', 'exercises.next': 'Siguiente posición', 'exercises.autoNext': 'Pasar automáticamente a la siguiente posición',
     'arena.title': 'Arena libre', 'arena.summary': 'Juega con ambos bandos para explorar una apertura a tu ritmo.',
@@ -479,7 +533,7 @@ export const messages = {
     'arena.undo': 'Deshacer jugada', 'arena.reset': 'Nueva partida', 'arena.flip': 'Girar tablero', 'arena.moves': 'Jugadas', 'arena.noMoves': 'Aún no hay jugadas.',
     'arena.fen': 'Cargar una posición (FEN)', 'arena.fenHelp': 'Pega una posición FEN para continuar desde ella.', 'arena.load': 'Cargar posición', 'arena.invalidFen': 'Posición FEN no válida.',
     'exercises.source': 'Fuente: Lichess, conjunto CC0.', 'exercises.difficulty': 'Dificultad {rating}',
-    'exercises.mateQuestion': '¿Hay mate en 1?', 'exercises.moveQuestion': '¿Cuál es tu mejor jugada?',
+    'exercises.mateQuestion': 'Da jaque mate en 1 jugada.', 'exercises.moveQuestion': '¿Cuál es tu mejor jugada?',
     'exercises.none': 'No hay posiciones disponibles para este modo.', 'exercises.saveError': 'El guardado no está disponible temporalmente. Reinténtalo desde el aviso.',
     'exercises.tryAgain': 'Esa jugada no resuelve la posición. Inténtalo de nuevo.',
     'exercises.oneMore': 'Un intento más. Observa las amenazas del rival.',
@@ -524,9 +578,9 @@ export const messages = {
     'today.starterDesc': 'Una apertura con blancas y 2 respuestas con negras, elegidas para tu nivel. Podrás cambiarlas después.',
     'today.starterRating': 'Ajustar mi Elo',
     'today.starterStart': 'Empezar con estas {count} aperturas', 'today.session': 'Tu sesión',
-    'today.sessionCounts': '{due} para repasar · {fresh} nuevas · unos {minutes} min', 'today.start': 'Empezar',
+    'today.sessionCounts': '{due} para repasar · {fresh} nuevas · unos {minutes} min', 'today.start': 'Empezar la sesión',
     'today.repertoireReady': 'Repertorio al día',
-    'today.repertoireReadyDesc': 'No tienes repasos pendientes y ya has empezado las líneas nuevas de hoy. Te esperan Rush y el descubrimiento diario.',
+    'today.repertoireReadyDesc': 'Has terminado las líneas previstas para hoy.',
     'today.myRepertoire': 'Mi repertorio', 'today.quests': 'Desafíos diarios',
     'today.chestOpen': 'Cofre abierto', 'today.chestReady': 'Abrir el cofre',
     'today.surprise': 'Recompensa sorpresa', 'today.chestLocked': 'Cofre cerrado',
@@ -596,6 +650,7 @@ export const messages = {
     'insights.action': 'Practicar esta dificultad', 'insights.details': 'Estadísticas detalladas de aperturas',
     'insights.start': 'Practicar una posición',
     'insights.method': 'Primer intento por posición o variante cada día. Un acierto no tiene errores ni pistas.',
+    ...visualMessages.es,
   },
 }
 

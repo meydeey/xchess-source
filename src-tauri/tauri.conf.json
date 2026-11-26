@@ -1,6 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "XChess",
+  "version": "1.0.0",
   "identifier": "com.meydeey.theorie",
   "build": {
     "frontendDist": "../dist",
@@ -16,8 +17,10 @@
   },
   "bundle": {
     "active": true,
+    "category": "BoardGame",
     "targets": ["app"],
-    "iOS": { "minimumSystemVersion": "16.0", "infoPlist": "Info.ios.plist" },
+    "iOS": { "minimumSystemVersion": "16.4", "infoPlist": "Info.ios.plist" },
+    "macOS": { "files": { "Resources/PrivacyInfo.xcprivacy": "PrivacyInfo.xcprivacy" } },
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

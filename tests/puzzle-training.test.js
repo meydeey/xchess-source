@@ -46,6 +46,25 @@ describe('adaptive puzzle training', () => {
     expect(choice?.id).toBe('miss')
   })
 
+  test('the mate-in-one theme skips mislabeled positions and failed-position retries without a mate', () => {
+    const mate = {
+      ...puzzle('mate', 'attack', 900), themes: ['mateIn1'],
+      fen: '3q1k2/pp6/2p1B1Qp/2Pp4/3b4/7P/P4PP1/6K1 b - - 1 32', moves: ['d8e7', 'g6g8'],
+    }
+    const miss = {
+      ...puzzle('miss', 'attack', 899), themes: ['mateIn1'],
+      fen: '8/p6R/kp6/8/1PK2n2/7p/7r/8 b - - 5 45', moves: ['h2e2', 'b4b5', 'a6a5', 'h7a7'],
+    }
+    const attempts = [event('miss', 'attack', 899, 'failed', 3, 1),
+      event('one', 'attack', 900, 'solved', 0, 2),
+      event('two', 'defense', 900, 'solved', 0, 3),
+      event('three', 'technique', 900, 'solved', 0, 4)]
+    expect(chooseTrainingPuzzle([miss, mate], { theme: 'mateIn1', attempts, turn: 3, random: () => 0 })?.id).toBe('mate')
+    expect(chooseTrainingPuzzle([miss, mate], { theme: 'mateIn1', attempts: [event('mate', 'attack', 900, 'solved')], random: () => 0 })?.id).toBe('mate')
+    const mateInTwo = { ...miss, id: 'mate-in-two', themes: ['mateIn2'], control: true }
+    expect(chooseTrainingPuzzle([mate, mateInTwo], { theme: 'mateIn2', random: () => 0 })?.id).toBe('mate-in-two')
+  })
+
   test('guidance follows training skill after calibration and returns if skill falls', () => {
     expect(needsPuzzleGuidance({ count: 0 }, 400)).toBe(true)
     expect(needsPuzzleGuidance({ count: 0 }, 1600)).toBe(false)

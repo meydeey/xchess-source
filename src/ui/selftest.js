@@ -33,11 +33,12 @@ const SELFTEST_OPENING_ID = 'french-defense'
 // set() a rendu : true seulement si le fichier a été écrit sur disque (false si theorie.json est en
 // lecture seule), la valeur restant lisible en mémoire dans les 2 cas.
 async function testStoreRoundtrip() {
-  const value = { at: Date.now(), n: Math.random() }
+  // JSON numbers can round slightly in Rust, so use a string to detect stale reads.
+  const value = { at: Date.now(), nonce: Math.random().toString(36).slice(2) }
   const written = await platform.store.set(ROUNDTRIP_KEY, value)
   const read = await platform.store.get(ROUNDTRIP_KEY)
   await platform.store.set(ROUNDTRIP_KEY, null)
-  return { ok: !!read && read.at === value.at && read.n === value.n, written }
+  return { ok: read?.at === value.at && read.nonce === value.nonce, written }
 }
 
 // Persistance entre 2 lancements : le 1er lancement ne trouve rien et écrit selftest:persist : le

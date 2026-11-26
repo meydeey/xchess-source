@@ -1,0 +1,213 @@
+.progress-page.progress-overview-page {
+  gap: clamp(16px, 2.5vw, 26px);
+}
+
+.progress-page-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.progress-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 18px);
+  margin: 0;
+}
+
+.progress-metric {
+  min-width: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: clamp(12px, 2.7vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.progress-metric dt {
+  color: var(--muted);
+  font-size: clamp(12px, 1.8vw, 15px);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.progress-metric dt::first-letter { text-transform: uppercase; }
+
+.progress-metric dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--f-display, inherit);
+  font-size: clamp(25px, 4vw, 46px);
+  line-height: 1;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.progress-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  align-items: start;
+  gap: clamp(12px, 2vw, 22px);
+}
+
+.progress-panel,
+.progress-shortcuts {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.progress-panel { padding: clamp(14px, 2.6vw, 26px); }
+
+.progress-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--ground);
+}
+
+.progress-tabs a {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 7px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.progress-tabs a[aria-current] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.progress-tab-content { margin-top: clamp(16px, 2.4vw, 24px); }
+
+.progress-empty,
+.progress-review {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.progress-empty h2,
+.progress-review h2 {
+  margin: 0;
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1.25;
+}
+
+.progress-empty p {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+.progress-empty .cta,
+.progress-review .cta { min-height: 44px; margin-top: 4px; }
+
+.progress-entries {
+  display: grid;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progress-entries li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  min-height: 48px;
+}
+
+.progress-entries li:first-child { padding-top: 4px; }
+
+.progress-entries a {
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 650;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.progress-entries small,
+.progress-entries time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+.progress-shortcuts {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+}
+
+.progress-shortcuts a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: var(--raise);
+  color: var(--ink);
+  font-weight: 650;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.progress-shortcuts a:hover,
+.progress-tabs a:hover { background: var(--accent-soft); color: var(--accent); }
+.progress-shortcuts a span { color: var(--accent); font-size: 1.3em; }
+
+.progress-detail-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.progress-detail-heading h1 { margin: 0; font-size: clamp(20px, 3vw, 30px); }
+
+.progress-return {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 650;
+  color: var(--accent);
+}
+
+.progress-return span { font-size: 1.4em; }
+
+@media (max-width: 720px) {
+  .progress-layout { grid-template-columns: minmax(0, 1fr); }
+  .progress-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 365px) {
+  .progress-metric { padding-inline: 8px; }
+  .progress-shortcuts { grid-template-columns: minmax(0, 1fr); }
+}

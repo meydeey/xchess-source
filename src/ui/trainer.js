@@ -1,4 +1,3 @@
-import { factsForMove } from '../core/companion.js'
 // Écran d'entraînement : généralisation de l'entraîneur Alien Gambit à n'importe quelle ouverture et
 // aux 2 camps. Exporte 2 briques réutilisées par src/ui/session.js (mountLineDrill, le plateau et la
 // feuille de partie pour UNE ligne) et le point d'entrée d'écran `mount` (les 3 onglets historiques :
@@ -7,7 +6,7 @@ import { Chessground } from 'chessground'
 import { Chess } from 'chess.js'
 import 'chessground/assets/chessground.base.css'
 import 'chessground/assets/chessground.cburnett.css'
-import { moveLabel, lineEnding } from '../core/lines.js'
+import { moveLabel, lineEnding, MAIN_LINE_LABEL } from '../core/lines.js'
 import { statusOf, recordRun, pickNext as pickNextLine } from '../core/srs.js'
 import {
   knownPrefixLength,
@@ -114,9 +113,9 @@ export async function getExplanations(id) {
 // posant un moteur factice via window.__theorieSetEngine(engine). Ce crochet ne s'active jamais de
 // lui-même : sans appel explicite, engineFor() reste null et le bouton reste caché en web.
 function engineFor() {
-  return platform.engine || window.__theorieTestEngine || null
+  return platform.engine || (import.meta.env.VITE_XCHESS_STORE === '1' ? null : window.__theorieTestEngine) || null
 }
-if (!window.__theorieSetEngine) {
+if (import.meta.env.VITE_XCHESS_STORE !== '1' && !window.__theorieSetEngine) {
   window.__theorieSetEngine = (engine) => { window.__theorieTestEngine = engine }
 }
 
@@ -316,8 +315,8 @@ export function mountLineDrill(host, { sideEn, onFinish, onMoveResult = () => {}
   }
   function render() {
     const { line, ply } = st
-    titleEl.textContent = line.name
-    lineNameEl.textContent = line.group
+    titleEl.textContent = line.name === MAIN_LINE_LABEL ? t('train.mainLine') : line.name
+    lineNameEl.textContent = line.group === MAIN_LINE_LABEL ? t('train.mainLine') : line.group
     stepEl.textContent = t('train.step', { current: Math.min(Math.floor(ply / 2) + 1, Math.ceil(line.moves.length / 2)), total: Math.ceil(line.moves.length / 2) })
     renderSheet()
     const mine = isMyPly(ply, st.side) && ply < line.moves.length
@@ -606,7 +605,7 @@ export function mountLineDrill(host, { sideEn, onFinish, onMoveResult = () => {}
 // onPlay(fen) : "Continuer contre Stockfish" depuis la position explorée (n'importe quel nœud de
 // l'arbre, section 6). Le bouton est câblé même sans moteur ; sa visibilité, décidée par l'appelant
 // (trainer.js, via setPlayVisible), suit platform.engine à chaque ouverture de l'onglet Explorer.
-function mountExplorer(host, { tree, sideEn, onDrill, onPlay, onCompanion = () => {}, t = french }) {
+function mountExplorer(host, { tree, sideEn, onDrill, onPlay, t = french }) {
   host.innerHTML = `
     <section class="board-col">
       <div class="board-frame"><div class="cg-wrap board"></div></div>
@@ -634,7 +633,6 @@ function mountExplorer(host, { tree, sideEn, onDrill, onPlay, onCompanion = () =
   const lineNameEl = host.querySelector('.line-name')
   let path = []
   let badMoveTimer = null
-  let companionDepth = 0, companionEpoch = 0
 
   function nodesAt(p) {
     let nodes = tree
@@ -667,10 +665,6 @@ function mountExplorer(host, { tree, sideEn, onDrill, onPlay, onCompanion = () =
       evals.push(n.e ?? null)
       nodes = n.c || []
     }
-    if (path.length < companionDepth) onCompanion({ type: 'idle', scope: `explorer:${++companionEpoch}` })
-    const companionMove = chess.history({ verbose: true }).at(-1)
-    if (path.length > companionDepth && companionMove?.color === (sideEn === 'white' ? 'w' : 'b')) onCompanion(factsForMove(chess, companionMove, { scope: `explorer:${companionEpoch}` }))
-    companionDepth = path.length
     const shapes = nodes.map((n) => {
       const mine = isMyPly(path.length, sideEn)
       const m = new Chess(chess.fen()).move(n.m)
@@ -809,7 +803,7 @@ export async function mount(host, ctx) {
   host.innerHTML = `
     <header class="train-top">
       <div class="train-heading">
-        <p class="train-context">${t(`side.${opening.side}`)} · <a href="#/opening/${opening.id}">${escapeHtml(openingName)}</a></p>
+        <h1 class="train-context">${t(`side.${opening.side}`)} · <a href="#/opening/${opening.id}">${escapeHtml(openingName)}</a></h1>
       </div>
       <div class="tabs" role="tablist" aria-label="${t('train.modes')}">
         <button type="button" role="tab" data-tab="train" aria-selected="true">${t('train.tabDrill')}</button>
@@ -830,7 +824,7 @@ export async function mount(host, ctx) {
         </div>
       </div>
     </header>
-    <main class="stage">
+    <div class="stage">
       <section class="pane" data-pane="train">
         <div class="scope" hidden><span>${t('train.branchTarget')} <b class="scope-name mono"></b></span><button type="button" class="scope-clear link">${t('train.fullOpening')}</button></div>
         <div class="drill-host"></div>
@@ -848,7 +842,7 @@ export async function mount(host, ctx) {
         <p class="variation-help">${t('train.variationHelp')}</p>
         <div class="line-groups"></div>
       </section>
-    </main>
+    </div>
   `
   const countsEl = host.querySelector('.train-progress')
   const linesCountEl = host.querySelector('.lines-count')
@@ -1023,7 +1017,6 @@ export async function mount(host, ctx) {
       elo: state.settings.elo,
       t,
       getSounds: () => state.settings.sounds,
-      onCompanion: ctx.reactCompanion,
       onOver: () => { resignBtn.disabled = true },
     })
     drillHost.querySelector('.drill-info').append(trainingActions)
@@ -1051,7 +1044,7 @@ export async function mount(host, ctx) {
       const sec = document.createElement('section')
       sec.className = 'group'
       const done = ls.filter((l) => statusOf(p, l.id) === 'mastered').length
-      sec.innerHTML = `<h3><span class="mono">${name}</span><small>${done}/${ls.length}</small></h3>`
+      sec.innerHTML = `<h3><span class="mono">${name === MAIN_LINE_LABEL ? t('train.mainLine') : name}</span><small>${done}/${ls.length}</small></h3>`
       const ul = document.createElement('ul')
       for (const l of ls) {
         const st = statusOf(p, l.id)
@@ -1059,7 +1052,7 @@ export async function mount(host, ctx) {
         const b = document.createElement('button')
         b.type = 'button'
         b.className = 'line-row'
-        b.innerHTML = `<i class="dot ${st}" aria-hidden="true"></i><span class="mono">${l.name}</span><small>${t(`status.${st}`)} · ${t('train.lineMoves', { count: Math.ceil(l.moves.length / 2) })}</small>`
+        b.innerHTML = `<i class="dot ${st}" aria-hidden="true"></i><span class="mono">${l.name === MAIN_LINE_LABEL ? t('train.mainLine') : l.name}</span><small>${t(`status.${st}`)} · ${t('train.lineMoves', { count: Math.ceil(l.moves.length / 2) })}</small>`
         b.addEventListener('click', () => { setScope(null); switchTab('train'); drill.setLine(l, { learn: learnFor(l) }) })
         li.append(b)
         ul.append(li)
@@ -1081,7 +1074,6 @@ export async function mount(host, ctx) {
         // calculée) et dessinerait ses flèches d'indice à des coordonnées NaN (erreurs console).
         void explorePane.offsetHeight
         explorer = mountExplorer(explorePane, {
-          onCompanion: ctx.reactCompanion,
           tree,
           sideEn,
           t,

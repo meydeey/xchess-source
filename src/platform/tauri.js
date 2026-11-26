@@ -4,6 +4,7 @@
 // analyse() ou bestMove() réaffirme explicitement UCI_LimitStrength, UCI_Elo et Skill Level plutôt que
 // de compter sur l'état laissé par l'appel précédent (setStrength ci-dessous).
 import { Command } from '@tauri-apps/plugin-shell'
+import { invoke } from '@tauri-apps/api/core'
 import { LazyStore } from '@tauri-apps/plugin-store'
 import { listen } from '@tauri-apps/api/event'
 import { parseBestMove, createMultiPv } from './uci.js'
@@ -309,12 +310,29 @@ function onMenu(callback) {
   }
 }
 
+let menuLocale
+function setMenuLocale(locale) {
+  if (import.meta.env.TAURI_ENV_PLATFORM !== 'darwin' || menuLocale === locale) return
+  menuLocale = locale
+  invoke('set_native_menu_locale', { locale }).catch(() => {
+    if (menuLocale === locale) menuLocale = undefined
+  })
+}
+
 // Un seul sidecar pour toute l'app : ses recherches passent par la file (engine-queue.js), sans quoi
 // les analyses parallèles d'explainTree recevaient les lignes d'une autre position.
+// An iPad can report the desktop Safari user agent. Prefer the native build target and cover
+// development bundles that run without an injected target.
+const usesEmbeddedWorker = import.meta.env.VITE_XCHESS_ENGINE === 'wasm' ||
+  import.meta.env.TAURI_ENV_PLATFORM === 'ios' ||
+  /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
 export const platform = {
   kind: 'tauri',
   store: { get, set },
   journal: createJournal(),
-  engine: queuedEngine(/iPhone|iPad|iPod/.test(navigator.userAgent) ? createEngine(createWorkerProcess()) : createEngine()),
+  engine: queuedEngine(usesEmbeddedWorker ? createEngine(createWorkerProcess()) : createEngine()),
   onMenu,
+  setMenuLocale,
 }

@@ -56,7 +56,7 @@ export async function mount(host, ctx) {
   const inRepertoire = () => state.repertoire.includes(opening.id)
 
   host.innerHTML = `
-    <p class="eyebrow"><a href="#/library">${t('library.title')}</a> · ${opening.eco ? `${opening.eco} · ` : ''}${t(`side.${opening.side}`)}${opening.family ? ` · ${t(`family.${opening.family}`)}` : ''}</p>
+    <p class="eyebrow"><a class="opening-library" href="#/library">${t('library.title')}</a> · ${opening.eco ? `${opening.eco} · ` : ''}${t(`side.${opening.side}`)}${opening.family ? ` · ${t(`family.${opening.family}`)}` : ''}</p>
     <h1>${escapeHtml(openingName)}</h1>
     <p class="thesis mono">${opening.moves.map((m, i) => `${i % 2 === 0 ? `${i / 2 + 1}.` : ''}${m}`).join(' ')}</p>
     ${game?.pickOfDay() === opening.id ? `<p class="pick-note"><span class="badge-x2 mono">XP ×2</span> ${t('opening.pick')}</p>` : ''}
@@ -77,6 +77,13 @@ export async function mount(host, ctx) {
   const generateBtn = host.querySelector('.btn-generate')
   const generateHost = host.querySelector('.generate-host')
   let activePanel = null
+  if (history.state?.fromLibrary) {
+    host.querySelector('.opening-library').addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      event.preventDefault()
+      history.back()
+    })
+  }
 
   const repertoireBtn = host.querySelector('.btn-repertoire')
   const renderRepertoireBtn = () => {

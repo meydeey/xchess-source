@@ -2,26 +2,89 @@ import { Chessground } from 'chessground'
 import { Chess } from 'chess.js'
 import 'chessground/assets/chessground.base.css'
 import 'chessground/assets/chessground.cburnett.css'
+import '../visual-exercises.css'
 import { PUZZLE_MODES, playUci, puzzleStart } from '../core/puzzles.js'
 import { chooseTrainingPuzzle, derivePuzzleTraining, needsPuzzleGuidance, trainingTarget } from '../core/puzzle-training.js'
 import { CHALLENGE_STAGES } from '../core/challenges.js'
 import * as sound from './sound.js'
-import { adventureEntry } from './adventure-shared.js'
 import { showPromotion } from './promotion.js'
 
 const THEMES = ['fork', 'pin', 'hangingPiece', 'defensiveMove', 'mateIn1', 'mateIn2', 'promotion', 'endgame', 'skewer', 'discoveredAttack']
 const EXTRA_MODES = ['mate1-series', 'mate1-timed']
-const ICON_PATHS = {
-  mixed: '<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16"/>',
-  attack: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/>',
-  tactics: '<path d="M12 20V9M12 9 5 3M12 9l7-6M4 20h16"/><circle cx="5" cy="3" r="1"/><circle cx="19" cy="3" r="1"/>',
-  defense: '<path d="M12 2 4 5v6c0 5 3 8 8 11 5-3 8-6 8-11V5zM9 12l2 2 4-4"/>',
-  technique: '<path d="M5 20h14M7 17h10M8 17l2-8h4l2 8M10 9 8 5l4-3 4 3-2 4"/>',
-  mate1: '<path d="M5 20h14M7 17h10M8 17V8h8v9M12 2v6M9 5h6"/>',
+const SKILL_MODES = ['mixed', 'attack', 'tactics', 'defense', 'technique']
+const ART = {
+  mixed: 'skill-mixed',
+  attack: 'skill-attack',
+  tactics: 'skill-tactics',
+  defense: 'skill-defense',
+  technique: 'skill-technique',
+  themes: 'skill-motifs',
+  mate1: 'advanced-series',
+  'mate1-series': 'advanced-series',
+  'mate1-timed': 'advanced-timed',
+  rush: 'advanced-rush',
+  arena: 'advanced-arena',
 }
-function icon(mode) {
-  const path = ICON_PATHS[mode.startsWith('mate1') ? 'mate1' : mode] || ICON_PATHS.tactics
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`
+const CHEVRON = '<svg class="exercise-tile-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 4 4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+function mountHub(host, { t, setActions }) {
+  function card(key, { href = `#/exercises/${key}`, title = t(`mode.${key}`), summary = t(`mode.${key}.summary`) } = {}) {
+    return `<a class="exercise-illustrated-tile" href="${href}">
+      <img class="exercise-cover" src="/art/${ART[key]}.webp" data-art="${ART[key]}" alt="" decoding="async">
+      <span class="exercise-tile-copy"><span><strong>${title}</strong><small>${summary}</small></span>${CHEVRON}</span>
+    </a>`
+  }
+  host.innerHTML = `
+    <div class="exercise-landing exercise-visual-landing">
+      <h1 class="exercise-landing-title">${t('exercises.title')}</h1>
+      <section class="exercise-warmup" aria-labelledby="exercise-warmup">
+        <div class="exercise-warmup-copy">
+          <span class="exercise-warmup-label">${t('exercises.warmup')}</span>
+          <h2 id="exercise-warmup">${t('mode.mate1')}</h2>
+          <p>${t('mode.mate1.summary')}</p>
+          <a class="cta primary" href="#/exercises/mate1">${t('exercises.playOne')}</a>
+        </div>
+        <span class="exercise-warmup-photo"><img class="exercise-warmup-art" src="/art/${ART.mate1}.webp" alt="" decoding="async"></span>
+      </section>
+      <section aria-labelledby="exercise-skills">
+        <h2 id="exercise-skills">${t('exercises.skills')}</h2>
+        <div class="exercise-illustrated-grid">
+          ${SKILL_MODES.map((key) => card(key)).join('')}
+          ${card('themes', { title: t('exercises.patterns'), summary: t('exercises.patternsSummary') })}
+        </div>
+      </section>
+      <section aria-labelledby="exercise-challenges">
+        <h2 id="exercise-challenges">${t('exercises.advanced')}</h2>
+        <div class="exercise-illustrated-grid exercise-advanced-grid">
+          ${EXTRA_MODES.map((key) => card(key)).join('')}
+          ${card('rush', { href: '#/rush', title: 'XChess Rush', summary: t('exercises.rushSummary') })}
+          ${card('arena', { href: '#/arena', title: t('arena.title'), summary: t('arena.summary') })}
+        </div>
+      </section>
+      <p class="exercise-credit">${t('exercises.source')}</p>
+    </div>
+  `
+  setActions({})
+  return { destroy() {} }
+}
+
+function mountThemes(host, { t, setActions }) {
+  host.innerHTML = `
+    <div class="exercise-motifs">
+      <header class="exercise-head exercise-toolbar">
+        <div class="exercise-identity">
+          <a class="exercise-back" href="#/exercises" aria-label="${t('exercises.back')}"><span aria-hidden="true">←</span></a>
+          <h1 class="exercise-title">${t('exercises.patterns')}</h1>
+        </div>
+      </header>
+      <p class="exercise-motifs-intro">${t('exercises.patternsSummary')}</p>
+      <div class="exercise-motifs-grid">
+        ${THEMES.map((key) => `<a href="#/exercises/theme/${key}"><span>${t(`theme.${key}`)}</span>${CHEVRON}</a>`).join('')}
+      </div>
+    </div>
+  `
+  setActions({})
+  return { destroy() {} }
 }
 
 function primaryTheme(puzzle) {
@@ -77,7 +140,9 @@ export async function mount(host, ctx) {
   const theme = ctx.params?.theme
   const challengeStage = mode === 'mixed' ? CHALLENGE_STAGES.find((stage) => stage.id === theme) : null
   const { t } = ctx
-  if (mode && !PUZZLE_MODES.includes(mode) && !EXTRA_MODES.includes(mode) && !(mode === 'theme' && THEMES.includes(theme))) {
+  if (!mode) return mountHub(host, ctx)
+  if (mode === 'themes' && !theme) return mountThemes(host, ctx)
+  if (!PUZZLE_MODES.includes(mode) && !EXTRA_MODES.includes(mode) && !(mode === 'theme' && THEMES.includes(theme))) {
     host.innerHTML = `<p class="empty">${t('exercises.unknown')} <a href="#/exercises">${t('exercises.back')}</a></p>`
     ctx.setActions({})
     return { destroy() {} }
@@ -85,43 +150,34 @@ export async function mount(host, ctx) {
   host.innerHTML = `<p class="empty">${t('exercises.loading')}</p>`
   const attempts = await ctx.getPuzzleAttempts()
   const training = derivePuzzleTraining(attempts)
-  const includeAdvanced = !mode || mode === 'theme' || !!challengeStage || (!mode.startsWith('mate1') && Object.values(training).some((category) => trainingTarget(category, ctx.state.settings.elo, ctx.state.settings.eloSource) > 1650))
+  const includeAdvanced = mode === 'theme' || !!challengeStage || (!mode.startsWith('mate1') && Object.values(training).some((category) => trainingTarget(category, ctx.state.settings.elo, ctx.state.settings.eloSource) > 1650))
   let puzzlesPack
   try { puzzlesPack = await loadPack(includeAdvanced) } catch (error) {
-    host.innerHTML = `<p class="empty"><span></span> <a href="#/exercises">${t('exercises.retry')}</a></p>`
-    host.querySelector('span').textContent = `${t(error.message.startsWith('exercises.') ? error.message : 'exercises.loadError')}.`
-    ctx.setActions({})
-    return { destroy() {} }
-  }
-  if (!mode) {
     host.innerHTML = `
-      <p class="eyebrow"><a href="#/">${t('today')}</a></p>
       <h1>${t('exercises.title')}</h1>
-      <p class="thesis">${t('exercises.thesis')}</p>
-      ${adventureEntry(ctx, ctx.getAdventure())}
-      <a class="exercise-card arena-entry" href="#/arena"><span class="exercise-card-symbol" aria-hidden="true">♔</span><span><b>${t('arena.title')}</b><small>${t('arena.summary')}</small></span><span class="exercise-card-arrow" aria-hidden="true">↗</span></a>
-      <div class="exercise-hub">${[...PUZZLE_MODES, ...EXTRA_MODES].map((key) => `
-        <a class="exercise-card" href="#/exercises/${key}">
-          <span class="exercise-card-symbol" aria-hidden="true">${icon(key)}</span>
-          <span><b>${t(`mode.${key}`)}</b><small>${t(`mode.${key}.summary`)}</small></span>
-          <span class="exercise-card-arrow" aria-hidden="true">↗</span>
-        </a>`).join('')}</div>
-      <section class="exercise-themes"><h2>${t('exercises.byTheme')}</h2><div>${THEMES.map((key) => `<a href="#/exercises/theme/${key}">${t(`theme.${key}`)} · ${puzzlesPack.puzzles.filter((p) => p.themes.includes(key)).length.toLocaleString(ctx.state.settings.locale)}</a>`).join('')}</div></section>
-      <p class="exercise-training">${t('exercises.trainingStatus', { count: Object.values(training).reduce((sum, item) => sum + item.count, 0) })} · ${t('exercises.played', { count: new Set(attempts.map((a) => a.ref)).size })}</p>
-      <p class="exercise-credit">${t('exercises.credit', { count: puzzlesPack.total.toLocaleString(ctx.state.settings.locale) })}</p>
+      <p class="empty" role="status"></p>
+      <div class="actions">
+        <button type="button" class="cta primary">${t('exercises.retry')}</button>
+        <a class="cta" href="#/exercises">${t('exercises.back')}</a>
+      </div>
     `
+    host.querySelector('[role=status]').textContent = t(error.message.startsWith('exercises.') ? error.message : 'exercises.loadError')
+    host.querySelector('button').addEventListener('click', () => ctx.navigate(location.hash))
     ctx.setActions({})
     return { destroy() {} }
   }
   const { state, game, savePuzzleAttempt, setActions } = ctx
-  const selectionMode = mode.startsWith('mate1') ? 'mate1' : mode === 'theme' ? 'mixed' : mode
+  const selectionMode = mode.startsWith('mate1') || theme === 'mateIn1' ? 'mate1' : mode === 'theme' ? 'mixed' : mode
+  const modeArt = ART[mode === 'theme' ? (selectionMode === 'mate1' ? 'mate1' : 'themes') : mode]
+  const backLink = mode === 'theme' ? '#/exercises/themes' : '#/exercises'
+  const backLabel = t(mode === 'theme' ? 'exercises.patterns' : 'exercises.back')
   const challengePool = challengeStage ? puzzlesPack.puzzles.filter((puzzle) => puzzle.rating >= challengeStage.min && puzzle.rating <= challengeStage.max) : puzzlesPack.puzzles
   let guided = false
   host.classList.add('board-screen', 'exercise-screen')
   host.innerHTML = `
-    <div class="exercise-page">
+    <div class="exercise-page exercise-visual-run">
       <header class="exercise-head exercise-toolbar">
-        <div class="exercise-identity"><a class="exercise-back" href="#/exercises" aria-label="${t('exercises.back')}" title="${t('exercises.back')}"><span aria-hidden="true">←</span></a><h1 class="exercise-title">${mode === 'theme' ? t(`theme.${theme}`) : challengeStage ? `${t(`mode.${mode}`)} · ${t(`path.stage.${challengeStage.id}`)}` : t(`mode.${mode}`)}</h1></div>
+        <div class="exercise-identity"><a class="exercise-back" href="${backLink}" aria-label="${backLabel}" title="${backLabel}"><span aria-hidden="true">←</span></a><h1 class="exercise-title">${mode === 'theme' ? t(`theme.${theme}`) : challengeStage ? `${t(`mode.${mode}`)} · ${t(`path.stage.${challengeStage.id}`)}` : t(`mode.${mode}`)}</h1></div>
         <div class="exercise-run-meta"><span class="exercise-record" ${EXTRA_MODES.includes(mode) ? '' : 'hidden'}>${t('exercises.bestRecord', { count: state.settings[mode === 'mate1-series' ? 'mate1SeriesBest' : 'mate1TimedBest'] || 0 })}</span><span class="exercise-timer mono" ${mode === 'mate1-timed' ? '' : 'hidden'}>3:00</span><p class="exercise-score mono" aria-live="polite">${t('exercises.score', { solved: 0, played: 0 })}</p></div>
       </header>
       <div class="drill-host exercise-stage">
@@ -129,13 +185,13 @@ export async function mount(host, ctx) {
           <div class="board-frame"><div class="cg-wrap board"></div><div class="promotion-choices" role="dialog" aria-modal="true" hidden aria-label="${t('exercises.promotion')}"></div></div>
         </section>
         <section class="drill-info exercise-info">
+          <img class="exercise-session-art" src="/art/${modeArt}.webp" data-art="${modeArt}" alt="" decoding="async">
           <p class="exercise-rating exercise-detail"></p>
           <h2 class="exercise-prompt"></h2>
           <p class="feedback" data-tone="neutral" role="status">${t('exercises.yourTurn')}</p>
           <div class="exercise-explanation" hidden></div>
           <div class="actions exercise-actions">
             <button type="button" class="btn-hint">${t('exercises.hint')}</button>
-            <button type="button" class="btn-no-mate" ${selectionMode === 'mate1' ? '' : 'hidden'}>${t('exercises.noMate')}</button>
             <button type="button" class="btn-next primary" hidden>${t('exercises.next')}</button>
           </div>
           <label class="exercise-auto-next"><input type="checkbox" ${state.settings.autoNextPuzzle ? 'checked' : ''}> ${t('exercises.autoNext')}</label>
@@ -152,7 +208,6 @@ export async function mount(host, ctx) {
   const scoreEl = host.querySelector('.exercise-score')
   const recordEl = host.querySelector('.exercise-record')
   const timerEl = host.querySelector('.exercise-timer')
-  const noMateEl = host.querySelector('.btn-no-mate')
   const hintEl = host.querySelector('.btn-hint')
   const explanationEl = host.querySelector('.exercise-explanation')
   const nextEl = host.querySelector('.btn-next')
@@ -177,6 +232,10 @@ export async function mount(host, ctx) {
     feedbackEl.dataset.tone = tone
     feedbackEl.textContent = text
   }
+  function currentMotif() {
+    if (selectionMode === 'mate1') return 'mateIn1'
+    return mode === 'theme' ? theme : primaryTheme(st.puzzle)
+  }
   function boardState(lastMove) {
     cg.set({
       fen: st.chess.fen(), turnColor: st.chess.turn() === 'w' ? 'white' : 'black',
@@ -191,7 +250,6 @@ export async function mount(host, ctx) {
     clearTimeout(st.timer)
     clearInterval(st.clock)
     boardState()
-    noMateEl.hidden = true
     hintEl.hidden = true
     nextEl.hidden = false
     nextEl.textContent = t('exercises.restartRun')
@@ -249,7 +307,6 @@ export async function mount(host, ctx) {
     explanationEl.hidden = true
     hintEl.hidden = false
     nextEl.hidden = true
-    noMateEl.hidden = selectionMode !== 'mate1'
     st.orientation = puzzleStart(st.puzzle).side
     cg.set({ orientation: st.orientation })
     boardState([last.from, last.to])
@@ -268,14 +325,13 @@ export async function mount(host, ctx) {
     st.played++
     if (solved) st.solved++
     boardState()
-    noMateEl.hidden = true
     hintEl.hidden = true
     nextEl.hidden = false
     promotionEl.hidden = true
     scoreEl.textContent = t('exercises.score', { solved: st.solved, played: st.played })
     feedback(solved ? 'good' : 'bad', message)
-    const motif = theme || primaryTheme(st.puzzle)
-    const solution = st.puzzle.control ? t('exercises.noMateReason') : solutionLine(st.puzzle)
+    const motif = currentMotif()
+    const solution = solved && selectionMode === 'mate1' ? st.chess.history().at(-1) : solutionLine(st.puzzle)
     explanationEl.textContent = t('exercises.explanation', { motif: motif ? t(`theme.${motif}`) : t(`mode.${st.puzzle.cat}`), solution })
     explanationEl.hidden = false
     const result = solved ? 'solved' : 'failed'
@@ -312,7 +368,7 @@ export async function mount(host, ctx) {
       cg.setAutoShapes([{ orig: expected.slice(0, 2), dest: expected.slice(2, 4), brush: 'green' }])
       finish(false, t('exercises.reveal'))
     } else {
-      const motif = primaryTheme(st.puzzle)
+      const motif = currentMotif()
       feedback('bad', guided && st.errors === 1 && motif ? t('exercises.guidedRetry', { hint: t(`themeHint.${motif}`) }) : t(st.errors === 1 ? 'exercises.tryAgain' : 'exercises.oneMore'))
     }
   }
@@ -322,8 +378,9 @@ export async function mount(host, ctx) {
     if (!move) { boardState(); return }
     const uci = move.from + move.to + (move.promotion || '')
     const expected = st.puzzle.moves[st.index]
-    if (selectionMode === 'mate1' && !st.puzzle.control && st.chess.isCheckmate()) {
-      finish(true, t(st.errors === 0 ? 'exercises.mate' : 'exercises.mateHelp', { move: move.san }))
+    if (selectionMode === 'mate1') {
+      if (st.chess.isCheckmate()) finish(true, t(st.errors === 0 ? 'exercises.mate' : 'exercises.mateHelp', { move: move.san }))
+      else mistake()
       return
     }
     if (uci !== expected) { mistake(); return }
@@ -373,21 +430,8 @@ export async function mount(host, ctx) {
   hintEl.addEventListener('click', () => {
     if (st.complete || st.busy) return
     st.hints++
-    const motif = primaryTheme(st.puzzle)
+    const motif = currentMotif()
     feedback('neutral', motif ? t('exercises.hintText', { hint: t(`themeHint.${motif}`) }) : t('exercises.generalHint'))
-  })
-  noMateEl.addEventListener('click', () => {
-    if (st.complete || st.busy) return
-    if (st.puzzle.control) finish(true, t(st.errors === 0 ? 'exercises.noMateGood' : 'exercises.noMateHelp'))
-    else {
-      st.errors++
-      const expected = st.puzzle.moves[st.index]
-      feedback('bad', t('exercises.mateExists'))
-      if (st.errors >= 3) {
-        cg.setAutoShapes([{ orig: expected.slice(0, 2), dest: expected.slice(2, 4), brush: 'green' }])
-        finish(false, t('exercises.mateReveal'))
-      }
-    }
   })
   nextEl.addEventListener('click', next)
   autoNextEl.addEventListener('change', () => ctx.saveSettings({ autoNextPuzzle: autoNextEl.checked }))

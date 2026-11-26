@@ -336,6 +336,7 @@ export function renderChip(el, g, locale = 'fr') {
   const goalPct = Math.min(100, Math.round((g.today.xp / g.today.goal) * 100))
   el.innerHTML = `
     <span class="chip-level">${t(locale, 'header.level', { level: g.level.level })}</span>
+    <span class="chip-xp mono" aria-hidden="true">${g.level.into} / ${g.level.span} XP</span>
     <progress class="chip-bar" value="${g.level.into}" max="${g.level.span}" aria-hidden="true"></progress>
     <span class="chip-streak${g.streak.todayActive ? ' on' : ''}" title="${t(locale, 'header.streak', { days: g.streak.current })}">${flameSvg()}<b class="mono">${g.streak.current}</b></span>
     <span class="chip-goal${g.today.goalMet ? ' met' : ''}" title="${t(locale, 'header.goal', { xp: g.today.xp, goal: g.today.goal })}" style="--p:${goalPct}">${g.today.goalMet ? '' : `<b class="mono">${goalPct}</b>`}</span>

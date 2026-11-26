@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "stockfish",
+  "description": "Access to the bundled Stockfish sidecar on desktop",
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [{ "name": "binaries/stockfish", "sidecar": true }]
+    },
+    "shell:allow-stdin-write",
+    "shell:allow-kill"
+  ]
+}

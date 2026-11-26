@@ -30,18 +30,33 @@ export function eligibleMateControl(puzzle) {
   return puzzle.themes.includes('mateIn2') && mateMoves(puzzleStart(puzzle).fen).length === 0
 }
 
-export function selectPuzzle(puzzles, { mode = 'mixed', target = 900, recent = [], turn = 0, random = Math.random } = {}) {
+function hasRecordedMateInOne(puzzle) {
+  try {
+    const chess = new Chess(puzzle.fen)
+    return Boolean(playUci(chess, puzzle.moves?.[0]) && playUci(chess, puzzle.moves?.[1]) && chess.isCheckmate())
+  } catch { return false }
+}
+
+export function selectPuzzle(puzzles, { mode = 'mixed', target = 900, recent = [], random = Math.random } = {}) {
   if (!PUZZLE_MODES.includes(mode)) throw new Error('Mode d’exercice inconnu')
-  const wantControl = mode === 'mate1' && turn % 5 === 4
   const matches = puzzles.filter((puzzle) => {
-    if (mode === 'mate1') return wantControl ? puzzle.control === true : puzzle.themes.includes('mateIn1')
+    if (mode === 'mate1') return !puzzle.control && puzzle.themes.includes('mateIn1')
     return mode === 'mixed' || puzzle.cat === mode
   })
   if (!matches.length) return null
   const recentIds = new Set(recent)
-  const fresh = matches.filter((p) => !recentIds.has(p.id))
-  const pool = fresh.length ? fresh : matches
-  const byRating = [...pool].sort((a, b) => Math.abs(a.rating - target) - Math.abs(b.rating - target) || a.id.localeCompare(b.id))
-  const window = byRating.slice(0, Math.min(byRating.length, Math.max(120, Math.ceil(byRating.length / 3))))
-  return window[Math.min(window.length - 1, Math.floor(random() * window.length))]
+
+  function pick(pool) {
+    if (!pool.length) return null
+    pool.sort((a, b) => Math.abs(a.rating - target) - Math.abs(b.rating - target) || a.id.localeCompare(b.id))
+    const size = Math.min(pool.length, Math.max(120, Math.ceil(pool.length / 3)))
+    const index = Math.min(size - 1, Math.floor(random() * size))
+    if (mode !== 'mate1') return pool[index]
+
+    // Validate the chosen position, only scanning farther if the recorded move fails to mate.
+    const ordered = [...pool.slice(index, size), ...pool.slice(0, index), ...pool.slice(size)]
+    return ordered.find(hasRecordedMateInOne) ?? null
+  }
+
+  return pick(matches.filter((p) => !recentIds.has(p.id))) ?? pick(matches.filter((p) => recentIds.has(p.id)))
 }

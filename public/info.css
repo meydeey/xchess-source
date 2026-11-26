@@ -1,0 +1,130 @@
+/* Same palette as the app shell. */
+:root {
+  --ground: #141416;
+  --surface: #1e1e21;
+  --ink: #f5f3ef;
+  --muted: #bab7b3;
+  --line: #3b3b41;
+  --accent: #e6b16a;
+  --accent-soft: #342a20;
+  --focus: #f2c58c;
+  color-scheme: dark;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font: -apple-system-body;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: max(1rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right))
+    max(2rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  background: var(--ground);
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-block-end: 1rem;
+}
+
+.brand,
+h1 {
+  font-weight: 700;
+}
+
+.brand { font-size: 1.35rem; }
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.35rem;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+  overflow-wrap: anywhere;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+nav a,
+.back,
+footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border-radius: 0.4rem;
+}
+
+nav a { padding: 0.35rem 0.55rem; }
+
+main > section {
+  padding: clamp(1rem, 4vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  scroll-margin-block-start: 11rem;
+}
+
+main > section + section { margin-block-start: 1rem; }
+
+/* Keep all translations readable on browsers without selector support. */
+@supports selector(main:has(> section:target)) {
+  main:not(:has(> section:target)) > section:not(:first-child),
+  main:has(> section:target) > section:not(:target) {
+    display: none;
+  }
+
+  main > section + section { margin-block-start: 0; }
+
+  body:not(:has(main > section:target)) nav a[href="#en"],
+  body:has(#en:target) nav a[href="#en"],
+  body:has(#fr:target) nav a[href="#fr"],
+  body:has(#es:target) nav a[href="#es"],
+  body:has(#pt-BR:target) nav a[href="#pt-BR"],
+  body:has(#de:target) nav a[href="#de"] {
+    background: var(--accent-soft);
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
+h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.9rem, 5vw, 2.75rem);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  margin: 1.75rem 0 0.4rem;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+p { margin: 0.5rem 0 0; }
+
+.intro {
+  margin-block-start: 0.7rem;
+  color: var(--muted);
+}
+
+footer {
+  margin-block-start: 1.5rem;
+  padding-block-start: 0.5rem;
+  border-block-start: 1px solid var(--line);
+}

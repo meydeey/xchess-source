@@ -35,7 +35,7 @@ export async function mount(host, ctx) {
   const { state, game, saveProgress, setActions } = ctx
   const locale = state.settings.locale
   const tr = (key, values) => t(locale, key, values)
-  host.innerHTML = `<p class="eyebrow"><a href="#/">${tr('today')}</a></p><h1>XChess Rush</h1><p class="empty">${tr('rush.preparing')}</p>`
+  host.innerHTML = `<p class="eyebrow"><a href="#/exercises">${tr('exercises.back')}</a></p><h1>XChess Rush</h1><p class="empty">${tr('rush.preparing')}</p>`
 
   const items = []
   for (const id of Object.keys(state.progress)) {
@@ -47,8 +47,14 @@ export async function mount(host, ctx) {
   const positions = rushPositions(items, Date.now())
   if (positions.length < RUSH.minPositions) {
     host.innerHTML = `
-      <p class="eyebrow"><a href="#/">${tr('today')}</a></p><h1>XChess Rush</h1>
-      <p class="empty">${tr('rush.locked', { count: positions.length, needed: RUSH.minPositions })}</p>
+      <p class="eyebrow"><a href="#/exercises">${tr('exercises.back')}</a></p><h1>XChess Rush</h1>
+      <div class="exercise-warmup rush-locked-card">
+        <div class="exercise-warmup-copy">
+          <p>${tr('rush.locked', { count: positions.length, needed: RUSH.minPositions })}</p>
+          <a class="cta primary" href="#/library">${tr('library.title')}</a>
+        </div>
+        <span class="exercise-warmup-photo"><img class="exercise-warmup-art" src="/art/advanced-rush.webp" alt="" decoding="async"></span>
+      </div>
     `
     setActions({})
     return { destroy() {} }
@@ -58,7 +64,7 @@ export async function mount(host, ctx) {
   host.innerHTML = `
     <div class="rush">
       <header class="rush-top rush-toolbar">
-        <div class="rush-identity"><a class="rush-back" href="#/" aria-label="${tr('today')}" title="${tr('today')}"><span aria-hidden="true">←</span></a><h1 class="rush-title">Rush</h1></div>
+        <div class="rush-identity"><a class="rush-back" href="#/exercises" aria-label="${tr('exercises.back')}" title="${tr('exercises.back')}"><span aria-hidden="true">←</span></a><h1 class="rush-title">Rush</h1></div>
         <div class="rush-hud" aria-live="off">
           <span class="rush-time mono" title="${tr('rush.timeRemaining')}">${fmtTime(RUSH.seconds * 1000)}</span>
           <span class="rush-lives" title="${tr('rush.lives')}"></span>
@@ -71,7 +77,8 @@ export async function mount(host, ctx) {
           <div class="board-frame"><div class="cg-wrap board"></div></div>
           <div class="board-foot"><span class="line-name"></span></div>
         </section>
-        <div class="drill-info">
+        <div class="drill-info rush-visual-panel">
+          <img class="exercise-session-art" src="/art/advanced-rush.webp" data-art="advanced-rush" alt="" decoding="async">
           <p class="rush-prompt"></p>
           <p class="feedback" data-tone="neutral">${tr('rush.positions', { count: positions.length })}</p>
           <div class="rush-intro">
@@ -161,8 +168,6 @@ export async function mount(host, ctx) {
     const pos = drawRush(positions, rand, new Set(st.recent))
     st.recent = [...st.recent, pos.key].slice(-RECENT)
     st.pos = pos
-    st.companionScope = `rush:${st.startedAt}:${pos.openingId}:${pos.lineId}:${pos.ply}:${st.score}:${st.lives}`
-    ctx.reactCompanion({ type: 'idle', scope: st.companionScope })
     const chess = new Chess()
     for (const san of pos.moves.slice(0, pos.ply)) chess.move(san)
     st.chess = chess
@@ -196,7 +201,6 @@ export async function mount(host, ctx) {
     const expected = st.pos.moves[st.pos.ply]
     st.busy = true
     if (mv.san === expected) {
-      ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'solved', scope: st.companionScope })
       st.score++
       st.streak++
       sound.play(mv.captured ? 'capture' : 'move', { sounds: getSounds() })
@@ -214,13 +218,11 @@ export async function mount(host, ctx) {
     }
     st.chess.undo()
     if (st.pos.alts.includes(mv.san)) {
-      ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'solved', scope: st.companionScope })
       const exp = showExpected('paleGreen')
       setFeedback('warn', tr('rush.alsoValid', { played: mv.san, expected: exp.san }))
       later(next, 1100)
       return
     }
-    ctx.reactCompanion({ type: 'puzzle', resolved: true, result: 'failed', scope: st.companionScope })
     st.lives--
     st.streak = 0
     sound.play('error', { sounds: getSounds() })
@@ -271,7 +273,7 @@ export async function mount(host, ctx) {
       <p class="rush-final"><b class="mono">${st.score}</b> ${tr(st.score === 1 ? 'rush.point' : 'rush.points')}${res.record ? `<span class="record">${tr('rush.newRecord')}</span>` : ''}</p>
       <p class="muted">${tr('rush.finalXp', { xp: res.xp })}${res.record ? tr('rush.recordBonus') : '.'}</p>
       ${st.misses.length ? `<p class="muted">${tr('rush.review')}</p><ul class="rush-misses">${st.misses.map((m) => `<li><b>${escapeHtml(nameOf(m.openingId))}</b> <span class="mono">${moveLabel(m.ply, m.expected)}</span> <small>${tr('rush.played', { move: escapeHtml(m.played) })}</small></li>`).join('')}</ul>` : `<p class="muted">${tr('rush.noMistakes')}</p>`}
-      <div class="actions"><button type="button" class="primary btn-again">${tr('rush.playAgain')} <kbd>${tr('rush.enter')}</kbd></button><a class="cta" href="#/">${tr('today')}</a></div>
+      <div class="actions"><button type="button" class="primary btn-again">${tr('rush.playAgain')} <kbd>${tr('rush.enter')}</kbd></button><a class="cta" href="#/exercises">${tr('exercises.back')}</a></div>
     `
     endEl.querySelector('.btn-again').addEventListener('click', start)
   }

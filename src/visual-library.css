@@ -1,0 +1,149 @@
+.lib-page .lib-page-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.lib-page .lib-recommendation {
+  display: grid;
+  grid-template-columns: clamp(76px, 16vw, 152px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  min-height: 84px;
+  padding-right: clamp(12px, 2vw, 24px);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.lib-page .lib-recommendation[hidden] { display: none; }
+
+.lib-page .lib-recommendation:hover {
+  border-color: var(--accent);
+  background: var(--raise);
+}
+
+.lib-recommendation img {
+  display: block;
+  width: 100%;
+  height: clamp(84px, 14vw, 102px);
+  object-fit: cover;
+  object-position: 76% center;
+  border-radius: 14px 0 0 14px;
+}
+
+.lib-recommendation-copy {
+  display: grid;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.lib-recommendation-copy small { color: var(--accent); font-weight: 650; }
+.lib-recommendation-copy strong { font-size: clamp(17px, 2.5vw, 24px); }
+.lib-recommendation-arrow { color: var(--accent); font-size: 1.5em; }
+
+.lib-page .lib-top { gap: 7px 12px; }
+
+.lib-page .lib-tabs {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.lib-page .lib-tabs button {
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  white-space: normal;
+  overflow-wrap: normal;
+  line-height: 1.15;
+}
+
+.lib-page .lib-tabs button[aria-selected="true"] {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lib-page .lib-tools { gap: 8px 10px; }
+.lib-page .lib-search {
+  max-width: none;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 16px;
+}
+
+.lib-page .lib-rating-control summary,
+.lib-page .lib-more summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.lib-page .lib-more[data-active="true"] summary {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lib-page .lib-more-body {
+  right: 0;
+  left: auto;
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  width: min(320px, calc(100vw - 24px));
+}
+
+.lib-page .lib-difficulty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lib-page .lib-difficulty > span {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.lib-page .lib-difficulty button { min-height: 44px; }
+.lib-page .lib-table { border-radius: 12px; }
+
+@media (min-width: 641px) {
+  .lib-page .lib-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+  .lib-page .lib-search { width: 100%; }
+  /* The virtual list owns the scroll area while the page keeps its natural height. */
+  .lib-page .lib-list { height: max(220px, calc(100dvh - 345px - var(--safe-top) - var(--tabbar-h, 0px) - env(safe-area-inset-bottom))); }
+}
+
+@media (max-width: 640px) {
+  .lib-page .lib-tabs button { flex: 1 1 28%; padding-inline: 4px; }
+  .lib-page .lib-tools { grid-template-columns: minmax(0, 1fr) auto; }
+  .lib-page .lib-search { grid-column: 1; }
+  .lib-page .lib-difficulty button { min-width: 33px; }
+  .lib-page .lib-head { padding: 0 12px; }
+  .lib-page .lib-sort { min-height: 44px; }
+  .lib-page .lib-list { height: max(240px, calc(100dvh - 320px - var(--tabbar-h) - env(safe-area-inset-bottom))); }
+}

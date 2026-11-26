@@ -1,47 +1,68 @@
-// Progrès (spec V2 §5.4 et L10) : 3 onglets. Trophées : niveau, échelle des titres, records et
-// trophées avec leur palier suivant. Atlas : les 500 codes ECO, allumés à mesure que j'y joue et que
-// j'y maîtrise des lignes, chaque case menant au catalogue filtré. Statistiques : XP des 14 derniers
-// jours, puis le tableau par ouverture (src/ui/stats.js).
 import { selection, openings, catalogMeta } from '../data.js'
 import { statusOf } from '../core/srs.js'
-import { TITLES } from '../core/game.js'
+import { progressDays, sortEvents, TITLES } from '../core/game.js'
+import { buildSession } from '../core/session.js'
 import { resolveOpening, getCachedLines, escapeHtml } from './shared.js'
 import * as statsScreen from './stats.js'
 import { t } from '../i18n.js'
 import { ACHIEVEMENT_ICONS, TIER_ICONS } from './achievement-visuals.js'
+import '../visual-progress.css'
 
-const TABS = [
-  { id: 'path', key: 'progress.path' },
-  { id: 'cards', key: 'progress.cards' },
-  { id: 'trophies', key: 'progress.trophies' },
-  { id: 'atlas', key: 'progress.atlas' },
-  { id: 'stats', key: 'progress.stats' },
-]
+const OVERVIEW_TABS = ['activity', 'memory']
+const DETAILS = ['path', 'cards', 'trophies', 'atlas', 'stats']
 const VOLUMES = ['A', 'B', 'C', 'D', 'E']
+const PRACTICE_KINDS = ['line', 'puzzle', 'drill', 'rush']
+const SHORTCUTS = [
+  ['#/progress/path', 'progress.path'],
+  ['#/progress/cards', 'progress.cards'],
+  ['#/progress/trophies', 'progress.trophies'],
+  ['#/games', 'coach.myGames'],
+  ['#/progress/atlas', 'progress.atlas'],
+  ['#/progress/stats', 'progress.stats'],
+]
 
 export async function mount(host, ctx) {
-  const { params, game, navigate, state } = ctx
-  const tr = (key, values) => t(state.settings.locale, key, values)
+  const { params, game, state } = ctx
   const locale = state.settings.locale
-  let tab = TABS.some((t) => t.id === params.tab) ? params.tab : 'path'
-  host.innerHTML = `
-    <div class="progress-page">
-      <div class="progress-heading"><h1>${tr('nav.progress')}</h1><a class="progress-settings" href="#/settings">${tr('nav.settings')}</a></div>
-      <div class="tabs" role="tablist" aria-label="${tr('nav.progress')}">
-        ${TABS.map((item) => `<button type="button" role="tab" data-tab="${item.id}" aria-selected="${item.id === tab}">${tr(item.key)}</button>`).join('')}
-      </div>
-      <div class="progress-body"></div>
-    </div>
-  `
-  const body = host.querySelector('.progress-body')
-  let sub = null
+  const tr = (key, values) => t(locale, key, values)
+  const tab = [...OVERVIEW_TABS, ...DETAILS].includes(params.tab) ? params.tab : 'activity'
+  const g = game.derive()
+  let sub
 
-  async function show(next) {
-    tab = next
-    host.querySelectorAll('[role="tab"]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)))
-    sub?.destroy?.()
-    sub = null
-    const g = game.derive()
+  if (OVERVIEW_TABS.includes(tab)) {
+    const practice = game.events.filter((event) => PRACTICE_KINDS.includes(event.kind))
+    const days = progressDays(state.progress)
+    for (const event of practice) if (event.day) days.add(event.day)
+    host.innerHTML = `
+      <div class="progress-page progress-overview-page">
+        <h1 class="progress-page-title">${tr('nav.progress')}</h1>
+        ${metrics(g, days.size, tr, locale)}
+        <div class="progress-layout">
+          <section class="progress-panel">
+            <nav class="progress-tabs" aria-label="${tr('nav.progress')}">
+              ${OVERVIEW_TABS.map((id) => `<a data-tab="${id}" href="#/progress/${id}"${id === tab ? ' aria-current="page"' : ''}>${tr(`progress.${id}`)}</a>`).join('')}
+            </nav>
+            <div class="progress-tab-content"></div>
+          </section>
+          <nav class="progress-shortcuts" aria-label="${tr('progress.shortcuts')}">
+            ${SHORTCUTS.map(([href, key]) => `<a href="${href}">${tr(key)}<span aria-hidden="true">›</span></a>`).join('')}
+          </nav>
+        </div>
+      </div>
+    `
+    const content = host.querySelector('.progress-tab-content')
+    content.innerHTML = tab === 'memory' ? await memory(state, tr, locale) : activity(practice, tr, locale)
+  } else {
+    host.innerHTML = `
+      <div class="progress-page progress-detail-page">
+        <header class="progress-detail-heading">
+          <a class="progress-return" href="#/progress"><span aria-hidden="true">‹</span> ${tr('nav.progress')}</a>
+          <h1>${tr(`progress.${tab}`)}</h1>
+        </header>
+        <div class="progress-body"></div>
+      </div>
+    `
+    const body = host.querySelector('.progress-body')
     if (tab === 'path') body.innerHTML = pathView(await ctx.getChallengePath(), await ctx.getMastery(), tr)
     else if (tab === 'cards') body.innerHTML = cardsView(await ctx.getMastery(), tr, locale)
     else if (tab === 'trophies') body.innerHTML = trophies(g, tr, locale)
@@ -51,11 +72,87 @@ export async function mount(host, ctx) {
       sub = await statsScreen.mount(body.querySelector('.stats-host'), { ...ctx, embedded: true })
     }
   }
-  host.querySelectorAll('[role="tab"]').forEach((b) => b.addEventListener('click', () => {
-    navigate(`#/progress/${b.dataset.tab}`)
-  }))
-  await show(tab)
   return { destroy() { sub?.destroy?.() } }
+}
+
+function metrics({ counters }, days, tr, locale) {
+  const num = new Intl.NumberFormat(locale)
+  const values = [
+    ['progress.record.lines', counters.lines],
+    ['progress.record.puzzles', counters.puzzlesSolved],
+    ['progress.practiceDays', days],
+  ]
+  return `<dl class="progress-metrics">${values.map(([key, value]) => `
+    <div class="progress-metric">
+      <dt>${tr(key)}</dt>
+      <dd>${num.format(value)}</dd>
+    </div>
+  `).join('')}</dl>`
+}
+
+function openingName(opening, locale) {
+  return locale === 'fr' ? opening.name : opening.lichessName || opening.name
+}
+
+function activity(practice, tr, locale) {
+  const completed = practice.filter((event) => Number.isFinite(event.at) && (event.kind !== 'puzzle' || event.data?.result === 'solved'))
+  const recent = sortEvents(completed).slice(-5).reverse()
+  if (!recent.length) return `
+    <div class="progress-empty">
+      <h2>${tr('progress.activityEmpty')}</h2>
+      <p>${tr('coach.firstLead')}</p>
+      <a class="cta primary" href="#/first-opening">${tr('coach.firstStart')}</a>
+    </div>
+  `
+  const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' })
+  const describe = (event) => {
+    switch (event.kind) {
+      case 'line': {
+        const opening = resolveOpening(event.data?.o, { selection, openings })
+        return opening ? [openingName(opening, locale), `#/opening/${encodeURIComponent(opening.id)}`] : [tr('nav.library'), '#/library']
+      }
+      case 'puzzle': return [tr('exercises.title'), '#/exercises/mixed']
+      case 'drill': return [tr('coach.myGames'), '#/games']
+      default: return ['Rush', '#/rush']
+    }
+  }
+  return `<ul class="progress-entries">${recent.map((event) => {
+    const [name, href] = describe(event)
+    return `<li><a href="${href}">${escapeHtml(name)}</a><time datetime="${escapeHtml(event.day)}">${date.format(event.at)}</time></li>`
+  }).join('')}</ul>`
+}
+
+async function memory(state, tr, locale) {
+  const now = Date.now()
+  const repertoire = state.repertoire.filter((id) => Object.values(state.progress[id] || {}).some((item) => item?.due <= now))
+  const available = (await Promise.all(repertoire.map(async (id) => {
+    const opening = resolveOpening(id, { selection, openings })
+    return opening ? [id, { opening, lines: (await getCachedLines(opening)).lines }] : null
+  }))).filter(Boolean)
+  const { queue } = buildSession({
+    repertoire,
+    linesByOpening: Object.fromEntries(available.map(([id, { lines }]) => [id, lines])),
+    progress: state.progress,
+    newPerDay: 0,
+    now,
+  })
+  if (!queue.length) return `
+    <div class="progress-empty">
+      <h2>${tr('progress.memoryEmpty')}</h2>
+      <a class="cta" href="#/library/repertoire">${tr('library.tab.repertoire')}</a>
+    </div>
+  `
+  const counts = new Map()
+  for (const { openingId } of queue) counts.set(openingId, (counts.get(openingId) ?? 0) + 1)
+  return `
+    <div class="progress-review">
+      <h2>${tr('progress.memoryReady')}</h2>
+      <ul class="progress-entries">${available.map(([id, { opening }]) => counts.has(id) ? `
+        <li><a href="#/opening/${encodeURIComponent(id)}">${escapeHtml(openingName(opening, locale))}</a><small>${tr('today.dueShort', { count: counts.get(id) })}</small></li>
+      ` : '').join('')}</ul>
+      <a class="cta primary" href="#/session/go">${tr('today.start')}</a>
+    </div>
+  `
 }
 
 function pathView(path, mastery, tr) {

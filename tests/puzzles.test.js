@@ -2,10 +2,10 @@ import { describe, expect, test } from 'bun:test'
 import { Chess } from 'chess.js'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { eligibleMateControl, mateMoves, puzzleStart, selectPuzzle } from '../src/core/puzzles.js'
+import { mateMoves, playUci, puzzleStart, selectPuzzle } from '../src/core/puzzles.js'
 
-const mate = { id: 'mate', fen: '6k1/5ppp/8/8/8/8/5PPP/6KQ b - - 0 1', moves: ['g8f8', 'h1d5'], themes: ['mateIn1'], cat: 'attack', rating: 900 }
-const control = { id: 'control', fen: '6k1/5ppp/8/8/8/8/5PPP/6KQ b - - 0 1', moves: ['g8f8', 'h1d5'], themes: ['mateIn2'], cat: 'attack', rating: 900, control: true }
+const mate = { id: 'mate', fen: '3q1k2/pp6/2p1B1Qp/2Pp4/3b4/7P/P4PP1/6K1 b - - 1 32', moves: ['d8e7', 'g6g8'], themes: ['mateIn1'], cat: 'attack', rating: 900 }
+const control = { id: 'control', fen: '8/p6R/kp6/8/1PK2n2/7p/7r/8 b - - 5 45', moves: ['h2e2', 'b4b5', 'a6a5', 'h7a7'], themes: ['mateIn2'], cat: 'attack', rating: 899, control: true }
 
 describe('exercices', () => {
   test('le pack livré respecte son index et couvre les catégories', () => {
@@ -34,19 +34,23 @@ describe('exercices', () => {
     const themes = ['fork', 'pin', 'hangingPiece', 'defensiveMove', 'mateIn1', 'mateIn2', 'promotion', 'endgame', 'skewer', 'discoveredAttack']
     const all = index.packs.flatMap((manifest) => JSON.parse(readFileSync(new URL(`../public/packs/${manifest.file}`, import.meta.url))).puzzles)
     for (const theme of themes) expect(all.filter((p) => p.themes.includes(theme)).length).toBeGreaterThanOrEqual(500)
+    for (const puzzle of all.filter((p) => p.themes.includes('mateIn1'))) {
+      const chess = new Chess(puzzleStart(puzzle).fen)
+      expect(playUci(chess, puzzle.moves[1])).toBeTruthy()
+      expect(chess.isCheckmate()).toBe(true)
+    }
   })
   test('le coup adverse est joué avant que le joueur réponde', () => {
     const start = puzzleStart(mate)
     expect(start.side).toBe('white')
-    expect(start.lastMove).toEqual(['g8', 'f8'])
+    expect(start.lastMove).toEqual(['d8', 'e7'])
   })
-  test('les nouvelles positions conservent des coups légaux et les mats en 1 sont réels', () => {
+  test('les nouvelles positions conservent des coups légaux', () => {
     const pack = JSON.parse(readFileSync(new URL('../public/packs/puzzles-motifs-2026-10.json', import.meta.url)))
     for (const puzzle of pack.puzzles) {
       const chess = new Chess(puzzle.fen)
-      for (const [index, uci] of puzzle.moves.entries()) {
+      for (const uci of puzzle.moves) {
         expect(chess.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] })).toBeTruthy()
-        if (index === 1 && puzzle.themes.includes('mateIn1')) expect(chess.isCheckmate()).toBe(true)
       }
     }
   })
@@ -61,9 +65,16 @@ describe('exercices', () => {
     const recent = pool.slice(0, 299).map((item) => item.id)
     expect(selectPuzzle(pool, { mode: 'attack', target: 800, recent, random: () => 0 })?.id).toBe('variety-299')
   })
-  test('un contrôle sans mat entre chaque 5e exercice Mat en 1', () => {
-    expect(selectPuzzle([mate, control], { mode: 'mate1', turn: 0, random: () => 0 }).id).toBe('mate')
-    expect(selectPuzzle([mate, control], { mode: 'mate1', turn: 4, random: () => 0 }).id).toBe('control')
+  test('Mat en 1 ne propose jamais un contrôle ni une solution qui ne mate pas', () => {
+    const wrongTag = { ...control, id: 'wrong-tag', themes: ['mateIn1'], control: false }
+    const wrongSolution = { ...mate, id: 'wrong-solution', moves: ['d8e7', 'g6g7'] }
+    const pool = [control, wrongTag, wrongSolution, mate]
+    expect(mateMoves(puzzleStart(control).fen)).toEqual([])
+    for (const turn of [0, 4, 9]) {
+      expect(selectPuzzle(pool, { mode: 'mate1', target: 899, turn, random: () => 0 })?.id).toBe('mate')
+    }
+    expect(selectPuzzle(pool, { mode: 'mate1', recent: ['mate'], random: () => 0 })?.id).toBe('mate')
+    expect(selectPuzzle([control, wrongTag, wrongSolution], { mode: 'mate1', random: () => 0 })).toBeNull()
   })
   test('mat en 1 détecté par tous les coups légaux', () => {
     const chess = new Chess()

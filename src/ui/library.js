@@ -14,6 +14,8 @@ import {
   escapeHtml,
   ELO_SOURCE_LABEL,
 } from './shared.js'
+import { FIRST_OPENING_ID } from './first-opening.js'
+import '../visual-library.css'
 
 const ROW_HEIGHT = 44
 // Téléphone : rangée sur 2 lignes (nom, puis difficulté, progression, score), hauteur fixe elle aussi
@@ -61,10 +63,24 @@ export async function mount(host, ctx) {
   const formatGames = (value) => value == null ? '-' : new Intl.NumberFormat(state.settings.locale, { notation: 'compact', maximumFractionDigits: 1 }).format(value)
   const dueLabel = (due) => !due ? null : due.rank === 0 ? t('library.today') :
     due.rank === 1 ? t('library.tomorrow') : t('library.inDays', { days: due.rank })
+  const knowsItalian = Object.keys(state.progress[FIRST_OPENING_ID] || {}).length > 0
+  const saved = history.state?.library
+  let tab = saved?.tab ?? (TABS.includes(params.tab) ? params.tab : 'selection')
+  let side = saved?.side ?? 'all'
+  let difficulty = saved?.difficulty ?? 'all'
+  let sort = saved?.sort ?? { id: 'score', dir: -1 }
   host.innerHTML = `
     <div class="lib-page">
-      <header class="lib-top">
-        <h1>${t('library.title')}</h1>
+      <h1 class="lib-page-title">${t('nav.library')}</h1>
+      <a class="lib-recommendation" href="${knowsItalian ? `#/opening/${FIRST_OPENING_ID}` : '#/first-opening'}" hidden>
+        <img src="/art/opening.webp" alt="" width="150" height="100" />
+        <span class="lib-recommendation-copy">
+          <small>${t(knowsItalian ? 'coach.italianSequence' : 'coach.firstTitle')}</small>
+          <strong>${t('coach.italian')}</strong>
+        </span>
+        <span class="lib-recommendation-arrow" aria-hidden="true">›</span>
+      </a>
+      <div class="lib-top">
         <div class="tabs lib-tabs" role="tablist" aria-label="${t('library.catalogue')}">
           ${TABS.map((tab) => `<button type="button" role="tab" data-tab="${tab}" aria-selected="false">${t(`library.tab.${tab}`)} (${tab === 'selection' ? selection.length : tab === 'catalog' ? openings.length : state.repertoire.length})</button>`).join('')}
         </div>
@@ -76,24 +92,28 @@ export async function mount(host, ctx) {
             <button type="submit" class="primary">${t('library.applyRating')}</button>
           </form>
         </details>
-      </header>
+      </div>
       <div class="lib-tools">
         <input type="search" class="lib-search" placeholder="${t('library.searchShort')}" aria-label="${t('library.searchLabel')}" />
-        <div class="lib-difficulty" role="group" aria-label="${t('library.difficultyHint')}">
-          <span>${t('library.difficulty')}</span>
-          ${['all', 1, 2, 3, 4, 5].map((value) => `<button type="button" data-difficulty="${value}" aria-pressed="${value === 'all'}">${value === 'all' ? t('library.all') : value}</button>`).join('')}
-        </div>
         <details class="lib-more"><summary>${t('library.filters')}</summary>
           <div class="lib-more-body">
+            <div class="lib-difficulty" role="group" aria-label="${t('library.difficultyHint')}">
+              <span>${t('library.difficulty')}</span>
+              ${['all', 1, 2, 3, 4, 5].map((value) => `<button type="button" data-difficulty="${value}" aria-pressed="${String(value) === difficulty}">${value === 'all' ? t('library.all') : value}</button>`).join('')}
+            </div>
             <div class="seg f-side" role="radiogroup" aria-label="${t('library.side')}">
-              <button type="button" role="radio" data-side="all" aria-checked="true">${t('library.all')}</button>
-              <button type="button" role="radio" data-side="white" aria-checked="false">${t('side.white')}</button>
-              <button type="button" role="radio" data-side="black" aria-checked="false">${t('side.black')}</button>
+              <button type="button" role="radio" data-side="all" aria-checked="${side === 'all'}">${t('library.all')}</button>
+              <button type="button" role="radio" data-side="white" aria-checked="${side === 'white'}">${t('side.white')}</button>
+              <button type="button" role="radio" data-side="black" aria-checked="${side === 'black'}">${t('side.black')}</button>
             </div>
             <select class="f-family" aria-label="${t('library.family')}"><option value="all">${t('library.allFamilies')}</option>${['classique', 'gambit', 'exotique'].map((key) => `<option value="${key}">${t(`family.${key}`)}</option>`).join('')}</select>
           </div>
         </details>
         <p class="lib-count"></p>
+      </div>
+      <div class="empty lib-empty" hidden>
+        <p role="status"></p>
+        <a class="cta" href="#/library/selection" hidden>${t('library.tab.selection')}</a>
       </div>
       <div class="lib-table">
         <div class="lib-head">
@@ -106,18 +126,20 @@ export async function mount(host, ctx) {
       </div>
     </div>
   `
+  const recommendation = host.querySelector('.lib-recommendation')
   const searchEl = host.querySelector('.lib-search')
   const sideButtons = [...host.querySelectorAll('.f-side button')]
   const familyEl = host.querySelector('.f-family')
   const diffButtons = [...host.querySelectorAll('[data-difficulty]')]
   const countEl = host.querySelector('.lib-count')
+  const emptyEl = host.querySelector('.lib-empty')
+  const emptyMessage = emptyEl.querySelector('p')
+  const emptyRepertoireLink = emptyEl.querySelector('a')
+  const tableEl = host.querySelector('.lib-table')
   const listHost = host.querySelector('.lib-list')
   const sortButtons = [...host.querySelectorAll('.lib-sort')]
+  const filtersEl = host.querySelector('.lib-more')
 
-  let tab = params.tab && TABS.includes(params.tab) ? params.tab : 'selection'
-  let side = 'all'
-  let difficulty = 'all'
-  let sort = { id: 'score', dir: -1 }
   let visible = []
   // id -> { total, masteredCount, pct, difficulty, due } | null, une fois l'arbre chargé.
   const metaCache = new Map()
@@ -141,7 +163,6 @@ export async function mount(host, ctx) {
   function matchesFilters(entry) {
     if (side !== 'all' && entry.side !== side) return false
     if (familyEl.value !== 'all' && entry.family !== familyEl.value) return false
-    if (difficulty !== 'all' && String(metaCache.get(entry.id)?.difficulty) !== difficulty) return false
     return true
   }
   // Valeur de tri : les entrées sans valeur finissent toujours en bas, quel que soit le sens.
@@ -171,10 +192,20 @@ export async function mount(host, ctx) {
 
   function recompute() {
     const q = normalizeText(searchEl.value.trim())
-    visible = entriesForTab().filter((e) => matchesSearch(e, q) && matchesFilters(e)).sort(compare)
+    recommendation.hidden = tab !== 'selection' || Boolean(q)
+    filtersEl.dataset.active = String(difficulty !== 'all' || side !== 'all' || familyEl.value !== 'all')
+    const entries = entriesForTab()
+    const matches = entries.filter((e) => matchesSearch(e, q) && matchesFilters(e))
+    visible = (difficulty === 'all' ? matches : matches.filter((e) => String(metaCache.get(e.id)?.difficulty) === difficulty)).sort(compare)
     countEl.textContent = tab === 'catalog'
       ? t('library.countOf', { count: visible.length, total: openings.length })
       : t('library.count', { count: visible.length })
+    const empty = !visible.length && (difficulty === 'all' || matches.every((e) => metaCache.has(e.id)))
+    const emptyRepertoire = tab === 'repertoire' && !entries.length
+    emptyEl.hidden = !empty
+    tableEl.hidden = empty
+    emptyMessage.textContent = empty ? t(emptyRepertoire ? 'library.emptyRepertoire' : 'library.noResults') : ''
+    emptyRepertoireLink.hidden = !emptyRepertoire
     for (const b of sortButtons) {
       const active = b.dataset.sort === sort.id
       b.dataset.active = String(active)
@@ -218,7 +249,12 @@ export async function mount(host, ctx) {
   mobileMq.addEventListener('change', onViewportChange)
   listHost.addEventListener('click', (ev) => {
     const row = ev.target.closest('.lib-row')
-    if (row) navigate(`#/opening/${row.dataset.id}`)
+    if (!row) return
+    // Restore the exact list from the history entry that precedes this opening.
+    history.replaceState({ library: {
+      tab, side, difficulty, sort, q: searchEl.value, family: familyEl.value, filtersOpen: filtersEl.open,
+    } }, '')
+    navigate(`#/opening/${row.dataset.id}`, { fromLibrary: true })
   })
 
   // Remplit metaCache pour les entrées de l'onglet courant (difficulté, progression, échéance), puis
@@ -296,7 +332,9 @@ export async function mount(host, ctx) {
   })
 
   setActions({ search: () => searchEl.focus() })
-  if (params.q) searchEl.value = params.q // #/library/catalog/B12 : une case de l'Atlas
+  searchEl.value = saved?.q ?? params.q ?? '' // #/library/catalog/B12 : une case de l'Atlas
+  familyEl.value = saved?.family ?? 'all'
+  filtersEl.open = saved?.filtersOpen ?? false
   switchTab(tab)
 
   return {

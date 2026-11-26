@@ -3,12 +3,12 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@tauri-apps/cli": "^2.11.5",
-    "vite": "^8.3.0",
+    "@tauri-apps/cli": "^2.12.6",
+    "vite": "^8.3.8",
     "vite-plugin-singlefile": "^2.3.3"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/api": "^2.12.5",
     "@tauri-apps/plugin-shell": "^2.3.6",
     "@tauri-apps/plugin-store": "^2.4.5",
     "chess.js": "^1.4.0",
@@ -30,6 +30,8 @@
     "app:build": "tauri build",
     "ios:build:sim": "bash tools/build-ios-sim.sh",
     "ios:build:device": "bash tools/build-ios-device.sh",
+    "ios:build:store": "bash tools/build-ios-store.sh",
+    "macos:build:store": "bash tools/build-macos-store.sh",
     "release:all": "bash tools/release-all.sh",
     "explain": "infisical run --env=dev --silent -- bun tools/build-explanations.mjs",
     "full-catalog": "bun tools/build-full-catalog.mjs",

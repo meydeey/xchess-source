@@ -1,17 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capacités par défaut de Théorie : coeur, événements et store pour toute la fenêtre, shell limité au sidecar Stockfish",
+  "description": "XChess window, event and local storage capabilities",
   "windows": ["main"],
   "permissions": [
     "core:default",
     "core:event:default",
-    "store:default",
-    {
-      "identifier": "shell:allow-spawn",
-      "allow": [{ "name": "binaries/stockfish", "sidecar": true }]
-    },
-    "shell:allow-stdin-write",
-    "shell:allow-kill"
+    "store:default"
   ]
 }

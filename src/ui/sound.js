@@ -55,6 +55,12 @@ export function unlock () {
   if (c && c.state !== 'running') c.resume().catch(() => {})
 }
 
+// Music uses the same iOS audio session, with its own output path.
+export function openMusicAudio() {
+  unlock()
+  return ready()
+}
+
 // Signature « Bois feutré » retenue après écoute sur iPhone : transitoire rond, passe-bas et chute
 // courte. Le compresseur partagé limite les crêtes si 2 événements se suivent rapidement.
 function woodNote (c, { freq, start = 0, duration = 0.09, gain = 0.12, slide = 0.72 }) {

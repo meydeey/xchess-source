@@ -13,6 +13,20 @@ import * as sound from './sound.js'
 import { resolveOpening, getCachedLines, difficultyOf } from './shared.js'
 import { mountHud } from './game.js'
 import { eloToBand } from '../core/metrics.js'
+import { platform } from '../platform/index.js'
+import { mountSessionSponsor } from './session-sponsor.js'
+
+const SESSION_PENDING = 'practiceSessionPending'
+let checkpointWrite = Promise.resolve()
+
+function rememberSession(pending) {
+  checkpointWrite = checkpointWrite.then(() => platform.store.set(SESSION_PENDING, pending)).catch(() => {})
+}
+
+export async function hasPendingSession() {
+  await checkpointWrite
+  return await platform.store.get(SESSION_PENDING).catch(() => false) === true
+}
 
 export async function mount(host, ctx) {
   const { state, saveProgress, setActions, game, t, params = {} } = ctx
@@ -39,6 +53,7 @@ export async function mount(host, ctx) {
 
   if (!state.repertoire.length) {
     summaryEl.textContent = t('session.empty')
+    bodyEl.innerHTML = `<div class="actions"><a class="cta primary" href="#/library">${t('nav.library')}</a></div>`
     setActions({})
     return { destroy() {} }
   }
@@ -66,7 +81,12 @@ export async function mount(host, ctx) {
 
   if (session.total) summaryEl.textContent = t('session.counts', { due: session.dueCount, fresh: session.newCount, total: session.total })
   else summaryEl.textContent = t('session.upToDate')
-  if (!session.total) { setActions({}); return { destroy() {} } }
+  if (!session.total) {
+    rememberSession(false)
+    bodyEl.innerHTML = `<div class="actions"><a class="cta primary" href="#/exercises">${t('today.tryPuzzle')}</a></div>`
+    setActions({})
+    return { destroy() {} }
+  }
 
   bodyEl.innerHTML = `
     <button type="button" class="btn-start primary">${t('session.start', { count: session.total })}</button>
@@ -87,6 +107,9 @@ export async function mount(host, ctx) {
   let hud = null
   let sessionXp = 0
   let flawlessCount = 0
+  let destroyed = false
+  let earliestDue = Infinity
+  let allSaved = true
 
   function playCurrent() {
     const item = session.queue[index]
@@ -119,13 +142,18 @@ export async function mount(host, ctx) {
         const wasMastered = statusOf(prevProgress, item.line.id) === 'mastered'
         const next = recordRun(prevProgress, item.line.id, errors, Date.now(), { aided })
         const patched = weak !== undefined ? { ...next, [item.line.id]: { ...next[item.line.id], weak } } : next
-        saveProgress(item.openingId, patched).then(() => {
+        const finishedDrill = drill
+        const finishedHud = hud
+        saveProgress(item.openingId, patched).then((saved) => {
           const verdict = verdictText(lineEnding({ evals: item.line.evals, moves: item.line.moves, side: sideEn, checkmate }), t)
           const res = game?.recordLine({
             openingId: item.openingId, lineId: item.line.id, phase: item.isNew ? 'new' : 'due', errors, aided, own, ms, checkmate,
             becameMastered: !wasMastered && statusOf(patched, item.line.id) === 'mastered',
-            comboMax: hud?.comboMax ?? 0, moveXp: hud?.lineXp ?? 0,
+            comboMax: finishedHud?.comboMax ?? 0, moveXp: finishedHud?.lineXp ?? 0,
           })
+          if (destroyed || drill !== finishedDrill) return
+          allSaved &&= saved
+          earliestDue = Math.min(earliestDue, patched[item.line.id].due)
           if (res) { hud?.lineEnd(res); sessionXp += res.xp }
           if (!errors) flawlessCount++
           const gain = res ? t('session.xp', { xp: res.xp }) : ''
@@ -156,8 +184,10 @@ export async function mount(host, ctx) {
     if (continueBtn.disabled) return
     index++
     if (index >= session.queue.length) {
+      rememberSession(false)
       drill?.destroy()
       host.classList.remove('is-playing')
+      host.classList.add('session-completed')
       drillHost.hidden = true
       actionsEl.hidden = true
       bodyEl.querySelector('.btn-start').hidden = true
@@ -167,11 +197,23 @@ export async function mount(host, ctx) {
       sideEl.hidden = true
       summaryEl.textContent = t('session.completeSummary', { lines: n, flawless: flawlessCount, xp: sessionXp })
       difficultyEl.hidden = true
-      bodyEl.insertAdjacentHTML('beforeend', `
-        <div class="session-end">
-          <a class="cta primary" href="#/">${t('session.challenges')}</a>
-          <a class="cta" href="#/rush">${t('session.rush')}</a>
-        </div>`)
+      const nextReview = earliestDue <= Date.now()
+        ? t('coach.reviewNow')
+        : t('coach.reviewAt', { date: new Intl.DateTimeFormat(state.settings.locale, { dateStyle: 'medium', timeStyle: 'short' }).format(earliestDue) })
+      const summary = document.createElement('section')
+      summary.className = 'session-end'
+      summary.innerHTML = `
+        <h2>${t('coach.reviewTitle')}</h2>
+        <p class="coach-review"></p>
+        <div class="actions">
+          <a class="cta primary" href="#/">${t('coach.backToday')}</a>
+          <a class="cta" href="#/progress">${t('coach.openProgress')}</a>
+        </div>`
+      summary.querySelector('.coach-review').textContent = allSaved ? nextReview : t('coach.finishError')
+      bodyEl.append(summary)
+      if (allSaved) mountSessionSponsor(summary, t)
+      openingEl.tabIndex = -1
+      openingEl.focus({ preventScroll: true })
       setActions({})
       return
     }
@@ -179,6 +221,7 @@ export async function mount(host, ctx) {
   }
   function start() {
     sound.unlock()
+    rememberSession(true)
     host.classList.add('is-playing')
     startBtn.hidden = true
     drillHost.hidden = false
@@ -201,6 +244,7 @@ export async function mount(host, ctx) {
 
   return {
     destroy() {
+      destroyed = true
       drill?.destroy()
     },
   }

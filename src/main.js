@@ -2,13 +2,9 @@
 // progression) persisté via platform.store (contrat 14.6), et le bus d'actions clavier / menu natif
 // qui relie les raccourcis web et platform.onMenu aux mêmes noms d'action.
 import './style.css'
-import './appearance.css'
-import './adventure.css'
+import './board-themes.css'
+import './visual-shell.css'
 import { platform } from './platform/index.js'
-import { createAdventureWriter } from './platform/adventure-journal.js'
-import { deriveAdventure } from './core/adventure.js'
-import adventureSeason from '../catalog/adventure-season-1.json'
-import * as adventure from './ui/adventure.js'
 import { createPersister } from './platform/persister.js'
 import { eloToBand } from './core/metrics.js'
 import { deriveChallengePath } from './core/challenges.js'
@@ -16,6 +12,7 @@ import { deriveMastery } from './core/mastery.js'
 import { JOURNAL_VERSION, exportJournal, importJournal, makeEvent, mergeEvents, migrationEvents, replayJournal } from './core/journal.js'
 import { DEFAULT_SETTINGS, createActionBus } from './ui/shared.js'
 import * as today from './ui/today.js'
+import * as firstOpening from './ui/first-opening.js'
 import * as library from './ui/library.js'
 import * as opening from './ui/opening.js'
 import * as trainer from './ui/trainer.js'
@@ -27,16 +24,19 @@ import * as games from './ui/games.js'
 import * as progress from './ui/progress.js'
 import * as settings from './ui/settings.js'
 import * as selftest from './ui/selftest.js'
-import * as collection from './ui/collection.js'
-import { collectionFor, appearanceState } from './core/appearance.js'
-import { mountBoardCompanions } from './ui/companion.js'
+import { createMusic, MUSIC_TRACKS } from './ui/music.js'
+import { openMusicAudio } from './ui/sound.js'
+import { boardThemesFor, equippedBoardTheme } from './core/board-themes.js'
 import { createGame, renderChip } from './ui/game.js'
 import { deviceLocale, resolveLocale, t } from './i18n.js'
 
-const SCREENS = { today, library, opening, train: trainer, session, rush, exercises, arena, games, progress, settings, selftest, collection, adventure }
+const storeBuild = import.meta.env.VITE_XCHESS_STORE === '1'
+const SCREENS = { today, firstOpening, library, opening, train: trainer, session, rush, exercises, arena, games, progress, settings, ...(storeBuild ? {} : { selftest }) }
 const view = document.getElementById('view')
-const navEl = document.getElementById('nav')
 const chipEl = document.getElementById('player-chip')
+const musicButton = document.getElementById('music-toggle')
+const effectsButton = document.getElementById('effects-toggle')
+const music = createMusic({ openAudio: openMusicAudio })
 
 const state = { settings: DEFAULT_SETTINGS, repertoire: [], progress: {} }
 let journalEvents = []
@@ -46,11 +46,9 @@ const actionBus = createActionBus()
 let screen = null
 let mountToken = 0
 let game = null // contrôleur du jeu (src/ui/game.js), créé au démarrage après l'état
-let adventureWriter = null
-let boardCompanions = null
-let ownedCollection = collectionFor()
-function applyAppearance() {
-  document.documentElement.dataset.boardTheme = appearanceState(state.settings, ownedCollection).board
+let availableBoardThemes = boardThemesFor()
+function applyBoardTheme() {
+  document.documentElement.dataset.boardTheme = equippedBoardTheme(state.settings, availableBoardThemes)
 }
 
 // ---------- sauvegarde confirmée (spec V2, L0 point 8) et message temporaire ----------
@@ -154,7 +152,8 @@ async function saveSettings(patch) {
   // Equipment and its visible theme follow durable confirmation, so an immediate
   // close cannot turn a displayed success into a lost preference.
   state.settings = { ...state.settings, ...patch }
-  applyAppearance()
+  updateEffectsButton()
+  applyBoardTheme()
   if (game) renderChip(chipEl, game.derive(), state.settings.locale)
   return true
 }
@@ -211,15 +210,6 @@ async function getPuzzleAttempts() {
   if (journalEnabled) return journalEvents.filter((event) => event.kind === 'puzzle').map((event) => ({ ...event.data, at: event.at, day: event.day, id: event.id }))
   return (await platform.store.get('puzzleAttempts')) || []
 }
-function getAdventure() { return deriveAdventure(journalEvents, adventureSeason) }
-async function saveAdventureFact(fact) {
-  if (!journalEnabled || !adventureWriter) return false
-  return adventureWriter.save(fact)
-}
-async function getCollection() {
-  ownedCollection = collectionFor(getAdventure().completedChapters, { attempts: await getPuzzleAttempts() })
-  return ownedCollection
-}
 function getGameEvents() { return journalEvents.filter((event) => event.kind === 'game' || event.kind === 'drill') }
 async function getChallengePath(attempts = null) {
   return deriveChallengePath({ elo: state.settings.elo, source: state.settings.eloSource, attempts: attempts ?? await getPuzzleAttempts(), activity: game.events, journal: getGameEvents() })
@@ -235,12 +225,15 @@ async function saveGameFact(kind, data) {
 // ---------- routeur par hash ----------
 // Accueil : Aujourd'hui (D6, ADR-0005). #/library[/<onglet>[/<recherche>]] ; #/stats reste un alias
 // de l'onglet Statistiques de Progrès.
+function decodeRouteSegment(value) {
+  try { return decodeURIComponent(value) }
+  catch { return value }
+}
 function parseRoute() {
   const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-  if (parts[0] === 'adventure') return { name: 'adventure', params: { id: parts[1] || null } }
-  if (parts[0] === 'collection') return { name: 'collection', params: {} }
-  if (parts[0] === 'opening' && parts[1]) return { name: 'opening', params: { id: decodeURIComponent(parts[1]) } }
-  if (parts[0] === 'train' && parts[1]) return { name: 'train', params: { id: decodeURIComponent(parts[1]), tab: parts[2] || 'train' } }
+  if (parts[0] === 'first-opening') return { name: 'firstOpening', params: {} }
+  if (parts[0] === 'opening' && parts[1]) return { name: 'opening', params: { id: decodeRouteSegment(parts[1]) } }
+  if (parts[0] === 'train' && parts[1]) return { name: 'train', params: { id: decodeRouteSegment(parts[1]), tab: parts[2] || 'train' } }
   if (parts[0] === 'session') return { name: 'session', params: { go: parts[1] === 'go' } }
   if (parts[0] === 'rush') return { name: 'rush', params: {} }
   if (parts[0] === 'exercises') return { name: 'exercises', params: { mode: parts[1] || null, theme: parts[2] || null } }
@@ -248,27 +241,21 @@ function parseRoute() {
   if (parts[0] === 'games') return { name: 'games', params: { gameId: parts[1] || null } }
   if (parts[0] === 'progress') return { name: 'progress', params: { tab: parts[1] } }
   if (parts[0] === 'stats') return { name: 'progress', params: { tab: 'stats' } }
-  if (parts[0] === 'settings') return { name: 'settings', params: {} }
-  if (parts[0] === 'selftest') return { name: 'selftest', params: {} } // ouverte uniquement par le Rust, THEORIE_SELFTEST=1
-  if (parts[0] === 'library') return { name: 'library', params: { tab: parts[1], q: parts[2] ? decodeURIComponent(parts[2]) : undefined } }
+  if (parts[0] === 'settings') return { name: 'settings', params: { help: parts[1] === 'help' } }
+  if (!storeBuild && parts[0] === 'selftest') return { name: 'selftest', params: {} }
+  if (parts[0] === 'library') return { name: 'library', params: { tab: parts[1], q: parts[2] ? decodeRouteSegment(parts[2]) : undefined } }
   return { name: 'today', params: {} }
 }
-function navigate(hash) {
+function navigate(hash, entryState) {
   if (location.hash === hash) { render(); return }
+  if (entryState) {
+    history.pushState(entryState, '', hash)
+    render(true)
+    return
+  }
   location.hash = hash
 }
 function makeCtx(route) {
-  const token = mountToken
-  const reactCompanion = (facts) => { if (token === mountToken) boardCompanions?.react(facts) }
-  // Preserve the live getters and return values of the existing game controller.
-  const screenGame = game ? Object.create(game) : null
-  if (screenGame) for (const name of ['recordLine', 'recordPuzzle', 'recordDrill']) {
-    screenGame[name] = (facts) => {
-      const result = game[name](facts)
-      reactCompanion({ type: name === 'recordPuzzle' ? 'puzzle' : 'line', ...facts, resolved: true, scope: `${name}:${facts.id || facts.lineId || facts.ref || Date.now()}` })
-      return result
-    }
-  }
   return {
     params: route.params,
     state,
@@ -281,12 +268,7 @@ function makeCtx(route) {
     restoreBackup,
     savePuzzleAttempt,
     getPuzzleAttempts,
-    getCollection,
-    getAdventure,
-    saveAdventureFact,
-    canSaveAdventure: journalEnabled,
-    appearance: () => appearanceState(state.settings, ownedCollection),
-    reactCompanion,
+    availableBoardThemes,
     getGameEvents,
     getChallengePath,
     getMastery,
@@ -294,31 +276,76 @@ function makeCtx(route) {
     navigate,
     notify,
     setActions: (handlers) => actionBus.setLocal(handlers),
-    game: screenGame,
+    game,
+    music,
     t: (key, values) => t(state.settings.locale, key, values),
   }
 }
-const NAV_OF = { today: 'today', session: 'today', rush: 'today', library: 'library', opening: 'library', train: 'library', exercises: 'exercises', arena: 'exercises', games: 'progress', progress: 'progress', settings: 'settings' }
-function highlightNav(route) {
-  const top = route.name === 'adventure' ? 'today' : route.name === 'collection' ? 'progress' : NAV_OF[route.name] ?? route.name
-  navEl.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', String(a.dataset.route === top)))
+const NAV_OF = { firstOpening: 'today', session: 'today', rush: 'exercises', opening: 'library', train: 'library', arena: 'exercises', games: 'progress' }
+function navDestination(route) {
+  if (route.name === 'progress' && route.params.tab === 'path') return 'challenges'
+  if (route.name === 'settings' && route.params.help) return 'help'
+  return NAV_OF[route.name] ?? route.name
 }
-function applyShellLocale() {
+function highlightNav(route) {
+  const top = navDestination(route)
+  document.querySelectorAll('.app a[data-route]').forEach((link) => {
+    if (link.dataset.route === top) link.setAttribute('aria-current', 'page')
+    else link.removeAttribute('aria-current')
+  })
+}
+function applyShellLocale(route) {
   const locale = resolveLocale(state.settings.locale)
   document.documentElement.lang = locale
-  for (const route of ['today', 'library', 'exercises', 'progress', 'settings']) {
-    navEl.querySelectorAll(`[data-route="${route}"] span`).forEach((span) => { span.textContent = t(locale, `nav.${route}`) })
+  platform.setMenuLocale?.(locale)
+  for (const link of document.querySelectorAll('.app a[data-route]')) {
+    const label = t(locale, `nav.${link.dataset.route}`)
+    const text = link.querySelector('span')
+    if (text) text.textContent = label
+    else link.setAttribute('aria-label', label)
   }
+  document.getElementById('brand-signature').textContent = t(locale, 'shell.signature')
   saveBanner.querySelector('span').textContent = t(locale, 'save.error')
   saveBanner.querySelector('button').textContent = t(locale, 'save.retry')
   document.querySelector('#levelup .eyebrow').textContent = t(locale, 'level.up')
   document.querySelector('#levelup .levelup-close').textContent = t(locale, 'continue')
+  const bar = document.getElementById('app-context')
+  if (route.name === 'today') {
+    const newPlayer = !state.repertoire.length && !Object.values(state.progress).some(lines => Object.keys(lines).length)
+    bar.innerHTML = `<a class="app-context-link" href="${newPlayer ? '#/first-opening' : '#/session'}">
+      <span class="app-context-icon"><svg class="nav-icon" aria-hidden="true"><use href="#app-library"/></svg></span>
+      <span><small>${t(locale, newPlayer ? 'coach.italian' : 'today.session')}</small><strong>${t(locale, newPlayer ? 'shell.guided' : 'today.start')}</strong></span>
+      <svg class="nav-icon context-chevron" aria-hidden="true"><use href="#app-chevron"/></svg>
+    </a>`
+  } else {
+    const key = navDestination(route)
+    const label = document.querySelector(`.app a[data-route="${key}"] span`)
+    bar.textContent = label?.textContent || ''
+  }
+  updateMusicButton(music.state)
+  updateEffectsButton()
 }
-async function render() {
+function updateEffectsButton() {
+  const label = t(state.settings.locale, 'shell.sound')
+  effectsButton.title = label
+  effectsButton.setAttribute('aria-label', label)
+  effectsButton.setAttribute('aria-pressed', String(Boolean(state.settings.sounds)))
+  effectsButton.querySelector('use').setAttribute('href', state.settings.sounds ? '#app-sound' : '#app-muted')
+}
+function updateMusicButton({ index, status }) {
+  const locale = state.settings.locale
+  const label = t(locale, 'music.toggle')
+  musicButton.setAttribute('aria-label', label)
+  musicButton.setAttribute('aria-pressed', String(status === 'playing'))
+  musicButton.dataset.status = status
+  musicButton.title = status === 'paused' ? label : t(locale, `music.${status}`, { track: MUSIC_TRACKS[index].title })
+}
+async function render(focusHeading = false) {
+  // Replace retired bookmarks in place so Back returns to the previous screen.
+  const retired = location.hash.match(/^#\/?(adventure|collection)(?:\/|$)/)?.[1]
+  if (retired) history.replaceState(history.state, '', retired === 'adventure' ? '#/exercises' : '#/settings')
   const route = parseRoute()
   const myToken = ++mountToken
-  boardCompanions?.destroy()
-  boardCompanions = null
   screen?.destroy?.()
   screen = null
   actionBus.setLocal({})
@@ -327,22 +354,36 @@ async function render() {
   const root = document.createElement('div')
   root.className = 'screen'
   view.replaceChildren(root)
-  applyShellLocale()
+  if (focusHeading) {
+    view.scrollTop = 0
+    window.scrollTo(0, 0)
+  }
+  applyShellLocale(route)
   highlightNav(route)
   if (game) renderChip(chipEl, game.derive(), state.settings.locale)
   const mod = SCREENS[route.name]
   const ctx = makeCtx(route)
   const result = await mod.mount(root, ctx)
   if (myToken !== mountToken) { result?.destroy?.(); return } // une navigation plus récente a eu lieu pendant le montage
-  boardCompanions = mountBoardCompanions(root, ctx, ownedCollection)
   screen = result
+  if (focusHeading && !root.contains(document.activeElement)) {
+    const heading = root.querySelector('h1')
+    if (heading) {
+      heading.tabIndex = -1
+      heading.focus({ preventScroll: true })
+    }
+  }
 }
 
 // ---------- actions : raccourcis web et menu natif (contrat 14.6) partagent les mêmes noms ----------
 function dispatchAction(action) {
+  if (action === 'today') return navigate('#/')
   if (action === 'library') return navigate('#/library')
+  if (action === 'exercises') return navigate('#/exercises')
+  if (action === 'progress') return navigate('#/progress')
   if (action === 'session') return navigate('#/session')
   if (action === 'settings') return navigate('#/settings')
+  if (action === 'help') return navigate('#/settings/help')
   if (action === 'search') {
     if (parseRoute().name !== 'library') return navigate('#/library')
     return actionBus.dispatch('search')
@@ -377,24 +418,19 @@ function setupInstallableWeb() {
 async function boot() {
   setupInstallableWeb()
   await loadState()
+  musicButton.addEventListener('click', () => { music.toggle() })
+  effectsButton.addEventListener('click', () => { saveSettings({ sounds: !state.settings.sounds }) })
+  music.subscribe((playback) => {
+    updateMusicButton(playback)
+    if (playback.status === 'error' && parseRoute().name !== 'settings') notify(t(state.settings.locale, 'music.error'))
+  })
   game = createGame({ state, store: platform.store, persister, journal: journalEnabled ? journalForGame : null, navigate })
   await game.load()
-  adventureWriter = createAdventureWriter({
-    journal: platform.journal, device: journalDevice, getEvents: () => journalEvents,
-    async onCommitted(events) {
-      journalEvents = mergeEvents(journalEvents, events)
-      await game.load()
-      await getCollection()
-      applyAppearance()
-      renderChip(chipEl, game.derive(), state.settings.locale)
-    },
-    onError: (error) => console.warn('Adventure save failed', error),
-  })
-  await getCollection()
-  applyAppearance()
+  availableBoardThemes = boardThemesFor(journalEvents)
+  applyBoardTheme()
   game.subscribe((g) => renderChip(chipEl, g, state.settings.locale))
   renderChip(chipEl, game.state, state.settings.locale)
-  window.addEventListener('hashchange', render)
+  window.addEventListener('hashchange', () => render(true))
   platform.onMenu((action) => dispatchAction(action))
   render()
 }

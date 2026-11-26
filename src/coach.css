@@ -1,0 +1,38 @@
+.coach-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.96fr);
+  align-items: start;
+  gap: clamp(16px, 4vw, 48px);
+  max-width: 965px;
+}
+.coach-copy { display: grid; align-content: start; justify-items: start; gap: 12px; }
+.coach-copy h1 { font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.04; text-wrap: initial; }
+.coach-copy .coach-lead { color: var(--muted); margin: 0; max-width: 38ch; font-size: clamp(1rem, 2vw, 1.17rem); }
+.coach-back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 8px; }
+.coach-board { min-width: 0; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+.coach-board .board-frame { width: 100%; }
+.coach-notation { font-size: 12px; color: var(--muted); margin: 8px 2px 0; }
+.coach-controls { display: flex; gap: 4px 12px; flex-wrap: wrap; align-items: center; width: 100%; min-width: 0; }
+.coach-controls > .coach-moves { flex: 0 1 auto; min-width: 0; }
+.coach-moves button { max-width: 100%; overflow-wrap: anywhere; }
+.coach-moves button, .coach-hint { min-height: 44px; }
+.coach-feedback { color: var(--muted); margin: 0; }
+.coach-feedback:empty { display: none; }
+.coach-hero { margin-block: 4px 24px; }
+.coach-hero .cta { min-height: 44px; }
+.coach-review { max-width: 60ch; margin: 0; }
+.session-completed .session-top { display: grid; gap: 10px; align-items: start; margin-bottom: 22px; }
+.session-completed .session-opening { font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.08; white-space: normal; overflow: visible; }
+.session-completed .session-summary { font-size: 1rem; }
+.session-completed .session-end { display: grid; justify-items: start; gap: 12px; }
+.session-sponsor { max-width: 38rem; margin-top: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+.session-sponsor p { margin: 0 0 5px; }
+.sponsor-label, .sponsor-contact { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+.session-sponsor .actions { align-items: center; margin: 6px 0; }
+.session-sponsor .link, .sponsor-destination, .sponsor-report { display: inline-flex; align-items: center; min-height: 44px; }
+.session-sponsor summary { cursor: pointer; padding: 11px 0; min-height: 44px; }
+.coach-opening .coach-finished { margin: 3px 0; }
+@media (max-width: 640px) {
+  .coach-grid { grid-template-columns: minmax(0, 1fr); }
+  .coach-board { width: min(100%, 395px); justify-self: center; }
+}

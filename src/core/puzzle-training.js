@@ -91,9 +91,10 @@ function dueRetry(puzzles, attempts, recent) {
 }
 
 export function chooseTrainingPuzzle(puzzles, {
-  mode = 'mixed', theme = null, attempts = [], recent = [], turn = 0,
+  mode: requestedMode = 'mixed', theme = null, attempts = [], recent = [], turn = 0,
   elo = 400, source = 'chesscom', random = Math.random,
 } = {}) {
+  const mode = theme === 'mateIn1' ? 'mate1' : requestedMode
   const training = derivePuzzleTraining(attempts)
   const pool = theme ? puzzles.filter((item) => item.themes.includes(theme)) : puzzles
   if (!pool.length) return null
@@ -120,5 +121,8 @@ export function chooseTrainingPuzzle(puzzles, {
   const candidatePool = mode === 'mate1' ? pool : pool.filter((item) => item.cat === category)
   const seen = new Set(attempts.map((attempt) => attempt.ref))
   const fresh = candidatePool.filter((item) => !seen.has(item.id))
-  return selectPuzzle(fresh.length ? fresh : candidatePool, { mode: mode === 'mate1' ? 'mate1' : 'mixed', target, recent, turn, random })
+  const options = { mode: mode === 'mate1' ? 'mate1' : 'mixed', target, recent, random }
+  if (!fresh.length) return selectPuzzle(candidatePool, options)
+  const chosen = selectPuzzle(fresh, options)
+  return chosen ?? selectPuzzle(candidatePool.filter((item) => seen.has(item.id)), options)
 }
