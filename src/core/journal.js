@@ -79,7 +79,32 @@ function validEntry(entry) {
   return entry && typeof entry === 'object' && !Array.isArray(entry) && Number.isFinite(entry.box) && Number.isFinite(entry.runs)
 }
 
-export function replayJournal(input, { defaultSettings = {} } = {}) {
+const unchangedOpeningId = (id) => id
+
+export function canonicalActivity(event, canonicalOpeningId = unchangedOpeningId) {
+  const data = event.data
+  if (event.kind === 'line' && safeKey(data?.o)) {
+    return { ...event, data: { ...data, o: canonicalOpeningId(data.o) } }
+  }
+  if (event.kind === 'history' && Array.isArray(data?.openings)) {
+    return { ...event, data: { ...data, openings: [...new Set(data.openings.map(canonicalOpeningId))] } }
+  }
+  if (event.kind === 'quests' && Array.isArray(data?.list)) {
+    return { ...event, data: { ...data, list: data.list.map((quest) =>
+      safeKey(quest?.openingId) ? { ...quest, openingId: canonicalOpeningId(quest.openingId) } : quest) } }
+  }
+  return event
+}
+
+function combineRuns(previous, next, runs, flawless) {
+  next.runs = (previous.runs || 0) + runs
+  next.flawless = (previous.flawless || 0) + flawless
+  next.days = [...new Set([...(previous.days || []), ...(next.days || [])])].sort().slice(-90)
+  if (previous.introduced && (!next.introduced || previous.introduced < next.introduced)) next.introduced = previous.introduced
+  return next
+}
+
+export function replayJournal(input, { defaultSettings = {}, canonicalOpeningId = unchangedOpeningId } = {}) {
   const events = mergeEvents(input)
   const settings = { ...defaultSettings }
   const repertoire = new Set()
@@ -98,35 +123,57 @@ export function replayJournal(input, { defaultSettings = {} } = {}) {
     if (!previous || (entry.lastRun || 0) > (previous.data.entry.lastRun || 0) ||
       ((entry.lastRun || 0) === (previous.data.entry.lastRun || 0) && event.id > previous.id)) legacies.set(key, event)
   }
-  for (const event of legacies.values()) {
+  // Two snapshots of the same historical ID can come from different devices. Distinct aliases were
+  // tracked independently before canonical IDs, so keep their contributions before merging.
+  const previousSourceRuns = new Map()
+  const legacyInOrder = [...legacies.values()].sort((a, b) =>
+    (a.data.entry.lastRun || 0) - (b.data.entry.lastRun || 0) || (a.id < b.id ? -1 : 1))
+  for (const event of legacyInOrder) {
     const { openingId, lineId, entry } = event.data
-    ;(progress[openingId] ||= {})[lineId] = structuredClone(entry)
+    const canonical = canonicalOpeningId(openingId)
+    const previous = progress[canonical]?.[lineId]
+    const next = structuredClone(entry)
+    if (previous) combineRuns(previous, next, entry.runs, entry.flawless || 0)
+    ;(progress[canonical] ||= {})[lineId] = next
+    previousSourceRuns.set(`${openingId}\u0000${lineId}`, { openingId: canonical, entry })
   }
 
   for (const event of events) {
     const d = event.data
     if (event.kind === 'setting' && safeKey(d.key)) settings[d.key] = d.value
-    if (event.kind === 'repertoire' && safeKey(d.openingId)) {
-      if (d.present) repertoire.add(d.openingId)
-      else repertoire.delete(d.openingId)
+    const openingId = safeKey(d.openingId) ? canonicalOpeningId(d.openingId) : null
+    if (event.kind === 'repertoire' && openingId) {
+      if (d.present) repertoire.add(openingId)
+      else repertoire.delete(openingId)
     }
-    if (event.kind === 'line' && safeKey(d.openingId) && safeKey(d.lineId) && validEntry(d.entry)) {
-      const previous = progress[d.openingId]?.[d.lineId]
+    if (event.kind === 'line' && openingId && safeKey(d.lineId) && validEntry(d.entry)) {
+      const previous = progress[openingId]?.[d.lineId]
       const next = structuredClone(d.entry)
-      if (previous && Number.isSafeInteger(d.runsDelta) && d.runsDelta >= 0) {
-        next.runs = previous.runs + d.runsDelta
-        const flawlessDelta = Number.isSafeInteger(d.flawlessDelta) && d.flawlessDelta >= 0 ? d.flawlessDelta : 0
-        next.flawless = (previous.flawless || 0) + flawlessDelta
-        next.days = [...new Set([...(previous.days || []), ...(next.days || [])])].sort().slice(-90)
-        if (previous.introduced && (!next.introduced || previous.introduced < next.introduced)) next.introduced = previous.introduced
+      const sourceKey = `${d.openingId}\u0000${d.lineId}`
+      if (previous) {
+        const source = previousSourceRuns.get(sourceKey)?.entry
+        const runs = Number.isSafeInteger(d.runsDelta) && d.runsDelta >= 0
+          ? d.runsDelta : Math.max(0, next.runs - (source?.runs || 0))
+        const flawless = Number.isSafeInteger(d.flawlessDelta) && d.flawlessDelta >= 0
+          ? d.flawlessDelta : Math.max(0, (next.flawless || 0) - (source?.flawless || 0))
+        combineRuns(previous, next, runs, flawless)
       }
-      ;(progress[d.openingId] ||= {})[d.lineId] = next
+      ;(progress[openingId] ||= {})[d.lineId] = next
+      previousSourceRuns.set(sourceKey, { openingId, entry: d.entry })
     }
     if (event.kind === 'reset') {
-      if (d.scope === 'progress') for (const key of Object.keys(progress)) delete progress[key]
-      if (d.scope === 'opening' && safeKey(d.openingId)) delete progress[d.openingId]
+      if (d.scope === 'progress') {
+        for (const key of Object.keys(progress)) delete progress[key]
+        previousSourceRuns.clear()
+      }
+      if (d.scope === 'opening' && openingId) {
+        delete progress[openingId]
+        for (const [key, source] of previousSourceRuns) {
+          if (source.openingId === openingId) previousSourceRuns.delete(key)
+        }
+      }
     }
-    if (event.kind === 'activity' && d.event?.id) activity.push(d.event)
+    if (event.kind === 'activity' && d.event?.id) activity.push(canonicalActivity(d.event, canonicalOpeningId))
   }
   return { settings, repertoire: [...repertoire], progress, activity }
 }

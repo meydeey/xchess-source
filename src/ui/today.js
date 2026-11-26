@@ -8,6 +8,7 @@ import { homeVisualMessages } from '../i18n-home-visual.js'
 import '../visual-home.css'
 import { resolveOpening, getCachedLines, difficultyOf, bandStatsFor, escapeHtml } from './shared.js'
 import { hasPendingSession } from './session.js'
+import { rankMedallion } from './reward-art.js'
 
 function activityCard({ kind, label, title, description = '', action, href, primary = false }) {
   return `
@@ -85,7 +86,7 @@ export async function mount(host, ctx) {
     const name = t('today.level', { level: level.level }).replace(/^./u, (char) => char.toLocaleUpperCase(locale))
     levelCard.innerHTML = `
       <div class="home-level-heading">
-        <span class="home-level-emblem" data-rank="${rank}" aria-hidden="true"><span>◇</span></span>
+        ${rankMedallion(level.level, 'home-level-emblem')}
         <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(t(`title.${rank}`))}</small></span>
         <span class="home-level-chevron" aria-hidden="true">›</span>
       </div>

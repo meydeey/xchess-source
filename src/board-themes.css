@@ -1,4 +1,46 @@
 /* Palette and frame decoration are inherited; the 64 squares retain their existing layout. */
+:root:is([data-board-theme='current'], :not([data-board-theme])) {
+  --sq-light: #e0d8cd;
+  --sq-dark: #68635e;
+  --sq-last: #c2874980;
+  --board-rim: #957654;
+  --board-ink: #2d2520;
+  --board-ivory: #fff6e5;
+  --board-amber: #efb975;
+
+  & .cg-wrap cg-board { outline: 1px solid var(--board-rim); }
+
+  & cg-board square.last-move {
+    background-color: var(--sq-last);
+    box-shadow: inset 0 -2px var(--board-amber);
+  }
+
+  & cg-board square.selected {
+    background-color: #e3ab6533;
+    box-shadow: inset 0 0 0 1px var(--board-ink), inset 0 0 0 3px var(--board-amber);
+  }
+
+  /* The dark centre reads on ivory, and the light ring reads on slate. */
+  & cg-board square.move-dest {
+    background: radial-gradient(circle closest-side, var(--board-ink) 21%, var(--board-ivory) 22% 27%, transparent 28%);
+  }
+
+  & cg-board square.oc.move-dest {
+    background: radial-gradient(circle closest-side, transparent 76%, var(--board-ink) 77% 84%, var(--board-ivory) 85% 92%, transparent 93%);
+  }
+
+  & cg-board square.move-dest:hover { background-color: #e3ab6533; }
+
+  & cg-board square.check {
+    background: radial-gradient(circle closest-side, #a63c3e 65%, #a63c3e99 90%, transparent);
+    box-shadow: inset 0 0 0 3px #832c34, inset 0 0 0 5px #ffc6ba;
+  }
+
+  & .cg-wrap coords { color: var(--board-ink); }
+  & .orientation-white :is(.ranks, .files) :nth-child(odd),
+  & .orientation-black :is(.ranks, .files) :nth-child(even) { color: var(--board-ivory); }
+}
+
 :root[data-board-theme='club'] { --sq-light: #ebd4ac; --sq-dark: #966a47; --board-rim: #825b38; --board-rim-width: 4px; --board-grain: repeating-linear-gradient(6deg, #a77946 0 1px, #63452f 1px 4px, #825b38 4px 7px); }
 :root[data-board-theme='burrow'] { --sq-light: #e9dfc4; --sq-dark: #6b7982; --board-rim: #ada48e; --board-rim-width: 4px; --board-grain: repeating-conic-gradient(from 25deg at 25% 10%, #292f39 0deg 1deg, #c4bca4 1deg 21deg); }
 :root[data-board-theme='code'] { --sq-light: #b0bca9; --sq-dark: #43574e; --board-rim: #548369; --board-rim-width: 4px; --board-grain: repeating-linear-gradient(90deg, #80bb83 0 1px, transparent 1px 38px), repeating-linear-gradient(0deg, #548369 0 1px, #142a20 1px 38px); }

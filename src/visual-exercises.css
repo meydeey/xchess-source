@@ -71,6 +71,9 @@
 
 .exercise-warmup-photo { position: relative; min-width: 0; }
 
+.exercise-warmup-art,
+.exercise-cover { filter: saturate(.85) sepia(.16); }
+
 .exercise-warmup-art {
   position: absolute;
   inset: 0;

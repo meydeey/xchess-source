@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Régénère tous les formats de l’icône XChess depuis le fou d’ivoire de la charte.
+# Régénère les icônes XChess depuis le cavalier ambré.
 # Usage : bash tools/make-icon.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."

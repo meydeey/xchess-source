@@ -99,6 +99,11 @@ const SOUNDS = {
   success (c) {
     ;[210, 264.6].forEach((freq, i) => woodNote(c, { freq, duration: 0.13, gain: 0.095, start: i * 0.095, slide: 1 }))
   },
+  mate (c) {
+    woodNote(c, { freq: 293.66, duration: 0.21, gain: 0.09, slide: 1 })
+    woodNote(c, { freq: 440, duration: 0.25, gain: 0.08, start: 0.105, slide: 1 })
+    woodNote(c, { freq: 587.33, duration: 0.36, gain: 0.085, start: 0.21, slide: 1 })
+  },
   perfect (c) {
     ;[210, 264.6, 315, 420].forEach((freq, i) => woodNote(c, { freq, duration: i === 3 ? 0.36 : 0.13, gain: i === 3 ? 0.105 : 0.09, start: i * 0.115, slide: 1 }))
   },

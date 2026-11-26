@@ -6,9 +6,9 @@
   --ink: #f5f3ef;
   --muted: #bab7b3;
   --line: #3b3b41;
-  --accent: #e6b16a;
-  --accent-ink: #20160b;
-  --accent-soft: #342a20;
+  --accent: #e5a047;
+  --accent-ink: #24160b;
+  --accent-soft: #38291c;
   --good: #a9dcb8;
   --good-soft: #263b31;
   --warn: #e6b16a;
@@ -1294,6 +1294,9 @@ kbd { font-family: var(--f-mono); font-size: 10px; padding: 1px 4px; border: 1px
   animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3);
 }
 .levelup-card p { margin: 0; position: relative; }
+.levelup-medallion { width: 72px; height: 72px; border-radius: 50%; margin-bottom: 6px; }
+:is(.reward-medallion, .home-level-emblem, .levelup-medallion)[src$='/rank-rare.webp'] { filter: hue-rotate(185deg) saturate(.78); }
+:is(.reward-medallion, .home-level-emblem, .levelup-medallion)[src$='/rank-epic.webp'] { filter: hue-rotate(230deg) saturate(.73); }
 .levelup-level { font: 600 42px/1.05 var(--f-display); color: var(--accent); }
 .levelup-title { font-size: 18px; font-weight: 600; }
 .levelup-next { font-size: 13px; color: var(--muted); }

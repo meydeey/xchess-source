@@ -24,7 +24,7 @@ import {
   formatEval,
   escapeHtml,
 } from './shared.js'
-import { selection, openings } from '../data.js'
+import { selection, openings, canonicalOpeningId } from '../data.js'
 import * as dataModule from '../data.js'
 import { platform } from '../platform/index.js'
 import { mountPlay } from './play.js'
@@ -798,6 +798,7 @@ export async function mount(host, ctx) {
     setActions({})
     return { destroy() {} }
   }
+  const openingId = canonicalOpeningId(opening.id)
   const sideEn = opening.side
   const openingName = state.settings.locale === 'fr' ? opening.name : opening.lichessName || opening.name
   host.innerHTML = `
@@ -873,9 +874,10 @@ export async function mount(host, ctx) {
   let explorer = null
   let currentTab = 'train'
   let play = null
+  let destroyed = false
 
   function progressOf() {
-    return state.progress[opening.id] || {}
+    return state.progress[openingId] || {}
   }
   function pool() {
     return scope ? linesUnder(lines, scope.path) : lines
@@ -888,7 +890,7 @@ export async function mount(host, ctx) {
     for (const k of ['mastered', 'learning', 'review']) countsEl.querySelector(`.seg.${k}`).style.width = `${(counts[k] / lines.length) * 100}%`
     linesCountEl.textContent = lines.length
   }
-  // persist(lineId, errors, weak) : `weak` (chantier X2) vient de onFinish(errors, { weak }) du drill.
+  // lineProgress(lineId, errors, weak) : `weak` (chantier X2) vient de onFinish(errors, { weak }) du drill.
   // Patché dans le RÉSULTAT de recordRun, jamais dans son entrée : recordRun doit recevoir l'entrée
   // précédente INTACTE (progressOf(), sans rien y ajouter) pour retomber correctement sur ses propres
   // valeurs par défaut quand la ligne n'a encore aucune entrée - la patcher AVANT créerait une entrée
@@ -898,17 +900,14 @@ export async function mount(host, ctx) {
   // champ, recordRun le porte tel quel depuis l'entrée précédente.
   // Rend les faits de jeu du passage (spec V2 L10) : phase ('new' ligne neuve, 'due' révision à
   // l'échéance, 'extra' hors échéance) et passage au statut maîtrisé.
-  async function persist(lineId, errors, weak, aided) {
+  function lineProgress(lineId, errors, weak, aided) {
     const now = Date.now()
     const prev = progressOf()[lineId]
     const phase = !prev ? 'new' : prev.due <= now ? 'due' : 'extra'
     const wasMastered = statusOf(progressOf(), lineId) === 'mastered'
     const next = recordRun(progressOf(), lineId, errors, now, { aided })
     const patched = weak !== undefined ? { ...next, [lineId]: { ...next[lineId], weak } } : next
-    await saveProgress(opening.id, patched)
-    renderCounts()
-    if (currentTab === 'lines') renderLines()
-    return { phase, becameMastered: !wasMastered && statusOf(patched, lineId) === 'mastered' }
+    return { patched, phase, becameMastered: !wasMastered && statusOf(patched, lineId) === 'mastered' }
   }
 
   // learnFor(line) : la config `learn` du cycle Découvrir/Rappeler/Réviser pour CETTE ligne, calculée
@@ -931,6 +930,7 @@ export async function mount(host, ctx) {
   // drill pour monter mountPlay() dans le même conteneur (drillHost, même grille CSS 2 colonnes).
   function createDrill() {
     let hud = null
+    let lineRun = 0
     const d = mountLineDrill(drillHost, {
       sideEn,
       t,
@@ -940,14 +940,23 @@ export async function mount(host, ctx) {
       onMoveResult: (ok) => (ok ? hud?.correct() : hud?.miss()),
       onFinish: (errors, { weak, aided, checkmate, own, ms } = {}) => {
         const line = d.currentLine
-        persist(line.id, errors, weak, aided).then(({ phase, becameMastered }) => {
-          if (d.currentLine !== line) return
+        const finishedRun = lineRun
+        const { patched, phase, becameMastered } = lineProgress(line.id, errors, weak, aided)
+        const res = game?.recordLine({
+          openingId, lineId: line.id, phase, errors, aided, own, ms, checkmate, becameMastered,
+          comboMax: hud?.comboMax ?? 0, moveXp: hud?.lineXp ?? 0,
+        }, (activity, allActivity) => saveProgress(openingId, patched, activity, allActivity))
+        const saving = res?.saved ?? saveProgress(openingId, patched)
+        renderCounts()
+        if (currentTab === 'lines') renderLines()
+        saving.then((saved) => {
+          if (destroyed || play || drill !== d || lineRun !== finishedRun) return
+          if (!saved) {
+            d.setFeedback('warn', t('coach.finishError'))
+            return
+          }
           const st = statusOf(progressOf(), line.id)
           const ending = lineEnding({ evals: line.evals, moves: line.moves, side: sideEn, checkmate })
-          const res = game?.recordLine({
-            openingId: opening.id, lineId: line.id, phase, errors, aided, own, ms, checkmate, becameMastered,
-            comboMax: hud?.comboMax ?? 0, moveXp: hud?.lineXp ?? 0,
-          })
           if (res) hud?.lineEnd(res)
           const gain = res ? t('session.xp', { xp: res.xp }) : ''
           d.setFeedback(errors ? 'warn' : 'good', errors
@@ -970,12 +979,23 @@ export async function mount(host, ctx) {
     inlineNext.addEventListener('click', next)
     drillHost.querySelector('.feedback').after(inlineNext)
     drillHost.querySelector('.drill-info').append(trainingActions)
-    if (game) hud = mountHud(drillHost, game, { getOpeningId: () => opening.id, getLineId: () => d.currentLine?.id, getSounds: () => state.settings.sounds, getLocale: () => state.settings.locale })
+    if (game) hud = mountHud(drillHost, game, { getOpeningId: () => openingId, getLineId: () => d.currentLine?.id, getSounds: () => state.settings.sounds, getLocale: () => state.settings.locale })
     // startLine garde une trace de la ligne en cours pour que onFinish sache laquelle enregistrer.
     const rawSetLine = d.setLine
-    d.setLine = (line, opts) => { inlineNext.hidden = true; nextBtn.hidden = false; d.currentLine = line; hud?.startLine(); rawSetLine(line, opts) }
+    d.setLine = (line, opts) => {
+      lineRun++
+      inlineNext.hidden = true
+      nextBtn.hidden = false
+      d.currentLine = line
+      hud?.startLine()
+      rawSetLine(line, opts)
+    }
     const rawRestart = d.restart
-    d.restart = () => { hud?.startLine(); rawRestart() }
+    d.restart = () => {
+      lineRun++
+      hud?.startLine()
+      rawRestart()
+    }
     return d
   }
   let drill = createDrill()
@@ -1125,6 +1145,7 @@ export async function mount(host, ctx) {
 
   return {
     destroy() {
+      destroyed = true
       // Partie en cours (mode partie, section 6) : drill est déjà détruit (enterPlay), donc ne pas
       // le détruire une 2e fois ; sinon c'est le drill qui est monté, comme d'habitude.
       if (play) play.destroy()

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'bun:test'
 import {
-  hashStr, createRng, addDays, newEvent, sortEvents, comboMultiplier, moveXp, lineBonuses,
+  hashStr, createRng, addDays, newEvent, sortEvents, lineKey, comboMultiplier, moveXp, lineBonuses,
   xpForLevel, levelOf, titleOf, streakOf, generateQuests, questLabel, questProgress, chestReward,
   dailyPick, achievementsOf, historyFromProgress, deriveGame, questContext, recallProbability,
   openingMemory, rushPositions, drawRush, rushXp, FREEZE_MAX, ACHIEVEMENTS,
@@ -142,6 +142,25 @@ describe('défis du jour', () => {
     ]
     expect(deriveGame(events, { now: at(0, 12) }).today.cleanPuzzles).toBe(1)
   })
+  test('seuls les exercices résolus font avancer le défi et le coffre', () => {
+    const list = [{ id: 'q1', level: 'medium', kind: 'puzzles', target: 2, xp: 25 }]
+    const puzzle = (ref, result) => newEvent('puzzle', { at: at(0), data: { ref, result } })
+    const failures = [newEvent('quests', { at: at(0, 8), data: { list } }), puzzle('a', 'failed'), puzzle('b', 'failed')]
+    const g = deriveGame(failures, { now: at(0, 12) })
+    expect(g.today.quests[0]).toMatchObject({ progress: 0, done: false })
+    expect(g.today.chest.available).toBe(false)
+    expect(g.today.xp).toBe(0)
+    expect(g.today.puzzles).toBe(2)
+    expect(g.streak.todayActive).toBe(true)
+
+    const events = [...failures, puzzle('c', 'solved')]
+    expect(deriveGame(events, { now: at(0, 12) }).today.quests[0]).toMatchObject({ progress: 1, done: false })
+    const completed = deriveGame([...events, puzzle('d', 'solved')], { now: at(0, 12) })
+    expect(completed.today.quests[0]).toMatchObject({ progress: 2, done: true })
+    expect(completed.today.chest.available).toBe(true)
+    expect(completed.today.xp).toBe(25)
+    expect(completed.today.puzzles).toBe(4)
+  })
 })
 
 describe('coffre et découverte du jour', () => {
@@ -236,6 +255,36 @@ describe('dérivation de l\'état de jeu', () => {
     const g = deriveGame(events, { now: at(0, 12), meta })
     expect([...g.today.discovered]).toEqual(['elephant'])
     expect(g.counters.openings.size).toBe(2)
+  })
+  test('une relance conserve la découverte et les XP d’une ligne déjà journalisée sous un alias', () => {
+    const canonicalOpeningId = (id) => id === 'ancien-caro' ? 'caro' : id
+    const events = [line(0, { o: 'caro', l: lineKey('e4 c6') }, 12)]
+    const progress = { 'ancien-caro': { 'e4 c6': { box: 1, runs: 1, flawless: 1 } } }
+    const h = historyFromProgress(progress, events, { canonicalOpeningId })
+    expect(h).toEqual({ xp: 0, data: { lines: 0, runs: 0, flawless: 0, mastered: 0, openings: [] } })
+    const g = deriveGame(events, { now: at(0, 12), meta })
+    expect(g.xp).toBe(12)
+    expect(g.today.discovered).toEqual(new Set(['caro']))
+    expect(g.firstDay.get('caro')).toBe(localDateStr(at(0)))
+  })
+  test('les passages antérieurs restent reconnus au milieu de passages journalisés', () => {
+    const canonicalOpeningId = (id) => id === 'ancien-caro' ? 'caro' : id
+    const progress = {
+      'ancien-caro': { 'e4 c6': { box: 3, runs: 3, flawless: 3 } },
+      caro: { 'e4 c6': { box: 1, runs: 1, flawless: 0 } },
+      anglaise: { 'c4 e5': { box: 1, runs: 1, flawless: 1 } },
+    }
+    const events = [
+      line(0, { o: 'ancien-caro', l: lineKey('e4 c6'), mst: true }),
+      line(0, { o: 'caro', l: lineKey('e4 c6'), err: 1 }),
+      line(0, { o: 'anglaise', l: lineKey('c4 e5') }),
+      line(0, { o: 'caro', l: lineKey('e4 c5') }),
+    ]
+    const h = historyFromProgress(progress, events, { canonicalOpeningId })
+    expect(h).toEqual({ xp: 16, data: { lines: 1, runs: 2, flawless: 2, mastered: 0, openings: ['caro'] } })
+    const normalized = events.map((e) => ({ ...e, data: { ...e.data, o: canonicalOpeningId(e.data.o) } }))
+    const g = deriveGame([...normalized, newEvent('history', { at: 0, ...h })], { now: at(0, 12), meta })
+    expect(g.today.discovered).toEqual(new Set(['anglaise']))
   })
   test('trophée Objectif : chaque jour jugé sur l\'objectif de ce jour-là', () => {
     const quests = (days, goal) => newEvent('quests', { at: at(days, 8), data: { list: [], goal } })

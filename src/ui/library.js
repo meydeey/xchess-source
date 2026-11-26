@@ -2,7 +2,7 @@
 // (spec V2, L0 point 9) : 1 rangée = 1 ligne, colonnes alignées, en-têtes cliquables pour trier, camp
 // en contrôle segmenté. Le catalogue complet (3 815 entrées) reste fluide grâce à la liste virtualisée
 // de shared.js : seules les rangées visibles sont dans le DOM.
-import { selection, openings, stats, catalogMeta } from '../data.js'
+import { selection, openings, stats, catalogMeta, canonicalOpeningId } from '../data.js'
 import { statusOf, localDateStr, DAY } from '../core/srs.js'
 import {
   bandStatsFor,
@@ -266,21 +266,22 @@ export async function mount(host, ctx) {
     for (const o of entriesForTab()) {
       if (destroyed) return
       if (metaCache.has(o.id)) continue
-      const indexed = o.tier === 'catalog' && !state.progress[o.id] && !state.repertoire.includes(o.id) && catalogMeta(o.id)
+      const openingId = canonicalOpeningId(o.id)
+      const indexed = o.tier === 'catalog' && !state.progress[openingId] && !state.repertoire.includes(openingId) && catalogMeta(o.id)
       if (indexed) {
         metaCache.set(o.id, { total: indexed.lines, masteredCount: 0, pct: 0, difficulty: indexed.difficulty, due: null })
         continue
       }
       const { lines, header } = await getCachedLines(o)
       if (!lines.length) { metaCache.set(o.id, null); continue }
-      const p = state.progress[o.id] || {}
+      const p = state.progress[openingId] || {}
       const masteredCount = lines.filter((l) => statusOf(p, l.id) === 'mastered').length
       metaCache.set(o.id, {
         total: lines.length,
         masteredCount,
         pct: masteredCount / lines.length,
         difficulty: difficultyOf(header),
-        due: dueOf(lines, p, state.repertoire.includes(o.id), now),
+        due: dueOf(lines, p, state.repertoire.includes(openingId), now),
       })
     }
     if (!destroyed) recompute()

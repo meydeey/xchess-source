@@ -102,7 +102,8 @@ export function mount(host, ctx) {
       const move = chess.move({ from: orig, to: dest, promotion })
       if (!move) { render(); return }
       lastMove = [move.from, move.to]
-      sound.play('move', { sounds: state.settings.sounds })
+      const cue = chess.isCheckmate() ? 'mate' : chess.inCheck() ? 'check' : move.captured ? 'capture' : 'move'
+      sound.play(cue, { sounds: state.settings.sounds })
     } catch { /* Chessground restores the legal position below. */ }
     render()
   }

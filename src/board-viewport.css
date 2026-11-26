@@ -1,0 +1,229 @@
+/* Reserve room for the controls, safe areas and app chrome before sizing the board. */
+#view > :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) {
+  --play-height: calc(100dvh - var(--safe-top) - var(--tabbar-h, 0px) - env(safe-area-inset-bottom));
+}
+
+#view .board-screen .explain-continue,
+#view .coach-opening .coach-finished .cta {
+  min-height: 44px;
+}
+
+/* The explanation remains in flow. Extra detail can extend below the primary action. */
+#view :is(.training-screen, .session-screen) .explain-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 10px;
+}
+
+#view .explain-card > :not(.explain-continue) { grid-column: 1 / -1; }
+#view .explain-card:has(.explain-continue:not([hidden])) .explain-idea { grid-area: 1 / 1; }
+#view .explain-card .explain-continue { grid-area: 1 / 2; }
+
+#view :is(.training-screen, .session-screen) .drill-info .explain-card { order: -4; }
+#view .training-screen .drill-info .drill-next { order: -3; }
+#view .session-screen .drill-info .session-actions,
+#view .training-screen .drill-info .training-actions { order: -2; }
+
+#view .exercise-stage :is(.exercise-prompt, .exercise-actions),
+#view .arena-stage :is(.arena-status, .arena-actions) { order: -2; }
+
+/* Side-by-side fallback for desktop and short touch viewports. */
+@media (min-width: 641px) {
+  #view > :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) {
+    --board-limit: clamp(180px, calc(var(--play-height) - 185px), 640px);
+    --board-column: min(58%, var(--board-limit));
+  }
+
+  #view .coach-opening .home-lesson-grid,
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .drill-host,
+  #view .training-screen .pane[data-pane='explore'] {
+    grid-template-columns: minmax(0, var(--board-column)) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(12px, 2vw, 20px);
+  }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) :is(.drill-host, .pane[data-pane='explore']) :is(.board-frame, .board-foot) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #view .coach-opening .home-lesson-grid .coach-board { width: 100%; }
+  #view :is(.training-screen, .session-screen) .drill-info > .actions { margin-top: 0; }
+
+  #view .exercise-screen .exercise-page { padding-bottom: 0; }
+  #view .exercise-stage .exercise-actions {
+    position: static;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+}
+
+/* The play area fills the space left by the real header and navigation. */
+@media (min-width: 641px) and (min-height: 900px) and (orientation: portrait) and (any-pointer: coarse),
+       (min-width: 861px) and (min-height: 560px) and (orientation: landscape) and (any-pointer: coarse) {
+  .app-work:has(> #view > :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) .board-frame) {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - var(--tabbar-h, 0px) - env(safe-area-inset-bottom));
+  }
+
+  .app-work:has(> #view > :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) .board-frame) > .app-topbar { flex: none; }
+
+  #view:has(> :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) .board-frame) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    padding-bottom: 12px;
+    --ipad-board-gap: 12px;
+    --ipad-coach-note: 24px;
+  }
+
+  #view:has(> .coach-opening .board-frame) { padding-top: 12px; }
+  #view .coach-opening .home-lesson-heading { margin-bottom: 10px; }
+
+  #view :is(.coach-opening .home-lesson-grid, .training-screen .stage, .session-screen .session-body, .exercise-screen .exercise-page, .arena-screen .arena-page),
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .drill-host {
+    display: flex;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  #view .training-screen .stage { flex-direction: column; }
+  #view :is(.coach-opening .home-lesson-grid, .training-screen .pane[data-pane='explore'], .training-screen .drill-host, .session-screen .drill-host, .exercise-stage, .arena-stage) {
+    gap: var(--ipad-board-gap);
+  }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col { --ipad-board-foot: 0px; gap: 6px; }
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col:has(> .board-foot) { --ipad-board-foot: 34px; }
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col .board-frame { flex: none; }
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col .board-foot { min-height: 28px; }
+  #view .coach-opening .coach-notation { line-height: 16px; margin-top: 8px; }
+}
+
+@media (min-width: 641px) and (min-height: 900px) and (orientation: portrait) and (any-pointer: coarse) {
+  #view :is(.coach-opening .home-lesson-grid, .training-screen .pane[data-pane='explore'], .training-screen .drill-host, .session-screen .drill-host, .exercise-stage, .arena-stage) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col,
+  #view .coach-opening .home-lesson-grid .coach-board {
+    container-type: size;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
+  }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) :is(.drill-host, .pane[data-pane='explore']) .board-col :is(.board-frame, .board-foot) {
+    width: min(100%, calc(100cqh - var(--ipad-board-foot)));
+  }
+  #view .coach-opening .home-lesson-grid .coach-board .board-frame { width: min(100%, calc(100cqh - var(--ipad-coach-note))); flex: none; }
+
+  #view :is(.coach-opening .coach-copy, .training-screen .drill-info, .session-screen .drill-info, .exercise-stage .exercise-info, .arena-stage .arena-info) {
+    flex: 0 0 130px;
+    min-height: 0;
+    max-height: 130px;
+    overflow-y: auto;
+    gap: 8px;
+  }
+
+  #view :is(.training-screen, .session-screen) .drill-info { flex-basis: 142px; max-height: 142px; }
+  #view :is(.training-screen, .session-screen) .drill-info .explain-card { flex: 0 0 auto; max-height: 80px; overflow-y: auto; }
+  #view .coach-opening .home-lesson-grid .coach-copy { padding: 12px; }
+  #view .coach-opening .coach-finished { order: -1; }
+
+  #view :is(.exercise-stage .exercise-info, .arena-stage .arena-info) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-auto-rows: max-content;
+    align-content: start;
+    padding: 12px;
+  }
+
+  #view .exercise-stage .exercise-info { flex-basis: 148px; max-height: 148px; }
+  #view :is(.exercise-stage .exercise-info, .arena-stage .arena-info) > * { grid-column: 1 / -1; }
+  #view :is(.exercise-stage .exercise-prompt, .arena-stage .arena-status) { grid-area: 1 / 1; align-self: center; margin: 0; font-size: 1.1rem; }
+  #view :is(.exercise-stage .exercise-actions, .arena-stage .arena-actions) { grid-area: 1 / 2; justify-content: end; }
+  #view .exercise-stage .feedback { order: -1; }
+}
+
+@media (min-width: 861px) and (min-height: 560px) and (orientation: landscape) and (any-pointer: coarse) {
+  #view :is(.coach-opening .home-lesson-grid, .training-screen .pane[data-pane='explore'], .training-screen .drill-host, .session-screen .drill-host, .exercise-stage, .arena-stage) {
+    container-type: size;
+    display: flex;
+    --ipad-panel-min: clamp(232px, 21vw, 296px);
+    --ipad-board-width: calc(100% - var(--ipad-panel-min) - var(--ipad-board-gap));
+  }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .board-col {
+    flex: none;
+    width: min(var(--ipad-board-width), calc(100cqh - var(--ipad-board-foot)));
+  }
+
+  #view .coach-opening .home-lesson-grid .coach-board {
+    flex: none;
+    width: min(var(--ipad-board-width), calc(100cqh - var(--ipad-coach-note)));
+  }
+
+  #view :is(.coach-opening .coach-copy, .training-screen .drill-info, .session-screen .drill-info, .exercise-stage .exercise-info, .arena-stage .arena-info) {
+    flex: 1 1 0;
+    min-width: var(--ipad-panel-min);
+    max-height: 100%;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 470px) and (orientation: landscape) {
+  #view > :is(.coach-opening, .training-screen, .session-screen, .exercise-screen, .arena-screen) {
+    --board-limit: max(128px, calc(var(--play-height) - 142px));
+  }
+
+  #view:has(.coach-opening .board-frame) { padding-top: 8px; }
+  #view .coach-opening .home-lesson-heading { margin-bottom: 8px; }
+  #view .coach-opening .home-lesson-grid .coach-copy,
+  #view .arena-stage .arena-info { padding: 12px; gap: 8px; }
+  #view .coach-opening .coach-finished { order: -1; }
+  #view .training-screen .train-top { grid-template-columns: minmax(0, 1fr) auto minmax(150px, 30%); }
+  #view .arena-stage .arena-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #view .arena-stage .arena-actions button { padding-inline: 5px; }
+}
+
+@media (max-width: 640px) {
+  #view:has(.coach-opening .board-frame) { padding-top: 12px; }
+
+  #view > .coach-opening { --board-limit: clamp(160px, calc(var(--play-height) - 295px), 395px); }
+  #view > :is(.exercise-screen, .arena-screen) { --board-limit: clamp(160px, calc(var(--play-height) - 238px), 480px); }
+  #view > :is(.training-screen, .session-screen) { --board-limit: clamp(160px, calc(var(--play-height) - 375px), 480px); }
+
+  #view .coach-opening .home-lesson-heading { margin-bottom: 8px; }
+  #view .coach-opening .home-lesson-grid { gap: 10px; }
+  #view .coach-opening .home-lesson-grid .coach-board { width: min(100%, var(--board-limit)); }
+  #view .coach-opening .home-lesson-grid .coach-copy { gap: 8px; padding: 12px; }
+  #view .coach-opening .coach-finished { order: -1; }
+  #view .coach-opening .coach-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+  #view .coach-opening .coach-hint { min-width: 44px; }
+  #view .coach-opening .coach-moves,
+  #view .arena-stage .arena-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  #view .coach-moves button,
+  #view .arena-actions button { padding-inline: 5px; }
+
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) .drill-host { gap: 8px; }
+  #view :is(.training-screen, .session-screen, .exercise-screen, .arena-screen) :is(.drill-host, .pane[data-pane='explore']) :is(.board-frame, .board-foot) {
+    width: min(100%, var(--board-limit, 100%));
+    min-width: 0;
+  }
+
+  #view .drill-host .board-col { gap: 5px; }
+  #view .board-screen .drill-info { gap: 8px; }
+  #view .board-screen .exercise-info { padding: 12px; }
+  #view .board-screen .exercise-info h2 { margin: 0; font-size: 1.1rem; }
+  #view .board-screen .exercise-detail { order: -3; }
+  #view .board-screen .explain-card { padding: 8px 10px; }
+  #view .training-actions .primary { flex-grow: 1.4; }
+}

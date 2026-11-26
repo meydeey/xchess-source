@@ -4,17 +4,20 @@
 // passent des faits (ligne terminée, Rush fini) ; il ne connaît ni le plateau ni les arbres.
 import * as core from '../core/game.js'
 import { localDateStr } from '../core/srs.js'
-import { selection, openings, fullIndex } from '../data.js'
+import { canonicalActivity } from '../core/journal.js'
+import { selection, openings, fullIndex, canonicalOpeningId } from '../data.js'
 import { resolveOpening } from './shared.js'
 import * as sound from './sound.js'
 import { t } from '../i18n.js'
 import { ACHIEVEMENT_ICONS } from './achievement-visuals.js'
+import { rankArt } from './reward-art.js'
 
 const COMBO_IDLE_MS = 10 * 60000 // un combo resté 10 min sans coup s'éteint
 const TOAST_MS = 4500
 
 export function createGame({ state, store, persister, journal = null, navigate }) {
   let events = []
+  let legacyActivity = []
   let game = null
   let combo = 0
   let comboAt = 0
@@ -42,9 +45,15 @@ export function createGame({ state, store, persister, journal = null, navigate }
   }
 
   async function load() {
-    try { events = journal ? await journal.allActivity() : (await store.get('activity')) || [] } catch { events = [] }
+    try {
+      if (journal) events = await journal.allActivity()
+      else {
+        legacyActivity = (await store.get('activity')) || []
+        events = legacyActivity.map((event) => canonicalActivity(event, canonicalOpeningId))
+      }
+    } catch { events = [] }
     if (!events.some((e) => e.kind === 'history')) {
-      const h = core.historyFromProgress(state.progress)
+      const h = core.historyFromProgress(state.progress, events, { canonicalOpeningId })
       // Daté du 1er janvier 1970 : ces ouvertures comptent comme jouées avant tout jour réel (la
       // découverte du jour ne les propose jamais) et ce jour ne compte pas dans la série.
       if (h.data.lines) append(core.newEvent('history', { at: 0, xp: h.xp, data: h.data }), { quiet: true })
@@ -52,15 +61,18 @@ export function createGame({ state, store, persister, journal = null, navigate }
     derive()
   }
 
-  function append(event, { quiet = false } = {}) {
+  function saveActivity(event, allActivity) {
+    return journal ? journal.appendActivity(event) : persister.write('activity', allActivity)
+  }
+  function append(event, { quiet = false, save = saveActivity } = {}) {
     const before = quiet ? null : derive()
     events = [...events, event]
-    if (journal) journal.appendActivity(event)
-    else persister.write('activity', events)
+    if (!journal) legacyActivity = [...legacyActivity, event]
+    const saved = save(event, legacyActivity)
     const after = derive()
     if (before) celebrate(before, after)
     for (const fn of listeners) fn(after)
-    return after
+    return { state: after, saved }
   }
 
   // ---------- découverte du jour ----------
@@ -82,13 +94,14 @@ export function createGame({ state, store, persister, journal = null, navigate }
   // (répéter en bloc apprend moins que revenir plus tard, spec V2 §3).
   function multiplierFor(openingId, now = Date.now(), lineId = null) {
     const g = game || derive(now)
-    const base = (g.boost && g.boost.until > now ? 2 : 1) * (openingId && openingId === pickOfDay(now) ? 2 : 1)
+    const base = (g.boost && g.boost.until > now ? 2 : 1) * (openingId && canonicalOpeningId(openingId) === pickOfDay(now) ? 2 : 1)
     return lineId ? base * repeatFactor(openingId, lineId, now) : base
   }
   function repeatFactor(openingId, lineId, now = Date.now()) {
     const day = localDateStr(now)
     const key = core.lineKey(lineId)
-    const n = events.filter((e) => e.kind === 'line' && e.day === day && e.data?.o === openingId && e.data?.l === key).length
+    const id = canonicalOpeningId(openingId)
+    const n = events.filter((e) => e.kind === 'line' && e.day === day && e.data?.o === id && e.data?.l === key).length
     return n === 0 ? 1 : n === 1 ? 0.5 : 0.25
   }
 
@@ -108,16 +121,16 @@ export function createGame({ state, store, persister, journal = null, navigate }
   }
 
   // recordLine(facts) : un passage de ligne terminé. `moveXp` = XP déjà gagnée coup par coup (HUD).
-  function recordLine({ openingId, lineId, phase, errors, aided = false, own, ms, checkmate, becameMastered, comboMax, moveXp = 0 }) {
+  function recordLine({ openingId, lineId, phase, errors, aided = false, own, ms, checkmate, becameMastered, comboMax, moveXp = 0 }, save) {
     const mult = multiplierFor(openingId, Date.now(), lineId)
     const bonuses = core.lineBonuses({ phase, errors, becameMastered, checkmate })
     const bonusXp = Math.round(bonuses.reduce((s, b) => s + b.xp, 0) * mult)
     const xp = moveXp + bonusXp
-    append(core.newEvent('line', {
+    const { saved } = append(core.newEvent('line', {
       xp,
-      data: { o: openingId, l: core.lineKey(lineId), ph: phase, own, err: errors, aided, ms, mate: !!checkmate, mst: !!becameMastered, combo: comboMax },
-    }))
-    return { xp, bonuses, mult }
+      data: { o: canonicalOpeningId(openingId), l: core.lineKey(lineId), ph: phase, own, err: errors, aided, ms, mate: !!checkmate, mst: !!becameMastered, combo: comboMax },
+    }), { save })
+    return { xp, bonuses, mult, saved }
   }
   function recordRush({ score, errors, ms }) {
     const record = score > 0 && score > (game || derive()).counters.rushBest
@@ -125,10 +138,10 @@ export function createGame({ state, store, persister, journal = null, navigate }
     append(core.newEvent('rush', { xp, data: { score, err: errors, ms } }))
     return { xp, record }
   }
-  function recordPuzzle({ id, result, errors, aided = false, cat }) {
-    const xp = result === 'solved' ? (errors === 0 ? 10 : 3) : 0
-    append(core.newEvent('puzzle', { xp, data: { ref: id, result, errors, aided, cat } }))
-    return { xp }
+  function recordPuzzle({ id, result, errors, aided = false, cat }, save) {
+    const xp = result === 'solved' ? (errors === 0 && !aided ? 10 : 3) : 0
+    const { saved } = append(core.newEvent('puzzle', { xp, data: { ref: id, result, errors, aided, cat } }), { save })
+    return { xp, saved }
   }
   function recordDrill({ ref, errors, aided }) {
     append(core.newEvent('drill', { xp: errors || aided ? 2 : 10, data: { ref, errors, aided } }))
@@ -139,7 +152,7 @@ export function createGame({ state, store, persister, journal = null, navigate }
     if (g.today.questsGenerated) return g
     const day = localDateStr(Date.now())
     const list = core.generateQuests(day, { ...core.questContext(g, { ...ctx, goal: goal(), pick: pickOfDay(), today: day }), challengeFocus: ctx.challengeFocus, personalDue: ctx.personalDue })
-    return append(core.newEvent('quests', { data: { list, goal: goal() } }), { quiet: true })
+    return append(core.newEvent('quests', { data: { list, goal: goal() } }), { quiet: true }).state
   }
   function openChest() {
     const g = derive()
@@ -202,6 +215,7 @@ export function createGame({ state, store, persister, journal = null, navigate }
     sound.play('levelup', { sounds: state.settings.sounds })
     const titleChanged = core.titleOf(level.level - 1) !== level.title
     const titleKey = core.TITLES.filter(([min]) => min <= level.level).at(-1)[0]
+    el.querySelector('.levelup-medallion').src = `/art/rewards/rank-${rankArt(level.level)}.webp`
     el.querySelector('.levelup-level').textContent = tr('today.level', { level: level.level })
     el.querySelector('.levelup-title').textContent = titleChanged ? tr('game.newTitle', { title: tr(`title.${titleKey}`) }) : tr(`title.${titleKey}`)
     el.querySelector('.levelup-next').textContent = level.nextTitle

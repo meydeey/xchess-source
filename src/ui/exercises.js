@@ -335,23 +335,29 @@ export async function mount(host, ctx) {
     explanationEl.textContent = t('exercises.explanation', { motif: motif ? t(`theme.${motif}`) : t(`mode.${st.puzzle.cat}`), solution })
     explanationEl.hidden = false
     const result = solved ? 'solved' : 'failed'
-    game?.recordPuzzle?.({ id: st.puzzle.id, result, errors: st.errors, aided: st.hints > 0, cat: st.puzzle.cat })
-    let saved = true
-    try {
-      const attempt = { id: st.puzzle.id, mode, result, errors: st.errors, ms: Date.now() - st.startedAt, rating: st.puzzle.rating, cat: st.puzzle.cat, aided: st.hints > 0, theme: motif, packVersion: st.puzzle.id.split('@')[1] || puzzlesPack.version }
-      await savePuzzleAttempt(attempt)
-      attempts.push({ ...attempt, ref: attempt.id, at: Date.now() })
-      Object.assign(training, derivePuzzleTraining(attempts))
-    } catch {
-      saved = false
-      feedback('bad', t('exercises.saveError'))
+    const attempt = {
+      id: finishedPuzzle.id, mode, result, errors: st.errors, ms: Date.now() - st.startedAt,
+      rating: finishedPuzzle.rating, cat: finishedPuzzle.cat, aided: st.hints > 0, theme: motif,
+      packVersion: finishedPuzzle.id.split('@')[1] || puzzlesPack.version,
     }
-    if (solved) sound.play('success', { sounds: state.settings.sounds })
+    if (solved) sound.play(st.chess.isCheckmate() ? 'mate' : 'success', { sounds: state.settings.sounds })
     else sound.play('error', { sounds: state.settings.sounds })
     if (mode === 'mate1-series') {
-      st.seriesMistakes += st.errors
+      st.seriesMistakes += attempt.errors
       if (st.seriesMistakes >= 3) endRun('exercises.seriesEnd')
     }
+    let saved = false
+    try {
+      const res = game?.recordPuzzle?.(attempt, (activity, allActivity) => savePuzzleAttempt(attempt, activity, allActivity))
+      saved = await (res?.saved ?? savePuzzleAttempt(attempt))
+      if (saved) {
+        attempts.push({ ...attempt, ref: attempt.id, at: Date.now() })
+        Object.assign(training, derivePuzzleTraining(attempts))
+      }
+    } catch {
+      saved = false
+    }
+    if (!saved && st.puzzle === finishedPuzzle) feedback('bad', t('exercises.saveError'))
     if (solved && saved && st.puzzle === finishedPuzzle && !st.runEnded && autoNextEl.checked) {
       st.timer = setTimeout(() => {
         if (st.complete && st.puzzle === finishedPuzzle && !st.runEnded && autoNextEl.checked) next()
@@ -391,6 +397,7 @@ export async function mount(host, ctx) {
     }
     st.busy = true
     boardState([move.from, move.to])
+    sound.play(move.captured ? 'capture' : 'move', { sounds: state.settings.sounds })
     feedback('good', t('exercises.reply', { move: move.san }))
     st.timer = setTimeout(() => {
       const reply = playUci(st.chess, st.puzzle.moves[st.index])

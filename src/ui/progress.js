@@ -6,6 +6,7 @@ import { resolveOpening, getCachedLines, escapeHtml } from './shared.js'
 import * as statsScreen from './stats.js'
 import { t } from '../i18n.js'
 import { ACHIEVEMENT_ICONS, TIER_ICONS } from './achievement-visuals.js'
+import { challengeArt, rankMedallion } from './reward-art.js'
 import '../visual-progress.css'
 
 const OVERVIEW_TABS = ['activity', 'memory']
@@ -75,14 +76,19 @@ export async function mount(host, ctx) {
   return { destroy() { sub?.destroy?.() } }
 }
 
-function metrics({ counters }, days, tr, locale) {
+function metrics({ counters, level }, days, tr, locale) {
   const num = new Intl.NumberFormat(locale)
   const values = [
     ['progress.record.lines', counters.lines],
     ['progress.record.puzzles', counters.puzzlesSolved],
     ['progress.practiceDays', days],
   ]
-  return `<dl class="progress-metrics">${values.map(([key, value]) => `
+  return `<a class="progress-rank" href="#/progress/trophies">
+    ${rankMedallion(level.level)}
+    <strong>${tr('header.level', { level: level.level })}</strong>
+    <span class="mono">${num.format(level.into)} / ${num.format(level.span)} XP</span>
+    <span aria-hidden="true">›</span>
+  </a><dl class="progress-metrics">${values.map(([key, value]) => `
     <div class="progress-metric">
       <dt>${tr(key)}</dt>
       <dd>${num.format(value)}</dd>
@@ -163,7 +169,7 @@ function pathView(path, mastery, tr) {
       <header><span aria-hidden="true">♙</span><div><h2>${tr('mastery.quickTitle')}</h2><p>${mastery.quickStart.complete ? tr('mastery.quickPlaque') : tr('mastery.quickPending', { count: mastery.quickStart.steps.filter(Boolean).length })}</p></div></header>
       <ol>${mastery.quickStart.steps.map((done, i) => `<li class="${done ? 'done' : ''}"><span aria-hidden="true">${done ? '✓' : i + 1}</span><a href="${quickLinks[i]}"${done ? ` aria-label="${tr(`mastery.quick.${i}`)} : ${tr('path.complete')}"` : ''}>${tr(`mastery.quick.${i}`)}</a></li>`).join('')}</ol>
     </section>
-    <section class="card path-intro">
+    <section class="card path-intro challenge-banner" data-art="${challengeArt(path.focus.id)}">
       <p class="eyebrow">${tr('path.current')}</p>
       <h2>${tr(`path.stage.${path.focus.id}`)}</h2>
       <p>${tr(path.provisional ? 'path.provisional' : 'path.measured')}</p>
@@ -173,7 +179,10 @@ function pathView(path, mastery, tr) {
     <h2 class="path-section-title">${tr('mastery.longChallenges')}</h2>
     <div class="path-stages">${path.stages.map((stage, index) => `
       <article class="card path-stage${index === path.focusIndex ? ' current' : ''}${stage.complete ? ' mastered' : ''}">
-        <header><span class="path-number mono">${String(index + 1).padStart(2, '0')}</span><div><h2>${tr(`path.stage.${stage.id}`)}</h2><small>${tr('path.difficulty', stage)}</small></div>${stage.complete ? `<span class="path-complete">♜ ${tr('mastery.pathPlaque')}</span>` : ''}</header>
+        <header class="challenge-banner" data-art="${challengeArt(stage.id)}">
+          <div><h2>${tr(`path.stage.${stage.id}`)}</h2><small>${tr('path.difficulty', stage)}</small></div>
+          ${stage.complete ? `<span class="path-complete">${tr('mastery.pathPlaque')}</span>` : ''}
+        </header>
         ${stage.inherited ? `<p class="path-inherited">${tr('path.inherited')}</p>` : ''}
         <div class="path-proofs">
           <a href="#/exercises/mixed/${stage.id}"><b>${tr('path.puzzles')}</b><span>${tr('mastery.puzzleCount', { count: stage.puzzle.attempted, target: stage.count })}</span><span>${tr('path.wins', { wins: stage.puzzle.wins, target: stage.wins })}</span><small>${tr('path.categories', { count: stage.puzzle.categories, target: stage.categories })}</small></a>
@@ -230,7 +239,7 @@ function trophies(g, tr, locale) {
   return `
     <section class="card trophy-head">
       <div class="hero-level">
-        <span class="level-badge mono" aria-hidden="true">${level.level}</span>
+        ${rankMedallion(level.level)}
         <div>
           <p class="hero-title">${tr(`title.${TITLES.filter(([value]) => value <= level.level).at(-1)[0]}`)} <small>${tr('today.level', { level: level.level })}</small></p>
           <p class="hero-sub mono">${tr('progress.totalXp', { xp: NUM.format(g.xp), unlocked, total })}</p>

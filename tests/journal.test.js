@@ -54,6 +54,50 @@ describe('journal', () => {
     expect(merged.progress.italian.e4.lastRun).toBe(400)
   })
 
+  test('une variante rejouée depuis un alias garde le même répertoire, ses passages et ses jours de révision', () => {
+    const canonical = 'attaque-fried-liver'
+    const alias = 'italian-game-two-knights-defense-fried-liver-attack'
+    const canonicalOpeningId = (id) => id === alias ? canonical : id
+    const lineId = 'e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5'
+    const legacy = migrationEvents({ progress: { [alias]: { [lineId]: entry(100) } }, repertoire: [alias] }, 'mac')
+    const otherCopy = migrationEvents({ progress: { [alias]: { [lineId]: entry(80, 1) } } }, 'iphone')
+    const independent = event('line', { openingId: canonical, lineId, entry: {
+      ...entry(200, 1), days: ['2026-09-26'], introduced: '2026-09-26',
+    }, runsDelta: 1, flawlessDelta: 1 }, 200, 'canonical-run')
+    const later = event('line', { openingId: alias, lineId, entry: {
+      ...entry(300, 3), days: ['2026-09-27'], introduced: '2026-09-25',
+    } }, 300, 'alias-run-without-delta')
+    const events = [...legacy, ...otherCopy, independent, later]
+    const replayed = replayJournal(events, { canonicalOpeningId })
+    expect(replayed.repertoire).toEqual([canonical])
+    expect(replayed.progress[alias]).toBeUndefined()
+    expect(replayed.progress[canonical][lineId]).toEqual({
+      ...entry(300, 4), flawless: 2, days: ['2026-09-25', '2026-09-26', '2026-09-27'],
+    })
+    const excluded = event('repertoire', { openingId: alias, present: false }, 400, 'remove-old-alias')
+    const reset = event('reset', { scope: 'opening', openingId: alias }, 401, 'reset-old-alias')
+    const resetState = replayJournal([...events, excluded, reset], { canonicalOpeningId })
+    expect(resetState.repertoire).toEqual([])
+    expect(resetState.progress).toEqual({})
+  })
+
+  test('l’activité relue partage l’identité canonique sans réécrire les sauvegardes', () => {
+    const canonicalOpeningId = (id) => id === 'catalogue-id' ? 'selection-id' : id
+    const activity = [
+      { id: 'line-1', kind: 'line', at: 100, xp: 12, data: { o: 'catalogue-id', l: 'abc' } },
+      { id: 'history-1', kind: 'history', at: 101, xp: 20, data: { openings: ['catalogue-id', 'selection-id'] } },
+      { id: 'quests-1', kind: 'quests', at: 102, data: { list: [{ id: 'play', openingId: 'catalogue-id' }, { id: 'other' }] } },
+    ]
+    const events = migrationEvents({ activity }, 'mac')
+    const before = exportJournal(events)
+    const replayed = replayJournal(events, { canonicalOpeningId }).activity
+    expect(replayed[0]).toEqual({ ...activity[0], data: { o: 'selection-id', l: 'abc' } })
+    expect(replayed[1].data.openings).toEqual(['selection-id'])
+    expect(replayed[2].data.list).toEqual([{ id: 'play', openingId: 'selection-id' }, { id: 'other' }])
+    expect(exportJournal(events)).toBe(before)
+    expect(replayJournal(importJournal(before), { canonicalOpeningId }).activity).toEqual(replayed)
+  })
+
   test('export, import, doublon divergent et fichier corrompu', () => {
     const a = makeEvent('setting', { key: 'elo', value: 400 }, 'mac', Date.now())
     expect(importJournal(exportJournal([a]))).toEqual([a])

@@ -11,6 +11,82 @@
   white-space: nowrap;
 }
 
+.progress-rank {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 12px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.progress-rank:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.progress-rank .reward-medallion {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.progress-rank .mono { margin-inline-start: auto; color: var(--muted); }
+.progress-rank > span:last-child { color: var(--accent); }
+
+.trophy-head .reward-medallion {
+  flex: none;
+  width: clamp(54px, 10vw, 90px);
+  height: auto;
+  border-radius: 50%;
+}
+
+.challenge-banner[data-art='common'] { --challenge-banner: url('/art/rewards/banner-common.webp'); }
+.challenge-banner[data-art='rare'] { --challenge-banner: url('/art/rewards/banner-rare.webp'); --challenge-hue: 185deg; }
+.challenge-banner[data-art='epic'] { --challenge-banner: url('/art/rewards/banner-epic.webp'); --challenge-hue: 230deg; }
+.challenge-banner[data-art='legendary'] { --challenge-banner: url('/art/rewards/banner-legendary.webp'); }
+
+.path-intro.challenge-banner,
+.path-stage > .challenge-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #171513;
+  color: #fffbf6;
+}
+
+.challenge-banner::before,
+.challenge-banner::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.challenge-banner::before {
+  background: var(--challenge-banner) right center / auto 127% no-repeat;
+  filter: hue-rotate(var(--challenge-hue, 0deg)) saturate(.82);
+}
+.challenge-banner::after {
+  background: linear-gradient(90deg, #171513 0%, #171513eb 46%, #1715131a 100%);
+}
+
+.path-intro.challenge-banner {
+  align-content: center;
+  min-height: 148px;
+}
+
+.path-intro.challenge-banner > :not(.cta) { max-width: 32ch; }
+.path-intro.challenge-banner p:not(.eyebrow),
+.path-stage > .challenge-banner small { color: #e4d7c8; }
+
+.path-stage > .challenge-banner {
+  min-height: 100px;
+  padding: 12px 28% 12px 14px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+}
+
+.path-stage > .challenge-banner .path-complete { margin: 0; color: #efd1a6; }
+
 .progress-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

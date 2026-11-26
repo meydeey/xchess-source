@@ -49,6 +49,7 @@
       <div class="app-work">
         <header class="app-topbar">
           <a class="brand mobile-brand" href="#/" aria-label="XChess"><span class="brand-mark" aria-hidden="true"></span><strong class="brand-name">XChess</strong></a>
+          <div id="game-toasts" class="game-toasts" aria-live="polite"></div>
           <div class="app-context" id="app-context"></div>
           <div class="app-tools">
             <a id="player-chip" class="player-chip" href="#/progress/trophies"></a>
@@ -64,10 +65,10 @@
       <span>Sauvegarde impossible : ta progression est gardée en mémoire, nouvelle tentative automatique.</span>
       <button type="button">Réessayer</button>
     </div>
-    <div id="game-toasts" class="game-toasts" aria-live="polite"></div>
     <div id="levelup" class="levelup" role="dialog" aria-modal="true" aria-labelledby="levelup-level" hidden>
       <div class="levelup-card">
         <div class="confetti" aria-hidden="true"></div>
+        <img class="levelup-medallion" width="192" height="192" alt="">
         <p class="eyebrow">Niveau supérieur</p>
         <p class="levelup-level" id="levelup-level"></p>
         <p class="levelup-title"></p>

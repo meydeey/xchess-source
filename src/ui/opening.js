@@ -2,7 +2,7 @@
 // victoires/nulles/défaites par tranche, nombre de lignes, ma progression, et les 4 actions. La
 // génération locale de l'arbre (catalogue complet ou sélection pas encore générée, section 5 "mode
 // app", critère 10.4) vit dans generate.js ; cette fiche se contente de l'afficher.
-import { selection, openings, stats } from '../data.js'
+import { selection, openings, stats, canonicalOpeningId, catalogMeta } from '../data.js'
 import { statusOf } from '../core/srs.js'
 import { openingMemory } from '../core/game.js'
 import { platform } from '../platform/index.js'
@@ -14,6 +14,7 @@ import {
   difficultyOf,
   escapeHtml,
 } from './shared.js'
+import '../opening-complexity.css'
 
 // Point d'accroche pour la génération locale de l'arbre : garde le nom et la signature historiques
 // (opening, { band, onProgress }) ; la génération réelle (moteur, tranche, paramètres, persistance)
@@ -30,15 +31,30 @@ function segmentsOf(bandRec, side) {
   const loss = side === 'black' ? bandRec.white : bandRec.black
   return { games: bandRec.games, win, draw: bandRec.draws, loss }
 }
-function wdlBar(seg, t) {
-  if (!seg || !seg.games) return `<p class="wdl-empty">${t('opening.wdlEmpty')}</p>`
-  const pct = (n) => `${(n / seg.games) * 100}%`
+function openingDifficulty(value, t, loading = false) {
+  if (value == null) return `<span class="opening-difficulty-value">${t(loading ? 'opening.difficultyLoading' : 'opening.difficultyEmpty')}</span>`
   return `
-    <div class="wdl-bar" title="${t('opening.wdlTitle', seg)}">
+    <div class="opening-difficulty-value">
+      <strong>${t(`opening.difficulty.${value}`)}</strong>
+      <span class="opening-difficulty-score">${t('opening.difficultyScore', { value })}</span>
+      <span class="opening-difficulty-meter" aria-hidden="true">
+        ${Array.from({ length: 5 }, (_, index) => `<i${index < value ? ' class="filled"' : ''}></i>`).join('')}
+      </span>
+    </div>
+  `
+}
+
+function wdlResults(seg, t, number) {
+  if (!seg?.games) return `<p class="wdl-empty">${t('opening.wdlEmpty')}</p>`
+  const pct = (n) => `${(n / seg.games) * 100}%`
+  const counts = Object.fromEntries(Object.entries(seg).map(([key, value]) => [key, number.format(value)]))
+  return `
+    <div class="wdl-bar" aria-hidden="true">
       <span class="seg win" style="width:${pct(seg.win)}"></span>
       <span class="seg draw" style="width:${pct(seg.draw)}"></span>
       <span class="seg loss" style="width:${pct(seg.loss)}"></span>
     </div>
+    <p class="wdl-label">${t('opening.wdlTitle', counts)}</p>
   `
 }
 
@@ -46,24 +62,29 @@ export async function mount(host, ctx) {
   const { params, state, saveRepertoire, band, navigate, notify, game, t } = ctx
   const locale = state.settings.locale
   const formatPercent = (value) => value == null ? '-' : new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(value)
-  const formatGames = (value) => value == null ? '-' : new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(value)
+  const number = new Intl.NumberFormat(locale)
   const opening = resolveOpening(params.id, { selection, openings })
   if (!opening) {
     host.innerHTML = `<p class="empty">${t('opening.missing')} <a href="#/library">${t('opening.back')}</a>.</p>`
     return { destroy() {} }
   }
   const openingName = locale === 'fr' ? opening.name : opening.lichessName || opening.name
-  const inRepertoire = () => state.repertoire.includes(opening.id)
+  const openingId = canonicalOpeningId(opening.id)
+  const indexedDifficulty = catalogMeta(opening.id)?.difficulty
+  const inRepertoire = () => state.repertoire.includes(openingId)
 
   host.innerHTML = `
     <p class="eyebrow"><a class="opening-library" href="#/library">${t('library.title')}</a> · ${opening.eco ? `${opening.eco} · ` : ''}${t(`side.${opening.side}`)}${opening.family ? ` · ${t(`family.${opening.family}`)}` : ''}</p>
     <h1>${escapeHtml(openingName)}</h1>
     <p class="thesis mono">${opening.moves.map((m, i) => `${i % 2 === 0 ? `${i / 2 + 1}.` : ''}${m}`).join(' ')}</p>
-    ${game?.pickOfDay() === opening.id ? `<p class="pick-note"><span class="badge-x2 mono">XP ×2</span> ${t('opening.pick')}</p>` : ''}
-    <p class="level-line"></p>
+    <div class="opening-difficulty">
+      <span class="opening-difficulty-label">${t('opening.difficulty')}</span>
+      <div class="opening-difficulty-body" role="status">${openingDifficulty(indexedDifficulty, t, true)}</div>
+    </div>
+    ${game?.pickOfDay() === openingId ? `<p class="pick-note"><span class="badge-x2 mono">XP ×2</span> ${t('opening.pick')}</p>` : ''}
     <div class="fiche-actions">
-      <button type="button" class="btn-train primary">${t('opening.train')}</button>
-      <button type="button" class="btn-explore">${t('opening.explore')}</button>
+      <button type="button" class="btn-train primary" disabled>${t('opening.train')}</button>
+      <button type="button" class="btn-explore" disabled>${t('opening.explore')}</button>
       <button type="button" class="btn-repertoire"></button>
       <button type="button" class="btn-generate" hidden>${t('opening.generate')}</button>
     </div>
@@ -71,7 +92,7 @@ export async function mount(host, ctx) {
     <p class="lines-line"></p>
     <section class="wdl-section"></section>
   `
-  const levelLine = host.querySelector('.level-line')
+  const difficultyBody = host.querySelector('.opening-difficulty-body')
   const linesLine = host.querySelector('.lines-line')
   const wdlSection = host.querySelector('.wdl-section')
   const generateBtn = host.querySelector('.btn-generate')
@@ -94,10 +115,10 @@ export async function mount(host, ctx) {
   // d'annuler ; Ajouter/Retirer relit l'état à chaque clic, jamais une valeur figée au montage.
   host.querySelector('.btn-train').addEventListener('click', () => {
     if (!inRepertoire()) {
-      saveRepertoire([...state.repertoire, opening.id])
+      saveRepertoire([...state.repertoire, openingId])
       notify(t('opening.added', { name: openingName }), {
         actionLabel: t('opening.undo'),
-        onAction: () => saveRepertoire(state.repertoire.filter((id) => id !== opening.id)),
+        onAction: () => saveRepertoire(state.repertoire.filter((id) => id !== openingId)),
       })
     }
     navigate(`#/train/${opening.id}`)
@@ -105,8 +126,8 @@ export async function mount(host, ctx) {
   host.querySelector('.btn-explore').addEventListener('click', () => navigate(`#/train/${opening.id}/explore`))
   repertoireBtn.addEventListener('click', () => {
     const next = inRepertoire()
-      ? state.repertoire.filter((id) => id !== opening.id)
-      : [...state.repertoire, opening.id]
+      ? state.repertoire.filter((id) => id !== openingId)
+      : [...state.repertoire, openingId]
     saveRepertoire(next) // met state.repertoire à jour tout de suite, avant l'écriture
     renderRepertoireBtn()
   })
@@ -130,16 +151,27 @@ export async function mount(host, ctx) {
   // le catalogue complet n'a qu'un score agrégé pour la tranche débutant (stats.catalog).
   if (opening.tier === 'selection') {
     const bandsStat = stats.selection?.[opening.id]?.bands ?? {}
-    wdlSection.innerHTML = BAND_ORDER.map((b) => `
-      <div class="wdl-row">
-        <p class="wdl-label">${t(`band.${b}`)}${b === band ? ` <b>${t('opening.band')}</b>` : ''}</p>
-        ${wdlBar(segmentsOf(bandsStat[b], opening.side), t)}
+    wdlSection.innerHTML = `
+      <div class="opening-rating-control">
+        <label for="opening-rating-band">${t('opening.ratingResults')}</label>
+        <select id="opening-rating-band" aria-controls="opening-rating-result">
+          ${BAND_ORDER.map((b) => `<option value="${b}">${t(`band.${b}`)}</option>`).join('')}
+        </select>
       </div>
-    `).join('')
+      <div id="opening-rating-result" class="opening-rating-result" role="status"></div>
+    `
+    const rating = wdlSection.querySelector('select')
+    const results = wdlSection.querySelector('.opening-rating-result')
+    rating.value = BAND_ORDER.includes(band) ? band : BAND_ORDER[0]
+    const renderResults = () => {
+      results.innerHTML = wdlResults(segmentsOf(bandsStat[rating.value], opening.side), t, number)
+    }
+    rating.addEventListener('change', renderResults)
+    renderResults()
   } else {
     const catStat = stats.catalog?.[opening.id]
     wdlSection.innerHTML = catStat
-      ? `<p class="wdl-label">${t('opening.catalogScore', { score: formatPercent(catStat.scoreLow), games: formatGames(catStat.games) })}</p>`
+      ? `<p class="wdl-label">${t('opening.catalogScore', { score: formatPercent(catStat.scoreLow), games: number.format(catStat.games) })}</p>`
       : `<p class="wdl-empty">${t('opening.catalogEmpty')}</p>`
   }
 
@@ -168,11 +200,11 @@ export async function mount(host, ctx) {
   }
 
   // Charge d’apprentissage (D9, ADR-0005) : la même fonction que la Bibliothèque.
-  const diff = difficultyOf(header)
-  levelLine.textContent = diff ? t('opening.difficulty', { value: diff }) : t('opening.difficultyEmpty')
+  const difficulty = difficultyOf(header) ?? indexedDifficulty
+  if (difficulty !== indexedDifficulty || difficulty == null) difficultyBody.innerHTML = openingDifficulty(difficulty, t)
 
   if (lines.length) {
-    const p = state.progress[opening.id] || {}
+    const p = state.progress[openingId] || {}
     const mastered = lines.filter((l) => statusOf(p, l.id) === 'mastered').length
     linesLine.textContent += ` ${t('opening.progress', { mastered, total: lines.length })}`
     const m = openingMemory(lines, p)

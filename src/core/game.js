@@ -206,7 +206,7 @@ export function questProgress (q, ds) {
     case 'side': return ds.sides[q.side] || 0
     case 'xp': return ds.xp
     case 'rush': return ds.rushMax
-    case 'puzzles': return ds.puzzles
+    case 'puzzles': return ds.puzzlesSolved
     case 'drills': return ds.drills
     case 'newPuzzle': return ds.cleanPuzzles
     default: return 0
@@ -273,26 +273,46 @@ export function achievementsOf (counters) {
 }
 
 // ---------- reprise de la progression antérieure ----------
-// 1 événement 'history' au 1er lancement du jeu : l'XP des passages déjà enregistrés dans `progress`,
-// et les ouvertures déjà jouées (elles ne comptent pas comme découvertes ensuite).
-export function historyFromProgress (progress = {}) {
+// Reprend uniquement les passages de `progress` absents du journal, même si une ouverture a
+// changé d'identifiant. Les passages journalisés portent déjà leurs XP et leur date réelle.
+export function historyFromProgress (progress = {}, events = [], { canonicalOpeningId = (id) => id } = {}) {
+  const key = (openingId, hash) => JSON.stringify([openingId, hash])
+  const missingByLine = new Map()
+  for (const [openingId, sub] of Object.entries(progress)) {
+    const canonicalId = canonicalOpeningId(openingId)
+    for (const [lineId, entry] of Object.entries(sub || {})) {
+      if (!entry.runs) continue
+      const id = key(canonicalId, lineKey(lineId))
+      const missing = missingByLine.get(id) || { openingId: canonicalId, runs: 0, flawless: 0, mastered: false }
+      missing.runs += entry.runs
+      missing.flawless += entry.flawless || 0
+      missing.mastered ||= entry.box >= 3 && !(entry.lastErrors > 0)
+      missingByLine.set(id, missing)
+    }
+  }
+  for (const e of events) {
+    if (e.kind !== 'line' || !e.data?.o || !e.data?.l) continue
+    const missing = missingByLine.get(key(canonicalOpeningId(e.data.o), e.data.l))
+    if (!missing) continue
+    missing.runs--
+    if (e.data.err === 0) missing.flawless--
+    if (e.data.mst) missing.mastered = false
+  }
+
   let lines = 0
   let runs = 0
   let flawless = 0
   let mastered = 0
-  const openings = []
-  for (const [openingId, sub] of Object.entries(progress)) {
-    const entries = Object.values(sub || {})
-    if (!entries.length) continue
-    openings.push(openingId)
-    for (const e of entries) {
-      lines++
-      runs += e.runs || 0
-      flawless += e.flawless || 0
-      if (e.box >= 3 && !(e.lastErrors > 0)) mastered++
-    }
+  const openings = new Set()
+  for (const missing of missingByLine.values()) {
+    if (missing.runs <= 0) continue
+    lines++
+    runs += missing.runs
+    flawless += clamp(missing.flawless, 0, missing.runs)
+    if (missing.mastered) mastered++
+    openings.add(missing.openingId)
   }
-  return { xp: flawless * 8 + (runs - flawless) * 3 + mastered * 20, data: { lines, runs, flawless, mastered, openings } }
+  return { xp: flawless * 8 + (runs - flawless) * 3 + mastered * 20, data: { lines, runs, flawless, mastered, openings: [...openings] } }
 }
 // Jours actifs connus de `progress` (champ days de chaque ligne) : la série antérieure au jeu compte.
 export function progressDays (progress = {}) {
@@ -304,7 +324,7 @@ export function progressDays (progress = {}) {
 // ---------- dérivation de l'état de jeu ----------
 function emptyDay (day) {
   return {
-    day, xp: 0, questXp: 0, lines: 0, flawless: 0, due: 0, fresh: 0, comboMax: 0, rushMax: 0, rushes: 0, puzzles: 0, cleanPuzzles: 0, drills: 0,
+    day, xp: 0, questXp: 0, lines: 0, flawless: 0, due: 0, fresh: 0, comboMax: 0, rushMax: 0, rushes: 0, puzzles: 0, puzzlesSolved: 0, cleanPuzzles: 0, drills: 0,
     sides: { white: 0, black: 0 }, openings: new Set(), discovered: new Set(),
   }
 }
@@ -379,7 +399,10 @@ export function deriveGame (events = [], { now = Date.now(), goal = DEFAULT_GOAL
     } else if (e.kind === 'puzzle') {
       ds.puzzles++
       c.puzzles++
-      if (e.data?.result === 'solved') c.puzzlesSolved++
+      if (e.data?.result === 'solved') {
+        ds.puzzlesSolved++
+        c.puzzlesSolved++
+      }
       if (e.data?.ref && !seenPuzzleRefs.has(e.data.ref)) {
         seenPuzzleRefs.add(e.data.ref)
         if (e.data.result === 'solved' && !e.data.errors && !e.data.aided) ds.cleanPuzzles++

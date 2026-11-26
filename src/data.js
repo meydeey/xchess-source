@@ -27,6 +27,10 @@ export const openings = firstEager(openingsModules, [])
 // identique à une ouverture sélectionnée (mêmes coups, même camp) renvoie à son arbre (alias).
 const fullIndexModules = import.meta.glob('../catalog/full-index.json', { eager: true })
 export const fullIndex = firstEager(fullIndexModules, { entries: {} })
+export function canonicalOpeningId(id) {
+  return fullIndex.entries?.[id]?.alias ?? id
+}
+
 export function catalogMeta (id) {
   const e = fullIndex.entries?.[id]
   return e && e.lines != null ? { lines: e.lines, difficulty: e.difficulty } : null

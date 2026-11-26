@@ -136,7 +136,7 @@ export async function mount(host, ctx) {
       onMoveResult: (ok) => (ok ? hud?.correct() : hud?.miss()),
       onFinish: (errors, { weak, aided, checkmate, own, ms } = {}) => {
         // weak (chantier X2) patché dans le RÉSULTAT de recordRun, jamais dans son entrée : voir le
-        // commentaire de persist() dans src/ui/trainer.js pour le bug que ça évite (entrée partielle
+        // commentaire de lineProgress() dans src/ui/trainer.js pour le bug que ça évite (entrée partielle
         // prise pour une entrée existante, runs -> NaN sur une ligne encore jamais jouée).
         const prevProgress = state.progress[item.openingId] || {}
         const wasMastered = statusOf(prevProgress, item.line.id) === 'mastered'
@@ -144,13 +144,14 @@ export async function mount(host, ctx) {
         const patched = weak !== undefined ? { ...next, [item.line.id]: { ...next[item.line.id], weak } } : next
         const finishedDrill = drill
         const finishedHud = hud
-        saveProgress(item.openingId, patched).then((saved) => {
+        const res = game?.recordLine({
+          openingId: item.openingId, lineId: item.line.id, phase: item.isNew ? 'new' : 'due', errors, aided, own, ms, checkmate,
+          becameMastered: !wasMastered && statusOf(patched, item.line.id) === 'mastered',
+          comboMax: finishedHud?.comboMax ?? 0, moveXp: finishedHud?.lineXp ?? 0,
+        }, (activity, allActivity) => saveProgress(item.openingId, patched, activity, allActivity))
+        const saving = res?.saved ?? saveProgress(item.openingId, patched)
+        saving.then((saved) => {
           const verdict = verdictText(lineEnding({ evals: item.line.evals, moves: item.line.moves, side: sideEn, checkmate }), t)
-          const res = game?.recordLine({
-            openingId: item.openingId, lineId: item.line.id, phase: item.isNew ? 'new' : 'due', errors, aided, own, ms, checkmate,
-            becameMastered: !wasMastered && statusOf(patched, item.line.id) === 'mastered',
-            comboMax: finishedHud?.comboMax ?? 0, moveXp: finishedHud?.lineXp ?? 0,
-          })
           if (destroyed || drill !== finishedDrill) return
           allSaved &&= saved
           earliestDue = Math.min(earliestDue, patched[item.line.id].due)

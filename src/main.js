@@ -6,6 +6,7 @@ import './board-themes.css'
 import './visual-shell.css'
 import { platform } from './platform/index.js'
 import { createPersister } from './platform/persister.js'
+import { canonicalOpeningId } from './data.js'
 import { eloToBand } from './core/metrics.js'
 import { deriveChallengePath } from './core/challenges.js'
 import { deriveMastery } from './core/mastery.js'
@@ -42,6 +43,7 @@ const state = { settings: DEFAULT_SETTINGS, repertoire: [], progress: {} }
 let journalEvents = []
 let journalDevice = null
 let journalEnabled = false
+let fallbackPuzzleAttempts = []
 const actionBus = createActionBus()
 let screen = null
 let mountToken = 0
@@ -58,7 +60,7 @@ const persister = createPersister({
   onStatus: (ok) => { saveBanner.hidden = ok && !journalPersister.failing },
 })
 const journalPersister = createPersister({
-  set: (_id, event) => platform.journal.append(event),
+  set: (_id, events) => platform.journal.appendMany(events),
   onStatus: (ok) => { saveBanner.hidden = ok && !persister.failing },
 })
 saveBanner.querySelector('button').addEventListener('click', () => persister.retry())
@@ -94,8 +96,7 @@ async function loadState() {
   state.settings = { ...defaults, ...(storedSettings || {}) }
   // Dédoublonné au chargement : l'ancien bouton Ajouter/Retirer pouvait ajouter 2 fois la même ouverture.
   const repertoire = storedRepertoire || []
-  state.repertoire = [...new Set(repertoire)]
-  state.progress = storedProgress || {}
+  fallbackPuzzleAttempts = storedPuzzleAttempts || []
   try {
     journalDevice = await platform.store.get('journalDevice')
     if (!journalDevice) {
@@ -115,7 +116,7 @@ async function loadState() {
       await platform.journal.append(makeEvent('setting', { key: 'locale', value: defaults.locale }, journalDevice))
     }
     journalEvents = await platform.journal.all()
-    const replayed = replayJournal(journalEvents, { defaultSettings: defaults })
+    const replayed = replayJournal(journalEvents, { defaultSettings: defaults, canonicalOpeningId })
     state.settings = replayed.settings
     state.repertoire = replayed.repertoire
     state.progress = replayed.progress
@@ -123,24 +124,39 @@ async function loadState() {
   } catch (error) {
     console.error('Journal indisponible', error)
     saveBanner.hidden = false
-    if (state.repertoire.length !== repertoire.length) persister.write('repertoire', state.repertoire)
+    const fallback = replayJournal(migrationEvents({
+      repertoire, progress: storedProgress || {},
+    }, 'local-store'), { canonicalOpeningId })
+    state.repertoire = fallback.repertoire
+    state.progress = fallback.progress
   }
 }
+function appendJournalBatch(events) {
+  if (!events.length) return Promise.resolve(true)
+  journalEvents = mergeEvents(journalEvents, events)
+  return journalPersister.write(events[0].id, events)
+}
 function appendJournal(event) {
-  journalEvents = mergeEvents(journalEvents, [event])
-  return journalPersister.write(event.id, event)
+  return appendJournalBatch([event])
+}
+function makeActivityEvent(original) {
+  return {
+    id: `activity:${original.id}`, at: original.at, day: original.day,
+    device: journalDevice, v: JOURNAL_VERSION, kind: 'activity', data: { event: original },
+  }
 }
 const journalForGame = {
   async allActivity() {
-    return replayJournal(journalEvents).activity
+    return replayJournal(journalEvents, { canonicalOpeningId }).activity
   },
   appendActivity(original) {
-    const event = {
-      id: `activity:${original.id}`, at: original.at, day: original.day,
-      device: journalDevice, v: JOURNAL_VERSION, kind: 'activity', data: { event: original },
-    }
-    return appendJournal(event)
+    return appendJournal(makeActivityEvent(original))
   },
+}
+async function saveLocal(key, value, activity) {
+  const writes = [persister.write(key, value)]
+  if (activity) writes.push(persister.write('activity', activity))
+  return (await Promise.all(writes)).every(Boolean)
 }
 // Chaque save* rend true une fois l'écriture confirmée, false si elle reste en attente (bandeau).
 async function saveSettings(patch) {
@@ -159,24 +175,26 @@ async function saveSettings(patch) {
 }
 async function saveRepertoire(next) {
   const previous = new Set(state.repertoire)
-  state.repertoire = [...new Set(next)]
+  state.repertoire = [...new Set(next.map(canonicalOpeningId))]
   if (!journalEnabled) return persister.write('repertoire', state.repertoire)
   const current = new Set(state.repertoire)
   const changed = [...new Set([...previous, ...current])].filter((id) => previous.has(id) !== current.has(id))
   return (await Promise.all(changed.map((openingId) =>
     appendJournal(makeEvent('repertoire', { openingId, present: current.has(openingId) }, journalDevice))))).every(Boolean)
 }
-async function saveProgress(openingId, nextSub) {
+async function saveProgress(id, nextSub, activity, allActivity) {
+  const openingId = canonicalOpeningId(id)
   const previous = state.progress[openingId] || {}
   state.progress = { ...state.progress, [openingId]: nextSub }
-  if (!journalEnabled) return persister.write('progress', state.progress)
+  if (!journalEnabled) return saveLocal('progress', state.progress, allActivity)
   const changed = Object.entries(nextSub).filter(([id, entry]) => JSON.stringify(previous[id]) !== JSON.stringify(entry))
-  return (await Promise.all(changed.map(([lineId, entry]) =>
-    appendJournal(makeEvent('line', {
-      openingId, lineId, entry,
-      runsDelta: Math.max(0, (entry.runs || 0) - (previous[lineId]?.runs || 0)),
-      flawlessDelta: Math.max(0, (entry.flawless || 0) - (previous[lineId]?.flawless || 0)),
-    }, journalDevice))))).every(Boolean)
+  const events = changed.map(([lineId, entry]) => makeEvent('line', {
+    openingId, lineId, entry,
+    runsDelta: Math.max(0, (entry.runs || 0) - (previous[lineId]?.runs || 0)),
+    flawlessDelta: Math.max(0, (entry.flawless || 0) - (previous[lineId]?.flawless || 0)),
+  }, journalDevice))
+  if (activity) events.push(makeActivityEvent(activity))
+  return appendJournalBatch(events)
 }
 async function resetAllProgress() {
   state.progress = {}
@@ -200,15 +218,19 @@ async function restoreBackup(file) {
   await platform.journal.appendMany(merged.filter((event) => !known.has(event.id)))
   location.reload()
 }
-async function savePuzzleAttempt({ id, mode, result, errors, ms, rating, cat, aided = false, theme = null, packVersion = null }) {
+async function savePuzzleAttempt({ id, mode, result, errors, ms, rating, cat, aided = false, theme = null, packVersion = null }, activity, allActivity) {
   const data = { ref: id, mode, result, errors, ms, rating, cat, aided, theme, packVersion }
-  if (journalEnabled) return appendJournal(makeEvent('puzzle', data, journalDevice))
-  const attempts = (await platform.store.get('puzzleAttempts')) || []
-  return persister.write('puzzleAttempts', [...attempts, { ...data, at: Date.now() }])
+  if (journalEnabled) {
+    const events = [makeEvent('puzzle', data, journalDevice)]
+    if (activity) events.push(makeActivityEvent(activity))
+    return appendJournalBatch(events)
+  }
+  fallbackPuzzleAttempts = [...fallbackPuzzleAttempts, { ...data, at: Date.now() }]
+  return saveLocal('puzzleAttempts', fallbackPuzzleAttempts, allActivity)
 }
 async function getPuzzleAttempts() {
   if (journalEnabled) return journalEvents.filter((event) => event.kind === 'puzzle').map((event) => ({ ...event.data, at: event.at, day: event.day, id: event.id }))
-  return (await platform.store.get('puzzleAttempts')) || []
+  return [...fallbackPuzzleAttempts]
 }
 function getGameEvents() { return journalEvents.filter((event) => event.kind === 'game' || event.kind === 'drill') }
 async function getChallengePath(attempts = null) {
