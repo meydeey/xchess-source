@@ -1,4 +1,4 @@
-Release: `5e98b6dfca05`
+Release: `03aefa6d4776`
 
 # XChess source
 

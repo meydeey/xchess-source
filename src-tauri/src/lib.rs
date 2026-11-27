@@ -8,6 +8,8 @@ use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 use tauri::{Emitter, Listener};
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 
+#[cfg(target_os = "macos")]
+mod backup;
 mod sponsor;
 
 // WebKit utilise la session audio de l'app. Le mode playback rend les sons audibles avec le
@@ -81,7 +83,13 @@ fn set_native_menu_locale(app: tauri::AppHandle, locale: &str) -> Result<(), Str
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let builder = tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![activate_audio, sponsor::open_sponsor_link, set_native_menu_locale])
+    .invoke_handler(tauri::generate_handler![
+      activate_audio,
+      sponsor::open_sponsor_link,
+      set_native_menu_locale,
+      #[cfg(target_os = "macos")]
+      backup::save_backup
+    ])
     .plugin(tauri_plugin_store::Builder::default().build());
   #[cfg(desktop)]
   let builder = builder.plugin(tauri_plugin_shell::init()).on_menu_event(|app, event| {

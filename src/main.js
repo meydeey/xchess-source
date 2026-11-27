@@ -203,11 +203,14 @@ async function resetAllProgress() {
 }
 async function downloadBackup() {
   if (!journalEnabled || !await journalPersister.retry()) throw new Error('Sauvegarde indisponible, réessaie après la synchronisation')
-  const blob = new Blob([exportJournal(journalEvents)], { type: 'application/json' })
+  const content = exportJournal(journalEvents)
+  const filename = `xchess-backup-${new Date().toISOString().slice(0, 10)}.json`
+  if (platform.saveBackup) return platform.saveBackup(filename, content)
+  const blob = new Blob([content], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `xchess-backup-${new Date().toISOString().slice(0, 10)}.json`
+  link.download = filename
   link.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

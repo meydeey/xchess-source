@@ -127,8 +127,11 @@ export async function mount(host, ctx) {
   host.querySelector('.btn-test-sound').addEventListener('click', async () => {
     try { await sound.test() } catch (error) { notify(t('settings.soundError', { reason: String(error) })) }
   })
-  host.querySelector('.btn-backup-export').addEventListener('click', async () => {
+  const backupExport = host.querySelector('.btn-backup-export')
+  backupExport.addEventListener('click', async () => {
+    backupExport.disabled = true
     try { await downloadBackup() } catch { notify(t('settings.exportFailed')) }
+    finally { backupExport.disabled = false }
   })
   const backupFile = host.querySelector('.backup-file')
   host.querySelector('.btn-backup-import').addEventListener('click', () => backupFile.click())

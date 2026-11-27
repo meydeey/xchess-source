@@ -333,6 +333,9 @@ export const platform = {
   store: { get, set },
   journal: createJournal(),
   engine: queuedEngine(usesEmbeddedWorker ? createEngine(createWorkerProcess()) : createEngine()),
+  ...(import.meta.env.TAURI_ENV_PLATFORM === 'darwin' && {
+    saveBackup: (filename, content) => invoke('save_backup', { filename, content }),
+  }),
   onMenu,
   setMenuLocale,
 }
